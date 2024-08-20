@@ -1,0 +1,19 @@
+{
+  "name": "hardhat-project",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.8",
+    "hardhat-deploy": "^0.12.4",
+    "hardhat-deploy-ethers": "^0.4.2",
+    "hardhat-ethers": "^1.0.1",
+    "hardhat-etherscan": "^1.0.1"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts-upgradeable": "^5.0.2"
+  },
+  "scripts": {
+    "build": "hardhat compile",
+    "clean": "hardhat clean",
+    "test": "hardhat test"
+  }
+}
