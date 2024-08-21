@@ -30,6 +30,10 @@ abstract contract DexInvestment is Investment {
         if (_totalSupply == 0) {
             toMint = amount * 10 ** 18/ _getDecimalsA();
         } else {
+            (uint ownedRewards, uint unclaimedRewards) = _getAllRewards();
+            emit TestValue("ownedRewards", ownedRewards);
+            emit TestValue("unclaimedRewards", unclaimedRewards);
+
             uint totalValue = _calculateTotalValue();
             emit TestValue("total", totalValue);
 

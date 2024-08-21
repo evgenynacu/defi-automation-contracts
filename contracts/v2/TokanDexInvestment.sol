@@ -25,7 +25,7 @@ contract TokanDexInvestment is DexInvestment {
 
     uint constant private UINT_MAX = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
 
-    function initialize(string memory name_, string memory symbol_, IERC20 _primary, IERC20 _secondary, IERC20 _reward, TokanDexInvestmentConfig memory config) initializer external {
+    function __TokanDexInvestment_init(string memory name_, string memory symbol_, IERC20 _primary, IERC20 _secondary, IERC20 _reward, TokanDexInvestmentConfig memory config) initializer external {
         __Context_init_unchained();
         __ERC20_init_unchained(name_, symbol_);
         __SingleTokenInvestment_init_unchained(_primary);
@@ -84,7 +84,6 @@ contract TokanDexInvestment is DexInvestment {
         TokanRouter.Route[] memory route = new TokanRouter.Route[](1);
         route[0] = TokanRouter.Route({from: address(primary), to: address(secondary), stable: stable});
         uint[] memory amounts = router.swapExactTokensForTokens(primaryAmount, outMin, route, address(this), block.timestamp);
-        emit TestValue("exchanged primary", amounts[1]);
         return amounts[1];
     }
 

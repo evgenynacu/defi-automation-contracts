@@ -25,7 +25,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 		proxy: {
 			execute: {
 				init: {
-					methodName: "initialize",
+					methodName: "__TokanDexInvestment_init",
 					args: ["USDC/CHI", "USDI", usdc, chi, tkn, { router, pair, gauge, decimalsA, stable: true, rewardExchangeRoute }],
 				},
 			},

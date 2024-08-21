@@ -5,6 +5,9 @@ import "hardhat-deploy"
 const config: HardhatUserConfig = {
 	solidity: "0.8.24",
 	networks: {
+		hardhat: {
+			allowBlocksWithSameTimestamp: true,
+		},
 		scroll: {
 			url: "http://127.0.0.1:1248",
 			chainId: 534352,
