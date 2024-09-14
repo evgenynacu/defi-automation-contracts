@@ -1,8 +1,9 @@
 import hre from "hardhat"
 import { TestERC20, TestTokanGauge, TestTokanPair, TestTokanRouter, TokanDexInvestment } from "../typechain-types"
 import { expect } from "chai"
-import { EventLog } from "ethers"
-import { time } from "@nomicfoundation/hardhat-network-helpers";
+import { type AddressLike, BigNumberish, ContractTransactionResponse, EventLog } from "ethers"
+import { time } from "@nomicfoundation/hardhat-network-helpers"
+import type { TypedContractMethod } from "../typechain-types/common"
 
 describe("TokanDexInvestment", () => {
 	let primary: TestERC20
@@ -19,6 +20,9 @@ describe("TokanDexInvestment", () => {
 		secondary = await tokenFactory.deploy()
 		reward = await tokenFactory.deploy()
 
+		const [signer] = await hre.ethers.getSigners()
+		await primary.mint(signer.address, "1000000000000000000")
+
 		const usdcRate = "1000000000000"
 		const rewardRate = "50000000000000"
 
@@ -32,6 +36,15 @@ describe("TokanDexInvestment", () => {
 		const routerFactory = await hre.ethers.getContractFactory("TestTokanRouter")
 		router = await routerFactory.deploy(pair, usdcRate, rewardRate)
 
+		console.log("deployed primary", await primary.getAddress())
+		console.log("deployed secondary", await secondary.getAddress())
+		console.log("deployed reward", await reward.getAddress())
+		console.log("deployed pair", await pair.getAddress())
+		console.log("deployed gauge", await gauge.getAddress())
+		console.log("deployed router", await router.getAddress())
+	})
+
+	beforeEach(async () => {
 		const f = await hre.ethers.getContractFactory("TokanDexInvestment")
 		testing = await f.deploy()
 		const config: TokanDexInvestment.TokanDexInvestmentConfigStruct = {
@@ -46,13 +59,12 @@ describe("TokanDexInvestment", () => {
 			]
 		}
 		await testing.__TokanDexInvestment_init("NAME", "SMB", primary, secondary, reward, config)
+		await primary.approve(testing, "1000000000000000000")
+		console.log("deployed testing", await testing.getAddress())
 	})
 
-	it("Should deposit if there is nothing locked", async () => {
+	it("should deposit if there is nothing locked", async () => {
 		const [signer] = await hre.ethers.getSigners()
-
-		await primary.mint(signer.address, 100000000000)
-		await primary.approve(testing, 100000000000)
 
 		await deposit(10000000, false)
 		// First deposit should result in the same amount as primary (but with decimals = 18)
@@ -70,19 +82,116 @@ describe("TokanDexInvestment", () => {
 		await expect(testing.balanceOf(signer)).to.eventually.eq("30000000000000000000")
 	})
 
-	async function deposit(amount: number, log: boolean = false) {
-		const result= await testing.deposit(amount)
-		const receipt = await result.wait()
-		if (log) {
-			const logs = receipt?.logs
-				.filter(it => "fragment" in it)
-				.map(it => it as EventLog)
-				.filter(it => it.fragment.name == "TestValue")
-				.map(it => `${it.args[0]} = ${it.args[1]}`)
+	it("should allow to withdraw everything right after deposit", async () => {
+		const [signer] = await hre.ethers.getSigners()
 
-			console.log(logs)
+		await deposit(10000000, false)
+		// First deposit should result in the same amount as primary (but with decimals = 18)
+		await expect(testing.balanceOf(signer)).to.eventually.eq("10000000000000000000")
+
+		await expectBalanceChange(async () => {
+			await testing.withdraw("10000000000000000000")
+			await expectBalance(testing, signer, 0)
+		}, primary, signer, 10000000)
+	})
+
+	it("should allow to withdraw partly right after deposit", async () => {
+		const [signer] = await hre.ethers.getSigners()
+
+		await deposit(10000000, false)
+		// First deposit should result in the same amount as primary (but with decimals = 18)
+		await expect(testing.balanceOf(signer)).to.eventually.eq("10000000000000000000")
+
+		await expectBalanceChange(async () => {
+			await testing.withdraw("3000000000000000000")
+			await expectBalance(testing, signer, "7000000000000000000")
+		}, primary, signer, 3000000)
+
+		await expectBalanceChange(async () => {
+			await testing.withdraw("7000000000000000000")
+			await expectBalance(testing, signer, 0)
+		}, primary, signer, 7000000)
+	})
+
+	it("should allow to withdraw full after some time", async () => {
+		const [signer] = await hre.ethers.getSigners()
+
+		await deposit(10000000, false)
+		// First deposit should result in the same amount as primary (but with decimals = 18)
+		await expect(testing.balanceOf(signer)).to.eventually.eq("10000000000000000000")
+
+		await time.increase(200)
+		await expectBalanceChange(async () => {
+			const res = await testing.withdraw("10000000000000000000")
+			await logTestValues(res)
+			await expectBalance(testing, signer, 0)
+		}, primary, signer, 12000000)
+	})
+
+	it("should allow to withdraw partly after some time", async () => {
+		const [signer] = await hre.ethers.getSigners()
+
+		await deposit(10000000, false)
+		// First deposit should result in the same amount as primary (but with decimals = 18)
+		await expect(testing.balanceOf(signer)).to.eventually.eq("10000000000000000000")
+
+		await time.increase(200) //+20%
+		await expectBalanceChange(async () => {
+			const res = await testing.withdraw("4000000000000000000")
+			await logTestValues(res)
+			await expectBalance(testing, signer, "6000000000000000000")
+		}, primary, signer, 4800000)
+
+		// after withdraw left = 12 - 4.8 = 7.2
+		await time.increase(200) //+20% (from initial, was no reinvestment) 6 * 1.4 = 8.4
+		await expectBalanceChange(async () => {
+			const res = await testing.withdraw("6000000000000000000")
+			await logTestValues(res)
+			await expectBalance(testing, signer, "0")
+		}, primary, signer, 8400000)
+	})
+
+	async function expectBalance(token: IERC20, address: AddressLike, balance: BigNumberish) {
+		await expect(token.balanceOf(address)).to.eventually.eq(balance)
+	}
+
+	async function expectBalanceChange(fn: () => Promise<void>, token: IERC20, address: AddressLike, balance: BigNumberish, increase: boolean = true) {
+		const start = await token.balanceOf(address)
+		await fn()
+		const end = await token.balanceOf(address)
+		if (increase) {
+			expect(end - start).to.eq(balance)
+		} else {
+			expect(start - end).to.eq(balance)
+		}
+	}
+
+	async function deposit(amount: number, log: boolean = false) {
+		const res = await testing.deposit(amount)
+		const receipt = await res.wait()
+		if (log) {
+			await logTestValues(res)
 		}
 		const block = await receipt?.getBlock()
 		return block?.timestamp
 	}
+
+	async function logTestValues(res: ContractTransactionResponse) {
+		const receipt = await res.wait()
+		if (receipt === null) {
+			return
+		}
+		const logs = receipt.logs
+			.filter(it => "fragment" in it)
+			.map(it => it as EventLog)
+			.filter(it => it.fragment.name == "TestValue")
+			.map(it => `${it.args[0]} = ${it.args[1]}`)
+
+		console.log("------logs------")
+		logs.forEach(log => console.log(log))
+	}
 })
+
+type IERC20 = {
+	balanceOf: TypedContractMethod<[account: AddressLike], [bigint], "view">
+}

@@ -23,7 +23,7 @@ abstract contract DexInvestment is Investment {
         emit TestValue("deltaA", dA);
 
         /// @dev B = amount of secondary tokens which are exchanged
-        uint B = _exchangePrimary(dA, _getSecondaryOut(dA));
+        uint B = _exchangePrimary(dA);
         emit TestValue("B", B);
 
         uint _totalSupply = totalSupply();
@@ -45,6 +45,31 @@ abstract contract DexInvestment is Investment {
 
         /// @dev put into the liquidity pool
         _putIntoDex(amount - dA, B);
+    }
+
+    // @notice Prepares withdrawal of the liquidity. Takes proportionally all values from: owned assets, invested, rewards
+    function _prepareWithdraw(uint amount, uint totalSupply) internal override returns (uint readyToWithdraw) {
+        uint userA = primary.balanceOf(address(this)) * amount / totalSupply;
+        uint userB = secondary.balanceOf(address(this)) * amount / totalSupply;
+        (uint amountA, uint amountB) = _withdrawFromDex(amount, totalSupply);
+
+        // @dev first just sum owned A and extracted from DEX liquidity
+        readyToWithdraw = userA + amountA;
+        emit TestValue("ready to withdraw primary", readyToWithdraw);
+        // @dev then exchange secondary to primary and add it as well
+        readyToWithdraw += _exchangeSecondary(userB + amountB);
+        emit TestValue("ready to withdraw +secondary", readyToWithdraw);
+
+        if (address(reward) != 0x0000000000000000000000000000000000000000) {
+            emit TestValue("total rewards before", reward.balanceOf(address(this)));
+            _receiveRewards();
+            uint rewards = reward.balanceOf(address(this));
+            emit TestValue("total rewards", rewards);
+            uint userRewards = rewards * amount / totalSupply;
+            readyToWithdraw += _exchangeRewards(userRewards);
+            emit TestValue("ready to withdraw +rewards", readyToWithdraw);
+            emit TestValue("total rewards after", reward.balanceOf(address(this)));
+        }
     }
 
     function _calculateTotalValue() internal view override returns (uint total) {
@@ -103,7 +128,13 @@ abstract contract DexInvestment is Investment {
     function _getRewardValue(uint rewardAmount) internal view virtual returns (uint primaryAmount);
 
     /// @notice Exchanges primary token and gets secondary token
-    function _exchangePrimary(uint primaryAmount, uint outMin) internal virtual returns (uint out);
+    function _exchangePrimary(uint amount) internal virtual returns (uint out);
+
+    /// @notice Exchanges secondary token and gets primary token
+    function _exchangeSecondary(uint amount) internal virtual returns (uint out);
+
+    /// @notice Exchanges secondary token and gets primary token
+    function _exchangeRewards(uint amount) internal virtual returns (uint out);
 
     /// @notice Returns liquidity currently in the DEX Pool
     function _getDexLiquidity() internal view virtual returns (uint amountA, uint amountB);
@@ -111,6 +142,12 @@ abstract contract DexInvestment is Investment {
     /// @notice Returns liquidity currently in the DEX Pool
     function _getRewards() internal view virtual returns (uint amount);
 
+    /// @notice Receives rewards and transfers them to this smart-contract
+    function _receiveRewards() internal virtual;
+
     /// @notice Adds liquidity into DEX pool
     function _putIntoDex(uint amountA, uint amountB) internal virtual returns (uint resultA, uint resultB);
+
+    /// @notice Removes part of the liquidity from DEX (amount/totalSupply)
+    function _withdrawFromDex(uint amount, uint totalSupply) internal virtual returns (uint amountA, uint amountB);
 }

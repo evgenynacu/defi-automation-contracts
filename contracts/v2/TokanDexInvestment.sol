@@ -46,11 +46,6 @@ contract TokanDexInvestment is DexInvestment {
         }
     }
 
-    function _prepareWithdraw(uint, uint) internal override pure returns (uint readyToWithdraw) {
-        readyToWithdraw = 0;
-        require(false, "not implemented");
-    }
-
     function approveAll() public {
         primary.approve(address(router), UINT_MAX);
         secondary.approve(address(router), UINT_MAX);
@@ -80,11 +75,27 @@ contract TokanDexInvestment is DexInvestment {
     }
 
     /// @notice Exchanges main and gets secondary token
-    function _exchangePrimary(uint primaryAmount, uint outMin) internal override returns (uint out) {
+    function _exchangePrimary(uint amount) internal override returns (uint out) {
         TokanRouter.Route[] memory route = new TokanRouter.Route[](1);
         route[0] = TokanRouter.Route({from: address(primary), to: address(secondary), stable: stable});
-        uint[] memory amounts = router.swapExactTokensForTokens(primaryAmount, outMin, route, address(this), block.timestamp);
+        uint[] memory amounts = router.swapExactTokensForTokens(amount, _getSecondaryOut(amount), route, address(this), block.timestamp);
         return amounts[1];
+    }
+
+    /// @notice Exchanges secondary token and gets primary token
+    function _exchangeSecondary(uint amount) internal override returns (uint out) {
+        TokanRouter.Route[] memory route = new TokanRouter.Route[](1);
+        route[0] = TokanRouter.Route({from: address(secondary), to: address(primary), stable: stable});
+        uint[] memory amounts = router.swapExactTokensForTokens(amount, _getPrimaryOut(amount), route, address(this), block.timestamp);
+        return amounts[1];
+    }
+
+    /// @notice Exchanges secondary token and gets primary token
+    function _exchangeRewards(uint amount) internal override returns (uint out) {
+        uint _value = _getRewardValue(amount);
+        emit TestValue("reward value", _value);
+        uint[] memory amounts = router.swapExactTokensForTokens(amount, _value, rewardExchangeRoute, address(this), block.timestamp);
+        return amounts[rewardExchangeRoute.length];
     }
 
     /// @notice Returns liquidity currently in the DEX Pool
@@ -131,5 +142,22 @@ contract TokanDexInvestment is DexInvestment {
     function _getRewardValue(uint rewardAmount) internal view override returns (uint primaryAmount) {
         uint[] memory amounts = router.getAmountsOut(rewardAmount, rewardExchangeRoute);
         return amounts[amounts.length - 1];
+    }
+
+    /// @notice Receives rewards and transfers them to this smart-contract
+    function _receiveRewards() internal override {
+        gauge.getReward();
+    }
+
+    /// @notice Removes part of the liquidity from DEX (amount/totalSupply)
+    function _withdrawFromDex(uint amount, uint totalSupply) internal override returns (uint amountA, uint amountB) {
+        emit TestValue("withdraw from dex amount", amount);
+        emit TestValue("withdraw from dex total supply", totalSupply);
+        uint toWithdraw = gauge.balanceOf(address(this)) * amount / totalSupply;
+        gauge.withdraw(toWithdraw);
+        (uint quoteA, uint quoteB) = router.quoteRemoveLiquidity(address(primary), address(secondary), stable, toWithdraw);
+        (uint withdrawnA, uint withdrawnB) = router.removeLiquidity(address(primary), address(secondary), stable, toWithdraw, quoteA, quoteB, address(this), block.timestamp);
+        amountA = withdrawnA;
+        amountB = withdrawnB;
     }
 }

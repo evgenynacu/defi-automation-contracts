@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import {TokanGauge} from "../interfaces/tokan/TokanGauge.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./TestERC20.sol";
 
 //1. есть то, сколько уже собрал чувак
 //2. есть то, сколько ему начислено и оно не меняется
@@ -34,10 +35,21 @@ contract TestTokanGauge is TokanGauge {
     }
 
     function getReward() external {
-        //todo implement
+        Position storage pos = positions[msg.sender];
+        require(pos.timestamp != 0, "Not initialized");
+        uint accumulated = pos.accumulated + (block.timestamp - pos.timestamp) * rewardRate * pos.value;
+        uint _earned = accumulated - claimed[msg.sender];
+        emit TestValue("accumulated", accumulated);
+        emit TestValue("earned", _earned);
+
+        pos.accumulated = accumulated;
+        pos.timestamp = block.timestamp;
+        claimed[msg.sender] += _earned;
+
+        TestERC20(reward).mint(msg.sender, _earned);
     }
 
-    function earned(address account) external view returns (uint256) {
+    function earned(address account) public view returns (uint256) {
         return _calculateRewards(account) - claimed[account];
     }
 
@@ -67,9 +79,9 @@ contract TestTokanGauge is TokanGauge {
             emit TestValue("non-first deposit value", pos.value);
             emit TestValue("non-first deposit amount", amount);
 
-            pos.accumulated = pos.accumulated + (block.timestamp - pos.timestamp) * rewardRate * pos.value;
+            pos.accumulated += (block.timestamp - pos.timestamp) * rewardRate * pos.value;
             pos.timestamp = block.timestamp;
-            pos.value = pos.value + amount;
+            pos.value += amount;
 
             emit TestValue("non-first deposit acc", pos.accumulated);
         }
@@ -77,5 +89,19 @@ contract TestTokanGauge is TokanGauge {
 
     function balanceOf(address _account) external view returns (uint) {
         return positions[_account].value;
+    }
+
+    function withdraw(uint256 amount) external {
+        emit TestValue("withdraw amount", amount);
+        Position storage pos = positions[msg.sender];
+
+        pos.accumulated = pos.accumulated + (block.timestamp - pos.timestamp) * rewardRate * pos.value;
+        emit TestValue("pos.accumulated", pos.accumulated);
+        pos.timestamp = block.timestamp;
+
+        emit TestValue("pos.value before", pos.value);
+        pos.value -= amount;
+        emit TestValue("pos.value after", pos.value);
+        require(IERC20(pair).transfer(msg.sender, amount));
     }
 }

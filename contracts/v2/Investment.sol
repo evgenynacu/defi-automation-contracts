@@ -28,6 +28,7 @@ abstract contract Investment is ERC20Upgradeable {
 
     /// @dev Deposits primary token and issues this token
     function deposit(uint amount) external returns (uint issued) {
+        require(amount > 0, "Zero amount");
         require(primary.transferFrom(_msgSender(), address(this), amount), "Transfer failed");
         uint toMint = _deposit(amount);
         _mint(_msgSender(), toMint);
@@ -36,6 +37,8 @@ abstract contract Investment is ERC20Upgradeable {
 
     /// @dev Burns this token and withdraws primary investment token
     function withdraw(uint amount) external returns (uint withdrawn) {
+        require(amount > 0, "Zero amount");
+
         uint _totalSupply = totalSupply();
         _burn(_msgSender(), amount);
 

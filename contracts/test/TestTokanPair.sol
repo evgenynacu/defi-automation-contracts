@@ -41,6 +41,10 @@ contract TestTokanPair is ERC20, TokanPair {
         _mint(to, amount);
     }
 
+    function burn(uint amount) public {
+        _burn(msg.sender, amount);
+    }
+
     function transferToken(address token, uint amount, address to) public {
         require(IERC20(token).transfer(to, amount));
     }

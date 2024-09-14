@@ -31,4 +31,22 @@ interface TokanRouter {
     ) external returns (uint256 amountA, uint256 amountB, uint256 liquidity);
 
     function getAmountsOut(uint256 amountIn, Route[] memory routes) external view returns (uint256[] memory amounts);
+
+    function quoteRemoveLiquidity(
+        address tokenA,
+        address tokenB,
+        bool stable,
+        uint256 liquidity
+    ) external view returns (uint256 amountA, uint256 amountB);
+
+    function removeLiquidity(
+        address tokenA,
+        address tokenB,
+        bool stable,
+        uint256 liquidity,
+        uint256 amountAMin,
+        uint256 amountBMin,
+        address to,
+        uint256 deadline
+    ) external returns (uint256 amountA, uint256 amountB);
 }

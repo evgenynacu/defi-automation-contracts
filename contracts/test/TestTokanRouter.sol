@@ -31,9 +31,9 @@ contract TestTokanRouter is TokanRouter {
     }
 
     function quoteAddLiquidity(
-        address tokenA,
-        address tokenB,
-        bool stable,
+        address,
+        address,
+        bool,
         uint256 amountADesired,
         uint256 amountBDesired
     ) external view returns (uint256 amountA, uint256 amountB, uint256 liquidity) {
@@ -51,13 +51,13 @@ contract TestTokanRouter is TokanRouter {
     function addLiquidity(
         address tokenA,
         address tokenB,
-        bool stable,
+        bool,
         uint256 amountADesired,
         uint256 amountBDesired,
         uint256 amountAMin,
         uint256 amountBMin,
         address to,
-        uint256 deadline
+        uint256
     ) external override returns (uint256 amountA, uint256 amountB, uint256 liquidity) {
         require(amountADesired == amountAMin);
         require(amountBDesired == amountBMin);
@@ -72,9 +72,41 @@ contract TestTokanRouter is TokanRouter {
     }
 
     /// @dev used to calculate reward rate - todo later more complicated case
-    function getAmountsOut(uint256 amountIn, Route[] memory routes) external view override returns (uint256[] memory amounts) {
+    function getAmountsOut(uint256 amountIn, Route[] memory) external view override returns (uint256[] memory amounts) {
         amounts = new uint[](2);
         amounts[0] = amountIn;
         amounts[1] = amountIn / rewardRate;
+    }
+
+    function quoteRemoveLiquidity(
+        address,
+        address,
+        bool,
+        uint256 liquidity
+    ) external view returns (uint256 amountA, uint256 amountB) {
+        amountA = liquidity;
+        amountB = liquidity * rate;
+    }
+
+    function removeLiquidity(
+        address tokenA,
+        address tokenB,
+        bool,
+        uint256 liquidity,
+        uint256 amountAMin,
+        uint256 amountBMin,
+        address to,
+        uint256
+    ) public returns (uint256 amountA, uint256 amountB) {
+        require(amountAMin == liquidity);
+        require(amountBMin == liquidity * rate);
+
+        pair.transferToken(tokenA, amountAMin, to);
+        pair.transferToken(tokenB, amountBMin, to);
+        pair.transferFrom(msg.sender, address(this), liquidity);
+        pair.burn(liquidity);
+
+        amountA = amountAMin;
+        amountB = amountBMin;
     }
 }

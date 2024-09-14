@@ -8,4 +8,5 @@ interface TokanGauge {
     function earned(address account) external view returns (uint256);
     function deposit(uint256 amount) external;
     function balanceOf(address _account) external view returns (uint);
+    function withdraw(uint256 amount) external;
 }
