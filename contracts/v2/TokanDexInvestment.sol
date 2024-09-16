@@ -54,6 +54,21 @@ contract TokanDexInvestment is DexInvestment {
         reward.approve(address(router), UINT_MAX);
     }
 
+    /// @notice Invoked on depeg of the stablecoin
+    /// @param minOut Minimal price for the secondary -> primary conversion (e.g 1010000000000)
+    /// @param maxOut Maximal price for the secondary -> primary conversion (e.g 1000100000000)
+    function alarm(uint minOut, uint maxOut) external {
+        _withdrawFromDex(100, 100);
+
+        uint amountB = secondary.balanceOf(address(this));
+        uint amountA = _exchangeSecondary(amountB);
+        //меняли 100, получили out in minPrice. in >= out * minPrice
+        // price = out / in. price = in / out
+        // in * maxPrice < out
+        require(amountA * minOut >= amountB, "minimal price");
+        require(amountA * maxOut <= amountB, "maximal price");
+    }
+
     /// @notice Gets reserves for both assets in the pool
     function _getReserves() internal override view returns (uint reserveA, uint reserveB) {
         (reserveA, reserveB,) = pair.getReserves();
