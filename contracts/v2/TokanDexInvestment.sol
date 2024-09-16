@@ -93,7 +93,6 @@ contract TokanDexInvestment is DexInvestment {
     /// @notice Exchanges secondary token and gets primary token
     function _exchangeRewards(uint amount) internal override returns (uint out) {
         uint _value = _getRewardValue(amount);
-        emit TestValue("reward value", _value);
         uint[] memory amounts = router.swapExactTokensForTokens(amount, _value, rewardExchangeRoute, address(this), block.timestamp);
         return amounts[rewardExchangeRoute.length];
     }
@@ -121,16 +120,9 @@ contract TokanDexInvestment is DexInvestment {
 
     /// @notice Adds liquidity into DEX pool
     function _putIntoDex(uint amountA, uint amountB) internal override returns (uint resultA, uint resultB) {
-        emit TestValue("amountA", amountA);
-        emit TestValue("amountB", amountB);
         bool _stable = stable;
         (uint amountAQuote, uint amountBQuote,) = router.quoteAddLiquidity(address(primary), address(secondary), _stable, amountA, amountB);
-        emit TestValue("amountAQuote", amountAQuote);
-        emit TestValue("amountBQuote", amountBQuote);
         (uint addedA, uint addedB, uint liquidity) = router.addLiquidity(address(primary), address(secondary), _stable, amountAQuote, amountBQuote, amountAQuote, amountBQuote, address(this), block.timestamp);
-        emit TestValue("addedA", addedA);
-        emit TestValue("addedB", addedB);
-        emit TestValue("liquidity", liquidity);
 
         resultA = addedA;
         resultB = addedB;
@@ -151,8 +143,6 @@ contract TokanDexInvestment is DexInvestment {
 
     /// @notice Removes part of the liquidity from DEX (amount/totalSupply)
     function _withdrawFromDex(uint amount, uint totalSupply) internal override returns (uint amountA, uint amountB) {
-        emit TestValue("withdraw from dex amount", amount);
-        emit TestValue("withdraw from dex total supply", totalSupply);
         uint toWithdraw = gauge.balanceOf(address(this)) * amount / totalSupply;
         gauge.withdraw(toWithdraw);
         (uint quoteA, uint quoteB) = router.quoteRemoveLiquidity(address(primary), address(secondary), stable, toWithdraw);

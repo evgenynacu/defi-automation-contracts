@@ -9,8 +9,6 @@ abstract contract Investment is ERC20Upgradeable {
 
     IERC20 public primary;
 
-    event TestValue(string title, uint value);
-
     function __SingleTokenInvestment_init_unchained(IERC20 _primary) internal onlyInitializing {
         primary = _primary;
     }

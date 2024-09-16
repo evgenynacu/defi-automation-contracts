@@ -151,6 +151,24 @@ describe("TokanDexInvestment", () => {
 		}, primary, signer, 8400000)
 	})
 
+	it("should allow reinvest after some time", async () => {
+		const [signer] = await hre.ethers.getSigners()
+
+		await deposit(10000000, false)
+		// First deposit should result in the same amount as primary (but with decimals = 18)
+		await expect(testing.balanceOf(signer)).to.eventually.eq("10000000000000000000")
+
+		await time.increase(200) //+20%
+		await expect(testing.calculateValue(signer)).to.eventually.eq(12000000)
+		await testing.reinvest(false, true)
+		await expect(testing.calculateValue(signer)).to.eventually.eq(12000000)
+
+		await time.increase(200) //+20%
+		await expect(testing.calculateValue(signer)).to.eventually.eq(14400000)
+		await testing.reinvest(false, true)
+		await expect(testing.calculateValue(signer)).to.eventually.eq(14400000)
+	})
+
 	async function expectBalance(token: IERC20, address: AddressLike, balance: BigNumberish) {
 		await expect(token.balanceOf(address)).to.eventually.eq(balance)
 	}

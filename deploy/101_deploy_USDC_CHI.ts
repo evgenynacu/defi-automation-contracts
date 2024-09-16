@@ -20,7 +20,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 		{ from: chi, to: usdc, stable: true },
 	]
 
-	const deployed = await deploy("TokanDexInvestment", {
+	await deploy("TokanDexInvestment", {
 		from: deployer,
 		proxy: {
 			execute: {

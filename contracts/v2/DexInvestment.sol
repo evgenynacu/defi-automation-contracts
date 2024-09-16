@@ -18,33 +18,20 @@ abstract contract DexInvestment is Investment {
     /// @param amount Amount of primary token to deposit
     /// @return toMint Number of tokens to be minted after depositing funds
     function _deposit(uint amount) internal override returns (uint toMint) {
-        emit TestValue("A", amount);
-        uint dA = _calculateDeltaA(amount);
-        emit TestValue("deltaA", dA);
-
-        /// @dev B = amount of secondary tokens which are exchanged
-        uint B = _exchangePrimary(dA);
-        emit TestValue("B", B);
+        (uint dA, uint B) = _depositToDex(amount);
 
         uint _totalSupply = totalSupply();
         if (_totalSupply == 0) {
             toMint = amount * 10 ** 18/ _getDecimalsA();
         } else {
-            (uint ownedRewards, uint unclaimedRewards) = _getAllRewards();
-            emit TestValue("ownedRewards", ownedRewards);
-            emit TestValue("unclaimedRewards", unclaimedRewards);
+            _getAllRewards();
 
             uint totalValue = _calculateTotalValue();
-            emit TestValue("total", totalValue);
 
             /// @dev calculating deposited assets value
             uint depositedValue = (amount - dA) + _getPrimaryOut(B);
-            emit TestValue("deposited", depositedValue);
             toMint = depositedValue * totalSupply() / (totalValue - depositedValue);
         }
-
-        /// @dev put into the liquidity pool
-        _putIntoDex(amount - dA, B);
     }
 
     // @notice Prepares withdrawal of the liquidity. Takes proportionally all values from: owned assets, invested, rewards
@@ -55,20 +42,50 @@ abstract contract DexInvestment is Investment {
 
         // @dev first just sum owned A and extracted from DEX liquidity
         readyToWithdraw = userA + amountA;
-        emit TestValue("ready to withdraw primary", readyToWithdraw);
         // @dev then exchange secondary to primary and add it as well
         readyToWithdraw += _exchangeSecondary(userB + amountB);
-        emit TestValue("ready to withdraw +secondary", readyToWithdraw);
 
         if (address(reward) != 0x0000000000000000000000000000000000000000) {
-            emit TestValue("total rewards before", reward.balanceOf(address(this)));
             _receiveRewards();
             uint rewards = reward.balanceOf(address(this));
-            emit TestValue("total rewards", rewards);
             uint userRewards = rewards * amount / totalSupply;
             readyToWithdraw += _exchangeRewards(userRewards);
-            emit TestValue("ready to withdraw +rewards", readyToWithdraw);
-            emit TestValue("total rewards after", reward.balanceOf(address(this)));
+        }
+    }
+
+    /// @notice Reinvests everything's owned into DEX (including rewards)
+    /// @dev it does it easy way - just exchanges everything to primary first and then runs part of deposit function
+    function reinvest(bool reinvestSecondary, bool reinvestRewards) external {
+        if (reinvestSecondary) {
+            uint ownedB = secondary.balanceOf(address(this));
+            _exchangeSecondary(ownedB);
+        }
+
+        if (reinvestRewards && address(reward) != 0x0000000000000000000000000000000000000000) {
+            _receiveRewards();
+            uint rewards = reward.balanceOf(address(this));
+
+            if (rewards != 0) {
+                _exchangeRewards(rewards);
+            }
+        }
+
+        uint amount = primary.balanceOf(address(this));
+        _depositToDex(amount);
+    }
+
+    function _depositToDex(uint amount) internal returns (uint dA, uint B) {
+        if (amount != 0) {
+            dA = _calculateDeltaA(amount);
+
+            /// @dev B = amount of secondary tokens which are exchanged
+            B = _exchangePrimary(dA);
+
+            /// @dev put into the liquidity pool
+            _putIntoDex(amount - dA, B);
+        } else {
+            dA = 0;
+            B = 0;
         }
     }
 
