@@ -7,6 +7,8 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 /// @dev Later you can redeem original investment token
 abstract contract Investment is ERC20Upgradeable {
 
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
     IERC20 public primary;
 
     function __SingleTokenInvestment_init_unchained(IERC20 _primary) internal onlyInitializing {
@@ -25,7 +27,7 @@ abstract contract Investment is ERC20Upgradeable {
     function _calculateTotalValue() internal view virtual returns (uint total);
 
     /// @dev Deposits primary token and issues this token
-    function deposit(uint amount) external returns (uint issued) {
+    function deposit(uint amount) external onlyUser returns (uint issued) {
         require(amount > 0, "Zero amount");
         require(primary.transferFrom(_msgSender(), address(this), amount), "Transfer failed");
         uint toMint = _deposit(amount);
@@ -34,7 +36,7 @@ abstract contract Investment is ERC20Upgradeable {
     }
 
     /// @dev Burns this token and withdraws primary investment token
-    function withdraw(uint amount) external returns (uint withdrawn) {
+    function withdraw(uint amount) external onlyUser returns (uint withdrawn) {
         require(amount > 0, "Zero amount");
 
         uint _totalSupply = totalSupply();
@@ -49,4 +51,37 @@ abstract contract Investment is ERC20Upgradeable {
     function _prepareWithdraw(uint amount, uint totalSupply) internal virtual returns (uint readyToWithdraw);
 
     function _deposit(uint amount) internal virtual returns (uint toMint);
+
+    modifier onlyUser() {
+        require(_isUser(), "NotUser");
+        _;
+    }
+
+    function _isUser() internal virtual view returns (bool);
+
+    modifier onlyOwner() {
+        require(_msgSender() == _owner(), "NOT_AUTHORIZED");
+        _;
+    }
+
+    function _owner() internal view returns (address adminAddress) {
+        // solhint-disable-next-line security/no-inline-assembly
+        assembly {
+            adminAddress := sload(0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103)
+        }
+    }
+
+    function claimOwner() external {
+        require(_owner() == 0x0000000000000000000000000000000000000000, "owner already set");
+        _setOwner(_msgSender());
+    }
+
+    function _setOwner(address newOwner) internal {
+        address previousOwner = _owner();
+        // solhint-disable-next-line security/no-inline-assembly
+        assembly {
+            sstore(0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103, newOwner)
+        }
+        emit OwnershipTransferred(previousOwner, newOwner);
+    }
 }

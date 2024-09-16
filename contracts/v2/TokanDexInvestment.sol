@@ -7,12 +7,15 @@ import "../interfaces/tokan/TokanRouter.sol";
 import "../interfaces/tokan/TokanGauge.sol";
 
 contract TokanDexInvestment is DexInvestment {
+    uint constant private UINT_MAX = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
+
     TokanRouter public router;
     TokanPair public pair;
     TokanGauge public gauge;
-    bool public stable;
+    bool private stable;
     uint private decimalsA;
-    TokanRouter.Route[] public rewardExchangeRoute;
+    TokanRouter.Route[] private rewardExchangeRoute;
+    mapping(address account => bool) private users;
 
     struct TokanDexInvestmentConfig {
         TokanRouter router;
@@ -22,8 +25,6 @@ contract TokanDexInvestment is DexInvestment {
         bool stable;
         TokanRouter.Route[] rewardExchangeRoute;
     }
-
-    uint constant private UINT_MAX = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
 
     function __TokanDexInvestment_init(string memory name_, string memory symbol_, IERC20 _primary, IERC20 _secondary, IERC20 _reward, TokanDexInvestmentConfig memory config) initializer external {
         __Context_init_unchained();
@@ -57,7 +58,7 @@ contract TokanDexInvestment is DexInvestment {
     /// @notice Invoked on depeg of the stablecoin
     /// @param minOut Minimal price for the secondary -> primary conversion (e.g 1010000000000)
     /// @param maxOut Maximal price for the secondary -> primary conversion (e.g 1000100000000)
-    function alarm(uint minOut, uint maxOut) external {
+    function alarm(uint minOut, uint maxOut) external onlyUser {
         _withdrawFromDex(100, 100);
 
         uint amountB = secondary.balanceOf(address(this));
@@ -164,5 +165,13 @@ contract TokanDexInvestment is DexInvestment {
         (uint withdrawnA, uint withdrawnB) = router.removeLiquidity(address(primary), address(secondary), stable, toWithdraw, quoteA, quoteB, address(this), block.timestamp);
         amountA = withdrawnA;
         amountB = withdrawnB;
+    }
+
+    function _isUser() internal override view returns (bool) {
+        return users[_msgSender()];
+    }
+
+    function setUser(address account, bool _user) external onlyOwner() {
+        users[account] = _user;
     }
 }

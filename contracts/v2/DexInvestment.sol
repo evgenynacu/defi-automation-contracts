@@ -55,7 +55,7 @@ abstract contract DexInvestment is Investment {
 
     /// @notice Reinvests everything's owned into DEX (including rewards)
     /// @dev it does it easy way - just exchanges everything to primary first and then runs part of deposit function
-    function reinvest(bool reinvestSecondary, bool reinvestRewards) external {
+    function reinvest(bool reinvestSecondary, bool reinvestRewards) external onlyUser {
         if (reinvestSecondary) {
             uint ownedB = secondary.balanceOf(address(this));
             _exchangeSecondary(ownedB);

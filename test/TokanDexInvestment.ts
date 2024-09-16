@@ -61,6 +61,10 @@ describe("TokanDexInvestment", () => {
 		await testing.__TokanDexInvestment_init("NAME", "SMB", primary, secondary, reward, config)
 		await primary.approve(testing, "1000000000000000000")
 		console.log("deployed testing", await testing.getAddress())
+
+		const [signer] = await hre.ethers.getSigners()
+		await testing.claimOwner()
+		await testing.setUser(signer, true)
 	})
 
 	it("should deposit if there is nothing locked", async () => {
