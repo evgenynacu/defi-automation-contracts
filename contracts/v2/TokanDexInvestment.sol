@@ -162,7 +162,9 @@ contract TokanDexInvestment is DexInvestment {
     function _putIntoDex(uint amountA, uint amountB) internal override returns (uint resultA, uint resultB) {
         bool _stable = stable;
         (uint amountAQuote, uint amountBQuote,) = router.quoteAddLiquidity(address(primary), address(secondary), _stable, amountA, amountB);
-        (uint addedA, uint addedB, uint liquidity) = router.addLiquidity(address(primary), address(secondary), _stable, amountAQuote, amountBQuote, amountAQuote, amountBQuote, address(this), block.timestamp);
+        uint amountAmin = amountAQuote * 999 / 1000;
+        uint amountBMin = amountBQuote * 999 / 1000;
+        (uint addedA, uint addedB, uint liquidity) = router.addLiquidity(address(primary), address(secondary), _stable, amountAQuote, amountBQuote, amountAmin, amountBMin, address(this), block.timestamp);
 
         resultA = addedA;
         resultB = addedB;

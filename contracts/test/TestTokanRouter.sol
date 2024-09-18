@@ -59,8 +59,8 @@ contract TestTokanRouter is TokanRouter {
         address to,
         uint256
     ) external override returns (uint256 amountA, uint256 amountB, uint256 liquidity) {
-        require(amountADesired == amountAMin);
-        require(amountBDesired == amountBMin);
+        require(amountADesired >= amountAMin);
+        require(amountBDesired >= amountBMin);
 
         amountA = amountADesired;
         amountB = amountBDesired;
