@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
+// This code has not been professionally audited, therefore I cannot make any promises about
+// safety or correctness. Use at own risk.
 pragma solidity ^0.8.0;
 
 import "./DexInvestment.sol";
@@ -47,6 +49,23 @@ contract TokanDexInvestment is DexInvestment {
         }
     }
 
+    /// @notice Deposit pooled liquidity (pair)
+    function depositPooledLiquidity(uint liquidity) external onlyUser returns (uint minted) {
+        pair.transferFrom(_msgSender(), address(this), liquidity);
+        gauge.deposit(liquidity);
+
+        uint liquidityValue = _calculateLiquidityValue(liquidity);
+        uint toMint = _calculateToMint(liquidityValue);
+        _mint(_msgSender(), toMint);
+        return toMint;
+    }
+
+    /// @notice Calculates value of the pooled liquidity (in primary token A)
+    function _calculateLiquidityValue(uint liquidity) internal view returns (uint amount) {
+        (uint amountA, uint amountB) = _calculateLiquidityAmounts(liquidity);
+        return amountA + _getPrimaryOut(amountB);
+    }
+
     function approveAll() public {
         primary.approve(address(router), UINT_MAX);
         secondary.approve(address(router), UINT_MAX);
@@ -58,7 +77,7 @@ contract TokanDexInvestment is DexInvestment {
     /// @notice Invoked on depeg of the stablecoin
     /// @param minOut Minimal price for the secondary -> primary conversion (e.g 1010000000000)
     /// @param maxOut Maximal price for the secondary -> primary conversion (e.g 1000100000000)
-    function alarm(uint minOut, uint maxOut) external onlyUser {
+    function alarm(uint minOut, uint maxOut) external onlyUser returns (uint exchanged) {
         _withdrawFromDex(100, 100);
 
         uint amountB = secondary.balanceOf(address(this));
@@ -68,6 +87,7 @@ contract TokanDexInvestment is DexInvestment {
         // in * maxPrice < out
         require(amountA * minOut >= amountB, "minimal price");
         require(amountA * maxOut <= amountB, "maximal price");
+        return amountA;
     }
 
     /// @notice Gets reserves for both assets in the pool
@@ -118,7 +138,11 @@ contract TokanDexInvestment is DexInvestment {
         // @dev liquidity - total amount of Pair tokens, deposited in Gauge for this Pool
         // @dev potentially some amount can be owned by this contract and not in the gauge, but will always put Pair tokens into the gauge, so should not happen
         uint liquidity = gauge.balanceOf(address(this));
+        (amountA, amountB) = _calculateLiquidityAmounts(liquidity);
+    }
 
+    /// @notice Calculates how much A & B assets pooled
+    function _calculateLiquidityAmounts(uint liquidity) view internal returns (uint amountA, uint amountB) {
         // @dev _balance0, _balance1 - how much primary and secondary tokens pair owns (total DEX liquidity)
         uint256 _balance0 = primary.balanceOf(address(pair));
         uint256 _balance1 = secondary.balanceOf(address(pair));

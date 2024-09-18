@@ -19,17 +19,18 @@ abstract contract DexInvestment is Investment {
     /// @return toMint Number of tokens to be minted after depositing funds
     function _deposit(uint amount) internal override returns (uint toMint) {
         (uint dA, uint B) = _depositToDex(amount);
+        toMint = _calculateToMint((amount - dA) + _getPrimaryOut(B));
+    }
 
+    /// @notice Calculates how much tokens to mint after the deposit
+    function _calculateToMint(uint depositedValue) internal view returns (uint toMint) {
         uint _totalSupply = totalSupply();
         if (_totalSupply == 0) {
-            toMint = amount * 10 ** 18/ _getDecimalsA();
+            toMint = depositedValue * 10 ** 18/ _getDecimalsA();
         } else {
-            _getAllRewards();
-
             uint totalValue = _calculateTotalValue();
 
             /// @dev calculating deposited assets value
-            uint depositedValue = (amount - dA) + _getPrimaryOut(B);
             toMint = depositedValue * totalSupply() / (totalValue - depositedValue);
         }
     }

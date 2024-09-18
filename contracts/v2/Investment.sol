@@ -26,8 +26,8 @@ abstract contract Investment is ERC20Upgradeable {
     /// @notice Calculates total assets denominated in primary tokens
     function _calculateTotalValue() internal view virtual returns (uint total);
 
-    /// @dev Deposits primary token and issues this token
-    function deposit(uint amount) external onlyUser returns (uint issued) {
+    /// @dev Deposits primary token and mints this token
+    function deposit(uint amount) external onlyUser returns (uint minted) {
         require(amount > 0, "Zero amount");
         require(primary.transferFrom(_msgSender(), address(this), amount), "Transfer failed");
         uint toMint = _deposit(amount);

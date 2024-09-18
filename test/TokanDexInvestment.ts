@@ -22,6 +22,7 @@ describe("TokanDexInvestment", () => {
 
 		const [signer] = await hre.ethers.getSigners()
 		await primary.mint(signer.address, "1000000000000000000")
+		await secondary.mint(signer.address, "100000000000000000000000000000")
 
 		const usdcRate = "1000000000000"
 		const rewardRate = "50000000000000"
@@ -84,6 +85,28 @@ describe("TokanDexInvestment", () => {
 		// reward = 1000 * 10000000 * 100000000000 / 50000000000000 = 20_000_000 = 20 USDC
 		// so current balance = 20 + 20. we add 20. then it's half of current total supply = 10, 30 in total
 		await expect(testing.balanceOf(signer)).to.eventually.eq("30000000000000000000")
+	})
+
+	it("should deposit pooled liquidity", async () => {
+		const [signer] = await hre.ethers.getSigners()
+
+		await deposit(10000000, false)
+		// First deposit should result in the same amount as primary (but with decimals = 18)
+		await expect(testing.balanceOf(signer)).to.eventually.eq("10000000000000000000")
+
+		const usdc = 5000000
+		const chi = "5000000000000000000"
+		await primary.approve(router, usdc)
+		await secondary.approve(router, chi)
+		await router.addLiquidity(primary, secondary, true, usdc, chi, usdc, chi, signer, 0)
+		// 1000005000000n
+		// 1000005000000000000000000n
+		// 5000000n
+
+		await pair.approve(testing, 5000000)
+
+		await testing.depositPooledLiquidity(5000000)
+		await expect(testing.balanceOf(signer)).to.eventually.eq("20000000000000000000")
 	})
 
 	it("should allow to withdraw everything right after deposit", async () => {
