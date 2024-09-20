@@ -75,6 +75,13 @@ abstract contract DexInvestment is Investment {
         _depositToDex(amount);
     }
 
+    /// @notice Calculate total value of the rewards accumulated
+    function getRewardsValue() view external returns (uint) {
+        uint current = reward.balanceOf(address(this));
+        uint earned = _getRewards();
+        return _getRewardValue(current + earned);
+    }
+
     function _depositToDex(uint amount) internal returns (uint dA, uint B) {
         if (amount != 0) {
             dA = _calculateDeltaA(amount);
@@ -157,7 +164,7 @@ abstract contract DexInvestment is Investment {
     /// @notice Returns liquidity currently in the DEX Pool
     function _getDexLiquidity() internal view virtual returns (uint amountA, uint amountB);
 
-    /// @notice Returns liquidity currently in the DEX Pool
+    /// @notice Returns rewards earned already
     function _getRewards() internal view virtual returns (uint amount);
 
     /// @notice Receives rewards and transfers them to this smart-contract
