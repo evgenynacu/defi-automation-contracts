@@ -16,9 +16,15 @@ abstract contract Investment is ERC20Upgradeable {
     }
 
     /// @notice calculates value for the wallet denominated in primary tokens
-    function calculateValue(address wallet) public view returns (uint value) {
+    function calculateValue(address wallet) external view returns (uint value) {
         uint _totalSupply = totalSupply();
         uint _balance = balanceOf(wallet);
+        uint _totalValue = _calculateTotalValue();
+        return _totalValue * _balance / _totalSupply;
+    }
+
+    function calculateValue(uint _balance) external view returns (uint value) {
+        uint _totalSupply = totalSupply();
         uint _totalValue = _calculateTotalValue();
         return _totalValue * _balance / _totalSupply;
     }

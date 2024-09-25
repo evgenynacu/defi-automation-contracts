@@ -186,14 +186,14 @@ describe("TokanDexInvestment", () => {
 		await expect(testing.balanceOf(signer)).to.eventually.eq("10000000000000000000")
 
 		await time.increase(200) //+20%
-		await expect(testing.calculateValue(signer)).to.eventually.eq(12000000)
+		await expect(testing["calculateValue(address)"](signer)).to.eventually.eq(12000000)
 		await testing.reinvest(false, true)
-		await expect(testing.calculateValue(signer)).to.eventually.eq(12000000)
+		await expect(testing["calculateValue(address)"](signer)).to.eventually.eq(12000000)
 
 		await time.increase(200) //+20%
-		await expect(testing.calculateValue(signer)).to.eventually.eq(14400000)
+		await expect(testing["calculateValue(address)"](signer)).to.eventually.eq(14400000)
 		await testing.reinvest(false, true)
-		await expect(testing.calculateValue(signer)).to.eventually.eq(14400000)
+		await expect(testing["calculateValue(address)"](signer)).to.eventually.eq(14400000)
 	})
 
 	async function expectBalance(token: IERC20, address: AddressLike, balance: BigNumberish) {
