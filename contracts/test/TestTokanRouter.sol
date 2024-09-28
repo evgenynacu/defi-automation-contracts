@@ -98,15 +98,15 @@ contract TestTokanRouter is TokanRouter {
         address to,
         uint256
     ) public returns (uint256 amountA, uint256 amountB) {
-        require(amountAMin == liquidity);
-        require(amountBMin == liquidity * rate);
+        require(amountAMin <= liquidity);
+        require(amountBMin <= liquidity * rate);
 
-        pair.transferToken(tokenA, amountAMin, to);
-        pair.transferToken(tokenB, amountBMin, to);
+        pair.transferToken(tokenA, liquidity, to);
+        pair.transferToken(tokenB, liquidity * rate, to);
         pair.transferFrom(msg.sender, address(this), liquidity);
         pair.burn(liquidity);
 
-        amountA = amountAMin;
-        amountB = amountBMin;
+        amountA = liquidity;
+        amountB = liquidity * rate;
     }
 }

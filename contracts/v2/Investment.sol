@@ -8,6 +8,9 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 abstract contract Investment is ERC20Upgradeable {
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event Deposit(address account, uint deposited, uint minted);
+    event Withdraw(address account, uint withdrawn, uint burned);
+    event Total(uint value, uint totalSupply);
 
     IERC20 public primary;
 
@@ -35,9 +38,11 @@ abstract contract Investment is ERC20Upgradeable {
     /// @dev Deposits primary token and mints this token
     function deposit(uint amount) external onlyUser returns (uint minted) {
         require(amount > 0, "Zero amount");
-        require(primary.transferFrom(_msgSender(), address(this), amount), "Transfer failed");
+        address msgSender = _msgSender();
+        require(primary.transferFrom(msgSender, address(this), amount), "Transfer failed");
         uint toMint = _deposit(amount);
         _mint(_msgSender(), toMint);
+        emit Deposit(msgSender, amount, toMint);
         return toMint;
     }
 
@@ -46,10 +51,12 @@ abstract contract Investment is ERC20Upgradeable {
         require(amount > 0, "Zero amount");
 
         uint _totalSupply = totalSupply();
-        _burn(_msgSender(), amount);
+        address msgSender = _msgSender();
+        _burn(msgSender, amount);
 
         uint toWithdraw = _prepareWithdraw(amount, _totalSupply);
-        require(primary.transfer(_msgSender(), toWithdraw), "Transfer failed");
+        require(primary.transfer(msgSender, toWithdraw), "Transfer failed");
+        emit Withdraw(msgSender, toWithdraw, amount);
         return toWithdraw;
     }
 

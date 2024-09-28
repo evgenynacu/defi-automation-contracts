@@ -73,6 +73,7 @@ abstract contract DexInvestment is Investment {
 
         uint amount = primary.balanceOf(address(this));
         _depositToDex(amount);
+        emit Total(_calculateTotalValue(), totalSupply());
     }
 
     /// @notice Calculate total value of the rewards accumulated
