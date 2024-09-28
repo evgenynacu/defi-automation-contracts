@@ -163,8 +163,8 @@ contract TokanDexInvestment is DexInvestment {
         bool _stable = stable;
         (uint amountAQuote, uint amountBQuote,) = router.quoteAddLiquidity(address(primary), address(secondary), _stable, amountA, amountB);
         uint amountAmin = amountAQuote * 999 / 1000;
-        uint amountBMin = amountBQuote * 999 / 1000;
-        (uint addedA, uint addedB, uint liquidity) = router.addLiquidity(address(primary), address(secondary), _stable, amountAQuote, amountBQuote, amountAmin, amountBMin, address(this), block.timestamp);
+        uint amountBmin = amountBQuote * 999 / 1000;
+        (uint addedA, uint addedB, uint liquidity) = router.addLiquidity(address(primary), address(secondary), _stable, amountAQuote, amountBQuote, amountAmin, amountBmin, address(this), block.timestamp);
 
         resultA = addedA;
         resultB = addedB;
@@ -188,7 +188,9 @@ contract TokanDexInvestment is DexInvestment {
         uint toWithdraw = gauge.balanceOf(address(this)) * amount / totalSupply;
         gauge.withdraw(toWithdraw);
         (uint quoteA, uint quoteB) = router.quoteRemoveLiquidity(address(primary), address(secondary), stable, toWithdraw);
-        (uint withdrawnA, uint withdrawnB) = router.removeLiquidity(address(primary), address(secondary), stable, toWithdraw, quoteA, quoteB, address(this), block.timestamp);
+        uint quoteAmin = quoteA * 999 / 1000;
+        uint quoteBmin = quoteB * 999 / 1000;
+        (uint withdrawnA, uint withdrawnB) = router.removeLiquidity(address(primary), address(secondary), stable, toWithdraw, quoteAmin, quoteBmin, address(this), block.timestamp);
         amountA = withdrawnA;
         amountB = withdrawnB;
     }
