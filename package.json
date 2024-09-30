@@ -15,6 +15,7 @@
   "scripts": {
     "build": "hardhat compile",
     "clean": "hardhat clean",
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "verify": "hardhat --network scroll etherscan-verify --api-url https://api.scrollscan.com --api-key $API_KEY"
   }
 }
