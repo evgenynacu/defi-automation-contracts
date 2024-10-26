@@ -187,13 +187,18 @@ contract TokanDexInvestment is DexInvestment {
     /// @notice Removes part of the liquidity from DEX (amount/totalSupply)
     function _withdrawFromDex(uint amount, uint totalSupply) internal override returns (uint amountA, uint amountB) {
         uint toWithdraw = gauge.balanceOf(address(this)) * amount / totalSupply;
-        gauge.withdraw(toWithdraw);
-        (uint quoteA, uint quoteB) = router.quoteRemoveLiquidity(address(primary), address(secondary), stable, toWithdraw);
-        uint quoteAmin = quoteA * 999 / 1000;
-        uint quoteBmin = quoteB * 999 / 1000;
-        (uint withdrawnA, uint withdrawnB) = router.removeLiquidity(address(primary), address(secondary), stable, toWithdraw, quoteAmin, quoteBmin, address(this), block.timestamp);
-        amountA = withdrawnA;
-        amountB = withdrawnB;
+        if (toWithdraw != 0) {
+            gauge.withdraw(toWithdraw);
+            (uint quoteA, uint quoteB) = router.quoteRemoveLiquidity(address(primary), address(secondary), stable, toWithdraw);
+            uint quoteAmin = quoteA * 999 / 1000;
+            uint quoteBmin = quoteB * 999 / 1000;
+            (uint withdrawnA, uint withdrawnB) = router.removeLiquidity(address(primary), address(secondary), stable, toWithdraw, quoteAmin, quoteBmin, address(this), block.timestamp);
+            amountA = withdrawnA;
+            amountB = withdrawnB;
+        } else {
+            amountA = 0;
+            amountB = 0;
+        }
     }
 
     function _isUser() internal override view returns (bool) {

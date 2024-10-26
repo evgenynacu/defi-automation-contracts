@@ -44,13 +44,17 @@ abstract contract DexInvestment is Investment {
         // @dev first just sum owned A and extracted from DEX liquidity
         readyToWithdraw = userA + amountA;
         // @dev then exchange secondary to primary and add it as well
-        readyToWithdraw += _exchangeSecondary(userB + amountB);
+        if (userB + amountB != 0) {
+            readyToWithdraw += _exchangeSecondary(userB + amountB);
+        }
 
         if (address(reward) != 0x0000000000000000000000000000000000000000) {
             _receiveRewards();
             uint rewards = reward.balanceOf(address(this));
             uint userRewards = rewards * amount / totalSupply;
-            readyToWithdraw += _exchangeRewards(userRewards);
+            if (userRewards != 0) {
+                readyToWithdraw += _exchangeRewards(userRewards);
+            }
         }
     }
 
