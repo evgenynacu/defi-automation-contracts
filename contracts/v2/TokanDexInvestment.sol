@@ -112,6 +112,7 @@ contract TokanDexInvestment is DexInvestment {
 
     /// @notice Exchanges main and gets secondary token
     function _exchangePrimary(uint amount) internal override returns (uint out) {
+        revert();
         TokanRouter.Route[] memory route = new TokanRouter.Route[](1);
         route[0] = TokanRouter.Route({from: address(primary), to: address(secondary), stable: stable});
         uint[] memory amounts = router.swapExactTokensForTokens(amount, _getSecondaryOut(amount), route, address(this), block.timestamp);

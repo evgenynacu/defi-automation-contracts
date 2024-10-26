@@ -76,6 +76,14 @@ abstract contract DexInvestment is Investment {
         emit Total(_calculateTotalValue(), totalSupply());
     }
 
+    function getRewardsAndExchange() external onlyUser {
+        _receiveRewards();
+        uint rewards = reward.balanceOf(address(this));
+        if (rewards != 0) {
+            _exchangeRewards(rewards);
+        }
+    }
+
     /// @notice Calculate total value of the rewards accumulated
     function getRewardsValue() view external returns (uint) {
         uint current = reward.balanceOf(address(this));
