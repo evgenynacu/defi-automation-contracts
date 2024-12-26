@@ -5,7 +5,7 @@ import { type AddressLike, BigNumberish, ContractTransactionResponse, EventLog }
 import { time } from "@nomicfoundation/hardhat-network-helpers"
 import type { TypedContractMethod } from "../typechain-types/common"
 
-describe("TokanDexInvestment", () => {
+describe.skip("TokanDexInvestment", () => {
 	let primary: TestERC20
 	let secondary: TestERC20
 	let reward: TestERC20

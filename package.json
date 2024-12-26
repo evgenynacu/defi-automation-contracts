@@ -10,7 +10,9 @@
     "hardhat-etherscan": "^1.0.1"
   },
   "dependencies": {
-    "@openzeppelin/contracts-upgradeable": "^5.0.2"
+    "@aave/core-v3": "^1.19.3",
+    "@openzeppelin/contracts-upgradeable": "^5.1.0",
+    "@uniswap/v3-core": "^1.0.2-solc-0.8-simulate"
   },
   "scripts": {
     "build": "hardhat compile",
