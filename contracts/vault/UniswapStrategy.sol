@@ -20,6 +20,7 @@ contract UniswapStrategy {
     INonfungiblePositionManager private immutable NFT_MANAGER;
     IERC20 private immutable TOKEN0;
     IERC20 private immutable TOKEN1;
+    uint24 private immutable FEE;
 
     // ------ slots for state vars ----- //
     bytes32 private constant TOKEN_ID_SLOT = keccak256("_tokenId");
@@ -27,19 +28,19 @@ contract UniswapStrategy {
     // ----- message types ----- //
 
     struct State {
-        uint256 id;          // tokenId
-        address token0;      // token0 address
-        address token1;      // token1 address
-        uint24 fee;         // pool fee
-        uint160 price;      // current sqrt price
-        uint8 decimals0;    // token0 decimals
-        uint8 decimals1;    // token1 decimals
-        uint256 balance0;   // token0 balance
-        uint256 balance1;   // token1 balance
-        uint256 staked0;    // token0 staked in position
-        uint256 staked1;    // token1 staked in position
-        uint256 fees0;      // token0 uncollected fees
-        uint256 fees1;      // token1 uncollected fees
+        uint256 id;            // tokenId
+        address token0;        // token0 address
+        address token1;        // token1 address
+        uint24 fee;            // pool fee
+        uint160 sqrtRatioX96;  // current sqrt price
+        uint8 decimals0;       // token0 decimals
+        uint8 decimals1;       // token1 decimals
+        uint256 balance0;      // token0 balance
+        uint256 balance1;      // token1 balance
+        uint256 staked0;       // token0 staked in position
+        uint256 staked1;       // token1 staked in position
+        uint256 fees0;         // token0 uncollected fees
+        uint256 fees1;         // token1 uncollected fees
     }
 
     struct DepositParams {
@@ -55,6 +56,7 @@ contract UniswapStrategy {
         TOKEN0 = IERC20(POOL.token0());
         TOKEN1 = IERC20(POOL.token1());
         NFT_MANAGER = INonfungiblePositionManager(nftManager);
+        FEE = POOL.fee();
     }
 
     // ----- view functions ----- //
@@ -67,11 +69,12 @@ contract UniswapStrategy {
         state.id = _readTokenId();
 
         // Get current price
-        state.price = getPoolPriceFromPool();
+        state.sqrtRatioX96 = getPoolPriceFromPool();
 
         // Get token addresses and decimals
         state.token0 = address(TOKEN0);
         state.token1 = address(TOKEN1);
+        state.fee = FEE;
         state.decimals0 = ERC20(address(TOKEN0)).decimals();
         state.decimals1 = ERC20(address(TOKEN1)).decimals();
 
@@ -85,7 +88,7 @@ contract UniswapStrategy {
             // Calculate staked amounts
             (state.staked0, state.staked1) = getAmountsForLiquidity(
                 liquidity,
-                state.price,
+                state.sqrtRatioX96,
                 tickLower,
                 tickUpper
             );
@@ -101,6 +104,13 @@ contract UniswapStrategy {
         return state;
     }
 
+    // ----- init ----- //
+
+    function init() external {
+        TOKEN0.approve(address(NFT_MANAGER), type(uint256).max);
+        TOKEN1.approve(address(NFT_MANAGER), type(uint256).max);
+    }
+
     // ----- main strategy functions ----- //
 
     // @notice Deposits funds into the strategy
@@ -110,10 +120,7 @@ contract UniswapStrategy {
     ) external {
         require(_readTokenId() == 0, "PosExists");
 
-        uint24 fee = POOL.fee();
-        _approveNftManager();
         uint tokenId = _estimateAndCreatePosition(
-            fee,
             getPoolPriceFromPool(),
             newTickLower,
             newTickUpper
@@ -194,7 +201,6 @@ contract UniswapStrategy {
     }
 
     function _estimateAndCreatePosition(
-        uint24 fee,
         uint160 poolPrice,
         int24 newTickLower,
         int24 newTickUpper
@@ -208,7 +214,6 @@ contract UniswapStrategy {
         );
 
         tokenId = createPosition(
-            fee,
             amount0Minted,
             amount1Minted,
             newTickLower,
@@ -221,7 +226,6 @@ contract UniswapStrategy {
      * @dev Mint initial liquidity
      */
     function createPosition(
-        uint24 fee,
         uint256 amount0,
         uint256 amount1,
         int24 newTickLower,
@@ -231,7 +235,7 @@ contract UniswapStrategy {
             INonfungiblePositionManager.MintParams({
                 token0: address(TOKEN0),
                 token1: address(TOKEN1),
-                fee: fee,
+                fee: FEE,
                 tickLower: newTickLower,
                 tickUpper: newTickUpper,
                 amount0Desired: amount0,
@@ -337,18 +341,6 @@ contract UniswapStrategy {
      */
     function getPriceFromTick(int24 tick) public pure returns (uint160) {
         return TickMath.getSqrtRatioAtTick(tick);
-    }
-
-    // @notice Approves NFT manager to use needed funds
-    // @dev Done only once per lifetime of the contract
-    function _approveNftManager() private {
-        if (TOKEN0.allowance(address(this), address(NFT_MANAGER)) == 0) {
-            TOKEN0.approve(address(NFT_MANAGER), type(uint256).max);
-        }
-
-        if (TOKEN1.allowance(address(this), address(NFT_MANAGER)) == 0) {
-            TOKEN1.approve(address(NFT_MANAGER), type(uint256).max);
-        }
     }
 
     /**

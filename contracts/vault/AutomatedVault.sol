@@ -37,8 +37,9 @@ contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
     }
 
     // @dev Rebalances the vault
-    function rebalance(Operation[] calldata _operations) external onlyOperator returns (int256 loss) {
-        return executeOperations(_operations);
+    function rebalance(int256 _maxLoss, Operation[] calldata _operations) external onlyOperator returns (int256 loss) {
+        loss = executeOperations(_operations);
+        require(loss <= _maxLoss, "!LossExceeds");
     }
 
     function executeOperations(Operation[] calldata _operations) internal returns (int256 totalLoss) {
@@ -58,7 +59,7 @@ contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
      * @notice Reads state from all strategies
      * @dev this is not a view function because some strategies can't have view functions (uniswap)
      */
-    function readState() external returns (bytes[] memory states) {
+    function readState() external returns (uint timestamp, bytes[] memory states) {
         require(_msgSender() == address(this) || _msgSender() == _owner());
 
         uint256 length = strategies.length;
@@ -70,6 +71,7 @@ contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
             bytes memory result = DelegateCall.doDelegateCall(_strategy, abi.encodePacked(AutomatedVault.readState.selector));
             states[i] = result;
         }
+        timestamp = block.timestamp;
     }
 
 }

@@ -65,11 +65,18 @@ contract AaveStrategy {
         });
     }
 
+    // ----- init ----- //
+
+    // @notice Initializes strategy by approving tokens to Aave pool
+    function init() external {
+        LONG_TOKEN.approve(address(AAVE_POOL), type(uint256).max);
+        SHORT_TOKEN.approve(address(AAVE_POOL), type(uint256).max);
+    }
+
     // ----- main strategy functions ----- //
 
     // @notice Deposits more long token as collateral
     function depositLong(uint256 amount) external {
-        //todo approve
         AAVE_POOL.supply(address(LONG_TOKEN), amount, address(this), 0);
     }
 
