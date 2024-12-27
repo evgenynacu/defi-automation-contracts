@@ -25,11 +25,14 @@ contract SwapStrategy {
 
     error SwapFailed(address router, string reason);
 
-    constructor(address pricePool, ValueSide valueSide) {
-        PRICE_POOL = IUniswapV3Pool(pricePool);
+    constructor(IUniswapV3Pool pricePool, ValueSide valueSide) {
+        PRICE_POOL = pricePool;
         TOKEN0 = IERC20(PRICE_POOL.token0());
         TOKEN1 = IERC20(PRICE_POOL.token1());
         VALUE_SIDE = valueSide;
+    }
+
+    function readState() external view {
     }
 
     function swap(address swapRouter, bytes calldata swapData) external returns (int256 loss) {
@@ -37,6 +40,7 @@ contract SwapStrategy {
         (uint160 startPrice, uint256 startValue) = _calculateValue();
 
         // 2. Do swap via router
+        _approveSwap(swapRouter);
         (bool success, bytes memory result) = swapRouter.call(swapData);
         if (!success) {
             string memory errorMessage = result.length > 0
@@ -52,6 +56,15 @@ contract SwapStrategy {
         // Return loss in millionths (-1e6 = -100%, 0 = 0%, 1e6 = 100%)
         loss = int256(1000000) * int256(startValue - endValue) / int256(startValue);
         emit Swap(startValue, endValue, startPrice, endPrice, loss);
+    }
+
+    function _approveSwap(address exchange) internal {
+        if (TOKEN0.allowance(address(this), address(exchange)) == 0) {
+            TOKEN0.approve(exchange, type(uint256).max);
+        }
+        if (TOKEN1.allowance(address(this), address(exchange)) == 0) {
+            TOKEN1.approve(exchange, type(uint256).max);
+        }
     }
 
     function _calculateValue() internal view returns (uint160 sqrtPriceX96, uint256 value) {

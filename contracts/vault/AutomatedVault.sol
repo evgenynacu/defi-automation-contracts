@@ -22,6 +22,11 @@ contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
         bytes callData;
     }
 
+    struct State {
+        uint timestamp;
+        bytes[] states;
+    }
+
     // @notice Initialized the vault. It can have any number of initialization calls for the strategies inside
     function __Vault_init(address[] calldata _strategies, Operation[] calldata _initOperations) external initializer {
         __Context_init_unchained();
@@ -69,11 +74,11 @@ contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
      * @notice Reads state from all strategies
      * @dev this is not a view function because some strategies can't have view functions (uniswap)
      */
-    function readState() external returns (uint timestamp, bytes[] memory states) {
+    function readState() external returns (State memory) {
         require(_msgSender() == address(this) || _msgSender() == _owner());
 
         uint256 length = strategies.length;
-        states = new bytes[](length);
+        bytes[] memory states = new bytes[](length);
 
         for (uint256 i = 0; i < length; i++) {
             address _strategy = strategies[i];
@@ -81,7 +86,11 @@ contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
             bytes memory result = DelegateCall.doDelegateCall(_strategy, abi.encodePacked(AutomatedVault.readState.selector));
             states[i] = result;
         }
-        timestamp = block.timestamp;
+
+        return State({
+            states: states,
+            timestamp: block.timestamp
+        });
     }
 
 }

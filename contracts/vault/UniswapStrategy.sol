@@ -87,9 +87,6 @@ contract UniswapStrategy {
     // ----- view functions ----- //
 
     function readState() external returns (State memory) {
-        // is needed just to prohibit regular calling. use eth_call to read the data and pass from = vault
-        require(msg.sender == address(this));
-
         State memory state;
         state.id = _readTokenId();
 
