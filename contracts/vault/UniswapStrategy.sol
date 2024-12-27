@@ -50,7 +50,7 @@ contract UniswapStrategy {
         address token0;        // token0 address
         address token1;        // token1 address
         uint24 fee;            // pool fee
-        uint160 sqrtRatioX96;  // current sqrt price
+        uint160 sqrtPriceX96;  // current sqrt price
         uint8 decimals0;       // token0 decimals
         uint8 decimals1;       // token1 decimals
         uint256 balance0;      // token0 balance
@@ -91,7 +91,7 @@ contract UniswapStrategy {
         state.id = _readTokenId();
 
         // Get current price
-        state.sqrtRatioX96 = getPoolPriceFromPool();
+        state.sqrtPriceX96 = getPoolPriceFromPool();
 
         // Get token addresses and decimals
         state.token0 = address(TOKEN0);
@@ -110,7 +110,7 @@ contract UniswapStrategy {
             // Calculate staked amounts
             (state.staked0, state.staked1) = getAmountsForLiquidity(
                 liquidity,
-                state.sqrtRatioX96,
+                state.sqrtPriceX96,
                 tickLower,
                 tickUpper
             );
@@ -354,9 +354,8 @@ contract UniswapStrategy {
     /**
      * @dev Get a pool's price from pool address
      */
-    function getPoolPriceFromPool() public view returns (uint160 price) {
-        (uint160 sqrtRatioX96, , , , , ,) = POOL.slot0();
-        return sqrtRatioX96;
+    function getPoolPriceFromPool() public view returns (uint160 sqrtPriceX96) {
+        (sqrtPriceX96, , , , , ,) = POOL.slot0();
     }
 
     /**
