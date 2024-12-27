@@ -2,8 +2,9 @@
 pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-import {RolesUpgradeable} from "../util/RolesUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {DelegateCall} from "../util/DelegateCall.sol";
+import {RolesUpgradeable} from "../util/RolesUpgradeable.sol";
 
 // @notice Vault manages funds. It can have several strategies inside
 // @notice Strategy is responsible for depositing/withdrawing funds from it and estimating real value
@@ -13,6 +14,7 @@ contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
     address[] public strategies;
 
     event Loss(int256 loss);
+    event Deposit(address token, uint amount);
 
     // @dev Operation for the rebalance
     struct Operation {
@@ -36,6 +38,11 @@ contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
     // @dev Can be called only by owner
     function setStrategies(address[] calldata _strategies) external onlyOwner {
         strategies = _strategies;
+    }
+
+    function deposit(IERC20 token, uint amount) external onlyOwner {
+        token.transferFrom(_msgSender(), address(this), amount);
+        emit Deposit(address(token), amount);
     }
 
     // @dev Rebalances the vault
