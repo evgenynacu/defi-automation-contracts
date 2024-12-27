@@ -11,23 +11,8 @@ import "../uniswap-v3-periphery/libraries/LiquidityAmounts.sol";
 import {StorageUtil} from "../util/StorageUtil.sol";
 
 contract UniswapStrategy {
-    event Withdraw(
-        uint indexed tokenId,
-        uint fees0,
-        uint fees1,
-        uint amount0,
-        uint amount1
-    );
-
-    event Deposit(
-        uint indexed tokenId,
-        int24 tickLower,
-        int24 tickUpper,
-        uint amount0,
-        uint amount1,
-        uint balance0,
-        uint balance1
-    );
+    event Withdraw(uint indexed tokenId, uint fees0, uint fees1, uint amount0, uint amount1);
+    event Deposit(uint indexed tokenId, int24 tickLower, int24 tickUpper, uint amount0, uint amount1, uint balance0, uint balance1);
 
     string private constant _NAMESPACE = "UniswapStrategy";
     uint256 private constant MINT_BURN_SLIPPAGE = 100; // 1%
