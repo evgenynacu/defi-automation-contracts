@@ -12,6 +12,8 @@ contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
     // @dev list of strategies
     address[] public strategies;
 
+    event Loss(int256 loss);
+
     // @dev Operation for the rebalance
     struct Operation {
         uint16 position;
@@ -39,6 +41,7 @@ contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
     // @dev Rebalances the vault
     function rebalance(int256 _maxLoss, Operation[] calldata _operations) external onlyOperator returns (int256 loss) {
         loss = executeOperations(_operations);
+        emit Loss(loss);
         require(loss <= _maxLoss, "!LossExceeds");
     }
 

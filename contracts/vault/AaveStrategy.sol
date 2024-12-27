@@ -13,6 +13,8 @@ contract AaveStrategy {
     IERC20 private immutable LONG_TOKEN;
     IERC20 private immutable SHORT_TOKEN;
 
+    event Lending(address longToken, uint256 longAmount, address shortToken, uint256 shortAmount);
+
     struct State {
         address longToken;     // token which we are long (supplied as collateral)
         uint256 longAmount;    // amount of long token supplied
@@ -31,31 +33,8 @@ contract AaveStrategy {
     function readState() external view returns (State memory) {
         IPoolDataProvider dataProvider = _readPoolDataProvider();
 
-        // Get long token supply data
-        (
-            uint256 longAmount,  // currentATokenBalance - amount supplied as collateral
-            ,                    // currentStableDebt
-            ,                    // currentVariableDebt
-            ,                    // principalStableDebt
-            ,                    // scaledVariableDebt
-            ,                    // stableBorrowRate
-            ,                    // liquidityRate
-            ,                    // stableRateLastUpdated
-        // usageAsCollateralEnabled
-        ) = dataProvider.getUserReserveData(address(LONG_TOKEN), address(this));
-
-        // Get short token debt data
-        (
-            ,                    // currentATokenBalance
-            ,                    // currentStableDebt
-            uint256 shortAmount, // currentVariableDebt - amount borrowed
-            ,                    // principalStableDebt
-            ,                    // scaledVariableDebt
-            ,                    // stableBorrowRate
-            ,                    // liquidityRate
-            ,                    // stableRateLastUpdated
-        // usageAsCollateralEnabled
-        ) = dataProvider.getUserReserveData(address(SHORT_TOKEN), address(this));
+        uint256 longAmount = _getLongAmount(dataProvider);
+        uint shortAmount = _getShortAmount(dataProvider);
 
         return State({
             longToken: address(LONG_TOKEN),
@@ -75,23 +54,78 @@ contract AaveStrategy {
 
     // ----- main strategy functions ----- //
 
+    function update(int256 longDiff, int256 shortDiff) external {
+        if (shortDiff < 0) {
+            // need to repay debt
+            _repayShort(uint(- shortDiff));
+        }
+
+        if (longDiff > 0) {
+            _depositLong(uint(longDiff));
+        }
+
+        if (longDiff < 0) {
+            _withdrawLong(uint(- longDiff));
+        }
+
+        if (shortDiff > 0) {
+            // need to borrow more
+            _borrowShort(uint(shortDiff));
+        }
+
+        IPoolDataProvider _dataProvider = _readPoolDataProvider();
+        uint longAmount = _getLongAmount(_dataProvider);
+        uint shortAmount = _getShortAmount(_dataProvider);
+        emit Lending(address(LONG_TOKEN), longAmount, address(SHORT_TOKEN), shortAmount);
+    }
+
+    // ----- aave related functions ----- //
+
+    function _getShortAmount(IPoolDataProvider dataProvider) internal view returns (uint256 shortAmount) {
+        (
+        ,                    // currentATokenBalance
+        ,                    // currentStableDebt
+            shortAmount,     // currentVariableDebt - amount borrowed
+        ,                    // principalStableDebt
+        ,                    // scaledVariableDebt
+        ,                    // stableBorrowRate
+        ,                    // liquidityRate
+        ,                    // stableRateLastUpdated
+                             // usageAsCollateralEnabled
+        ) = dataProvider.getUserReserveData(address(SHORT_TOKEN), address(this));
+    }
+
+    function _getLongAmount(IPoolDataProvider dataProvider) internal view returns (uint256 longAmount) {
+        (
+            longAmount,          // currentATokenBalance - amount supplied as collateral
+            ,                    // currentStableDebt
+            ,                    // currentVariableDebt
+            ,                    // principalStableDebt
+            ,                    // scaledVariableDebt
+            ,                    // stableBorrowRate
+            ,                    // liquidityRate
+            ,                    // stableRateLastUpdated
+                                 // usageAsCollateralEnabled
+        ) = dataProvider.getUserReserveData(address(LONG_TOKEN), address(this));
+    }
+
     // @notice Deposits more long token as collateral
-    function depositLong(uint256 amount) external {
+    function _depositLong(uint256 amount) internal {
         AAVE_POOL.supply(address(LONG_TOKEN), amount, address(this), 0);
     }
 
     // @notice Withdraws long token from collateral
-    function withdrawLong(uint256 amount) external {
+    function _withdrawLong(uint256 amount) internal {
         AAVE_POOL.withdraw(address(LONG_TOKEN), amount, address(this));
     }
 
     // @notice Borrows more short token
-    function borrowShort(uint256 amount) external {
+    function _borrowShort(uint256 amount) internal {
         AAVE_POOL.borrow(address(SHORT_TOKEN), amount, 2, 0, address(this)); // Variable rate = 2
     }
 
     // @notice Repays borrowed short token
-    function repayShort(uint256 amount) external {
+    function _repayShort(uint256 amount) internal {
         AAVE_POOL.repay(address(SHORT_TOKEN), amount, 2, address(this)); // Variable rate = 2
     }
 

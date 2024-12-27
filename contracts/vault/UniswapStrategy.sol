@@ -11,6 +11,24 @@ import "../uniswap-v3-periphery/libraries/LiquidityAmounts.sol";
 import {StorageUtil} from "../util/StorageUtil.sol";
 
 contract UniswapStrategy {
+    event Withdraw(
+        uint indexed tokenId,
+        uint fees0,
+        uint fees1,
+        uint amount0,
+        uint amount1
+    );
+
+    event Deposit(
+        uint indexed tokenId,
+        int24 tickLower,
+        int24 tickUpper,
+        uint amount0,
+        uint amount1,
+        uint balance0,
+        uint balance1
+    );
+
     string private constant _NAMESPACE = "UniswapStrategy";
     uint256 private constant MINT_BURN_SLIPPAGE = 100; // 1%
 
@@ -59,6 +77,13 @@ contract UniswapStrategy {
         FEE = POOL.fee();
     }
 
+    // ----- init ----- //
+
+    function init() external {
+        TOKEN0.approve(address(NFT_MANAGER), type(uint256).max);
+        TOKEN1.approve(address(NFT_MANAGER), type(uint256).max);
+    }
+
     // ----- view functions ----- //
 
     function readState() external returns (State memory) {
@@ -104,13 +129,6 @@ contract UniswapStrategy {
         return state;
     }
 
-    // ----- init ----- //
-
-    function init() external {
-        TOKEN0.approve(address(NFT_MANAGER), type(uint256).max);
-        TOKEN1.approve(address(NFT_MANAGER), type(uint256).max);
-    }
-
     // ----- main strategy functions ----- //
 
     // @notice Deposits funds into the strategy
@@ -120,12 +138,16 @@ contract UniswapStrategy {
     ) external {
         require(_readTokenId() == 0, "PosExists");
 
-        uint tokenId = _estimateAndCreatePosition(
+        (uint tokenId, uint amount0, uint amount1) = _estimateAndCreatePosition(
             getPoolPriceFromPool(),
             newTickLower,
             newTickUpper
         );
         _setTokenId(tokenId);
+
+        uint balance0 = TOKEN0.balanceOf(address(this));
+        uint balance1 = TOKEN1.balanceOf(address(this));
+        emit Deposit(tokenId, newTickLower, newTickUpper, amount0, amount1, balance0, balance1);
     }
 
     // @notice withdraws funds from the strategy
@@ -134,9 +156,13 @@ contract UniswapStrategy {
         require(tokenId != 0, "PosNotExists");
         (int24 tickLower, int24 tickUpper, uint128 liquidity) = readPosition(tokenId);
 
-        _withdrawPositionWithFees(getPoolPriceFromPool(), tokenId, liquidity, tickLower, tickUpper);
+        (uint256 _collected0, uint256 _collected1, uint256 _amount0, uint256 _amount1) = _withdrawPositionWithFees(
+            getPoolPriceFromPool(), tokenId, liquidity, tickLower, tickUpper
+        );
         NFT_MANAGER.burn(tokenId);
         _setTokenId(0);
+
+        emit Withdraw(tokenId, _collected0, _collected1, _amount0, _amount1);
     }
 
     // ----- uniswap-related helper functions ----- //
@@ -204,7 +230,7 @@ contract UniswapStrategy {
         uint160 poolPrice,
         int24 newTickLower,
         int24 newTickUpper
-    ) internal returns (uint tokenId) {
+    ) internal returns (uint tokenId, uint amount0, uint amount1) {
         (uint256 amount0Minted, uint256 amount1Minted) = calculatePoolMintedAmounts(
             TOKEN0.balanceOf(address(this)),
             TOKEN1.balanceOf(address(this)),
@@ -213,7 +239,7 @@ contract UniswapStrategy {
             getPriceFromTick(newTickUpper)
         );
 
-        tokenId = createPosition(
+        (tokenId, amount0, amount1) = createPosition(
             amount0Minted,
             amount1Minted,
             newTickLower,
@@ -230,8 +256,8 @@ contract UniswapStrategy {
         uint256 amount1,
         int24 newTickLower,
         int24 newTickUpper
-    ) private returns (uint _tokenId) {
-        (_tokenId,,,) = NFT_MANAGER.mint(
+    ) private returns (uint _tokenId, uint _amount0, uint _amount1) {
+        (_tokenId,, _amount0, _amount1) = NFT_MANAGER.mint(
             INonfungiblePositionManager.MintParams({
                 token0: address(TOKEN0),
                 token1: address(TOKEN1),
