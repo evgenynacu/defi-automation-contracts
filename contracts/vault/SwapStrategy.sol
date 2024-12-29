@@ -54,7 +54,7 @@ contract SwapStrategy {
         (uint160 endPrice, uint256 endValue) = _calculateValue();
 
         // Return loss in millionths (-1e6 = -100%, 0 = 0%, 1e6 = 100%)
-        loss = int256(1000000) * int256(startValue - endValue) / int256(startValue);
+        loss = int256(1000000) * (int256(startValue) - int256(endValue)) / int256(startValue);
         emit Swap(startValue, endValue, startPrice, endPrice, loss);
     }
 

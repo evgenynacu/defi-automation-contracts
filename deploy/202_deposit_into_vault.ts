@@ -11,7 +11,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	const f = await hre.ethers.getContractFactory("AutomatedVault")
 	const contract: AutomatedVault = f.attach(deployment.address) as AutomatedVault
 
-	await contract.deposit(usdc, 50000000)
+	await contract.deposit(usdc, 1119729290)
 }
 
 export default func

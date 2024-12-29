@@ -15,6 +15,7 @@ contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
 
     event Loss(int256 loss);
     event Deposit(address token, uint amount);
+    event Withdraw(address token, uint amount);
 
     // @dev Operation for the rebalance
     struct Operation {
@@ -46,8 +47,13 @@ contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
     }
 
     function deposit(IERC20 token, uint amount) external onlyOwner {
-        token.transferFrom(_msgSender(), address(this), amount);
+        require(token.transferFrom(_msgSender(), address(this), amount));
         emit Deposit(address(token), amount);
+    }
+
+    function withdraw(IERC20 token, uint amount) external onlyOwner {
+        require(token.transfer(_msgSender(), amount));
+        emit Withdraw(address(token), amount);
     }
 
     // @dev Rebalances the vault
