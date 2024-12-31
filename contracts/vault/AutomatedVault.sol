@@ -10,8 +10,10 @@ import {RolesUpgradeable} from "../util/RolesUpgradeable.sol";
 // @notice Strategy is responsible for depositing/withdrawing funds from it and estimating real value
 // @dev Strategy is code-only contract which is called using delegatecall
 contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
-    // @dev list of strategies
+    // @notice list of strategies
     address[] public strategies;
+    // @notice Timestamp of the last rebalance operation
+    uint256 public lastRebalanceTimestamp;
 
     event Loss(int256 loss);
     event Deposit(address token, uint amount);
@@ -57,10 +59,12 @@ contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
     }
 
     // @dev Rebalances the vault
-    function rebalance(int256 _maxLoss, Operation[] calldata _operations) external onlyOperator returns (int256 loss) {
+    function rebalance(uint256 stateTimestamp, int256 _maxLoss, Operation[] calldata _operations) external onlyOperator returns (int256 loss) {
+        require(stateTimestamp > lastRebalanceTimestamp, "StaleState!");
         loss = executeOperations(_operations);
         emit Loss(loss);
         require(loss <= _maxLoss, "!LossExceeds");
+        lastRebalanceTimestamp = block.timestamp;
     }
 
     function executeOperations(Operation[] calldata _operations) internal returns (int256 totalLoss) {
