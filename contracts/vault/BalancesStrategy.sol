@@ -20,4 +20,7 @@ contract BalancesStrategy {
         uint balance1 = TOKEN1.balanceOf(address(this));
         emit Balances(balance0, balance1);
     }
+
+    function readState() external view {
+    }
 }
