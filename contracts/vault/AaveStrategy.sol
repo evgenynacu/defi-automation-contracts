@@ -13,7 +13,7 @@ contract AaveStrategy {
     IERC20 private immutable LONG_TOKEN;
     IERC20 private immutable SHORT_TOKEN;
 
-    event Lending(address longToken, uint256 longAmount, address shortToken, uint256 shortAmount);
+    event Lending(uint256 longAmount, uint256 shortAmount);
 
     struct State {
         address longToken;     // token which we are long (supplied as collateral)
@@ -76,7 +76,29 @@ contract AaveStrategy {
         IPoolDataProvider _dataProvider = _readPoolDataProvider();
         uint longAmount = _getLongAmount(_dataProvider);
         uint shortAmount = _getShortAmount(_dataProvider);
-        emit Lending(address(LONG_TOKEN), longAmount, address(SHORT_TOKEN), shortAmount);
+        emit Lending(longAmount, shortAmount);
+    }
+
+    function withdrawAll() external {
+        IPoolDataProvider dataProvider = _readPoolDataProvider();
+        uint256 longAmount = _getLongAmount(dataProvider);
+        uint shortAmount = _getShortAmount(dataProvider);
+
+        if (shortAmount > 0) {
+            uint shortTokenAmount = SHORT_TOKEN.balanceOf(address(this));
+            if (shortTokenAmount > 0) {
+                // need to repay debt
+                _repayShort(shortTokenAmount);
+            }
+        }
+
+        if (longAmount > 0) {
+            _withdrawLong(longAmount);
+        }
+
+        longAmount = _getLongAmount(dataProvider);
+        shortAmount = _getShortAmount(dataProvider);
+        emit Lending(longAmount, shortAmount);
     }
 
     // ----- aave related functions ----- //
@@ -91,21 +113,21 @@ contract AaveStrategy {
         ,                    // stableBorrowRate
         ,                    // liquidityRate
         ,                    // stableRateLastUpdated
-                             // usageAsCollateralEnabled
+        // usageAsCollateralEnabled
         ) = dataProvider.getUserReserveData(address(SHORT_TOKEN), address(this));
     }
 
     function _getLongAmount(IPoolDataProvider dataProvider) internal view returns (uint256 longAmount) {
         (
             longAmount,          // currentATokenBalance - amount supplied as collateral
-            ,                    // currentStableDebt
-            ,                    // currentVariableDebt
-            ,                    // principalStableDebt
-            ,                    // scaledVariableDebt
-            ,                    // stableBorrowRate
-            ,                    // liquidityRate
-            ,                    // stableRateLastUpdated
-                                 // usageAsCollateralEnabled
+        ,                    // currentStableDebt
+        ,                    // currentVariableDebt
+        ,                    // principalStableDebt
+        ,                    // scaledVariableDebt
+        ,                    // stableBorrowRate
+        ,                    // liquidityRate
+        ,                    // stableRateLastUpdated
+        // usageAsCollateralEnabled
         ) = dataProvider.getUserReserveData(address(LONG_TOKEN), address(this));
     }
 

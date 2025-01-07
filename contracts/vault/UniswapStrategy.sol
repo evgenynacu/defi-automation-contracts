@@ -11,8 +11,8 @@ import "../uniswap-v3-periphery/libraries/LiquidityAmounts.sol";
 import {StorageUtil} from "../util/StorageUtil.sol";
 
 contract UniswapStrategy {
-    event Withdraw(uint indexed tokenId, uint160 sqrtPriceX96, uint fees0, uint fees1, uint amount0, uint amount1);
-    event Deposit(uint indexed tokenId, uint160 sqrtPriceX96, int24 tickLower, int24 tickUpper, uint amount0, uint amount1, uint balance0, uint balance1);
+    event DexWithdraw(uint indexed tokenId, uint160 sqrtPriceX96, uint amount0, uint amount1, uint fees0, uint fees1);
+    event DexDeposit(uint indexed tokenId, uint160 sqrtPriceX96, int24 tickLower, int24 tickUpper, uint amount0, uint amount1);
 
     string private constant _NAMESPACE = "UniswapStrategy";
     uint256 private constant MINT_BURN_SLIPPAGE = 100; // 1%
@@ -133,9 +133,7 @@ contract UniswapStrategy {
         );
         _setTokenId(tokenId);
 
-        uint balance0 = TOKEN0.balanceOf(address(this));
-        uint balance1 = TOKEN1.balanceOf(address(this));
-        emit Deposit(tokenId, sqrtPriceX96, newTickLower, newTickUpper, amount0, amount1, balance0, balance1);
+        emit DexDeposit(tokenId, sqrtPriceX96, newTickLower, newTickUpper, amount0, amount1);
     }
 
     // @notice withdraws funds from the strategy
@@ -151,7 +149,7 @@ contract UniswapStrategy {
         NFT_MANAGER.burn(tokenId);
         _setTokenId(0);
 
-        emit Withdraw(tokenId, sqrtPriceX96, _collected0, _collected1, _amount0, _amount1);
+        emit DexWithdraw(tokenId, sqrtPriceX96, _amount0, _amount1, _collected0, _collected1);
     }
 
     // ----- uniswap-related helper functions ----- //

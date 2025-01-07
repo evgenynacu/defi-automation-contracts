@@ -27,6 +27,11 @@ const config: HardhatUserConfig = {
 			accounts: [process.env.ADMIN_PRIVATE_KEY!],
 			url: "https://1rpc.io/arb",
 		},
+		arbitrum2: {
+			accounts: [process.env.ADMIN_PRIVATE_KEY!],
+			url: "https://1rpc.io/arb",
+			chainId: 42161,
+		},
 	},
 	namedAccounts: {
 		deployer: 0,

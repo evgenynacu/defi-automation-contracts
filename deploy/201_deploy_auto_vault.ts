@@ -1,5 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
+import { AutomatedVault } from "../typechain-types"
 
 const ethUsdcPool = "0xC6962004f452bE9203591991D15f6b388e09E8D0"
 const nftManager = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
@@ -32,21 +33,41 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 		log: true
 	})
 
-	const strategies = [uniswapStrategy.address, aaveStrategy.address, swapStrategy.address]
-	console.log("deployed strategies:", strategies)
-
-	await deploy("AutomatedVault", {
+	const balancesStrategy = await deploy("BalancesStrategy", {
 		from: deployer,
-		proxy: {
-			execute: {
-				init: {
-					methodName: "__Vault_init",
-					args: [strategies, [{ position: 0, callData: "0xe1c7392a" }, { position: 0, callData: "0xe1c7392a" }]],
-				},
-			},
-		},
+		args: [weth, usdc],
 		log: true
 	})
+
+	const strategies = [uniswapStrategy.address, aaveStrategy.address, swapStrategy.address, balancesStrategy.address]
+	console.log("deployed strategies:", strategies)
+
+	const deployment = await hre.deployments.getOrNull("AutomatedVault")
+	const f = await hre.ethers.getContractFactory("AutomatedVault")
+	if (deployment) {
+		const contract: AutomatedVault = f.attach(deployment.address) as AutomatedVault
+		console.log("deployment found. setting strategies", strategies)
+		await contract.setStrategies(strategies)
+	} else {
+		console.log("deploying vault with strategies: ")
+		const deployed = await deploy("AutomatedVault", {
+			from: deployer,
+			proxy: {
+				execute: {
+					init: {
+						methodName: "__Vault_init",
+						args: [strategies, [{ position: 0, callData: "0xe1c7392a" }, { position: 0, callData: "0xe1c7392a" }]],
+					},
+				},
+			},
+			log: true
+		})
+
+		console.log("initializing vault")
+		const contract: AutomatedVault = f.attach(deployed.address) as AutomatedVault
+		await contract.setOperator(deployer, true)
+		await contract.rebalance(1, 500, [{ position: 0, callData: "0xe1c7392a" }, { position: 1, callData: "0xe1c7392a" }])
+	}
 }
 
 export default func
