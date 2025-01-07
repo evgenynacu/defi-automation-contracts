@@ -40,8 +40,6 @@ contract UniswapStrategy {
         int24 tickUpper;       // upper price tick
         uint8 decimals0;       // token0 decimals
         uint8 decimals1;       // token1 decimals
-        uint256 balance0;      // token0 balance
-        uint256 balance1;      // token1 balance
         uint256 staked0;       // token0 staked in position
         uint256 staked1;       // token1 staked in position
         uint256 fees0;         // token0 uncollected fees
@@ -86,10 +84,6 @@ contract UniswapStrategy {
         state.fee = FEE;
         state.decimals0 = ERC20(address(TOKEN0)).decimals();
         state.decimals1 = ERC20(address(TOKEN1)).decimals();
-
-        // Get balances
-        state.balance0 = TOKEN0.balanceOf(address(this));
-        state.balance1 = TOKEN1.balanceOf(address(this));
 
         if (state.id != 0) {
             (int24 tickLower, int24 tickUpper, uint128 liquidity) = readPosition(state.id);

@@ -10,6 +10,12 @@ contract BalancesStrategy {
 
     event Balances(uint balance0, uint balance1);
 
+    struct State {
+        uint256 balance0;       // token0 staked in position
+        uint256 balance1;       // token1 staked in position
+    }
+
+
     constructor(IERC20 token0, IERC20 token1) {
         TOKEN0 = token0;
         TOKEN1 = token1;
@@ -21,6 +27,11 @@ contract BalancesStrategy {
         emit Balances(balance0, balance1);
     }
 
-    function readState() external view {
+    function readState() external view returns (State memory) {
+        // Get balances
+        State memory state;
+        state.balance0 = TOKEN0.balanceOf(address(this));
+        state.balance1 = TOKEN1.balanceOf(address(this));
+        return state;
     }
 }
