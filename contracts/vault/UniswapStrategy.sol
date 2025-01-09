@@ -130,6 +130,14 @@ contract UniswapStrategy {
         emit DexDeposit(tokenId, sqrtPriceX96, newTickLower, newTickUpper, amount0, amount1);
     }
 
+    // @notice Just emits state of the pool
+    function emitState() external {
+        require(_readTokenId() == 0, "PosExists");
+
+        uint160 sqrtPriceX96 = getPoolPriceFromPool();
+        emit DexDeposit(0, sqrtPriceX96, 0, 0, 0, 0);
+    }
+
     // @notice withdraws funds from the strategy
     function withdraw() external {
         uint tokenId = _readTokenId();
