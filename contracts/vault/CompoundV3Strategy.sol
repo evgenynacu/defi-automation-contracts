@@ -66,24 +66,35 @@ contract CompoundV3Strategy {
     /**
      * @notice Supply token as collateral to Compound V3
      * @param token The token address to supply as collateral
-     * @param amount The amount to supply
+     * @param amount The amount to supply. If type(uint256).max is passed, all available tokens will be supplied
      * @return loss Returns 0 as loss calculation is not applicable here
      */
     function supplyCollateral(address token, uint256 amount) external returns (int256) {
-        require(amount > 0, "Amount must be greater than 0");
         require(_isValidCollateralToken(token), "Token not supported as collateral");
 
+        uint256 supplyAmount;
+
+        // If max uint is passed, supply all available tokens
+        if (amount == type(uint256).max) {
+            supplyAmount = IERC20(token).balanceOf(address(this));
+        } else {
+            supplyAmount = amount;
+        }
+
+        require(supplyAmount > 0, "Amount must be greater than 0");
+
         // Approve Comet to transfer tokens if needed
-        _approveIfNeeded(token, address(COMET), amount);
+        _approveIfNeeded(token, address(COMET), supplyAmount);
 
         // Supply the token as collateral
-        COMET.supply(token, amount);
+        COMET.supply(token, supplyAmount);
 
-        emit CollateralSupplied(token, amount);
+        emit CollateralSupplied(token, supplyAmount);
 
         // No loss calculation for this operation
         return 0;
     }
+
 
     /**
      * @notice Withdraw token from Compound V3 collateral
