@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {DelegateCall} from "../util/DelegateCall.sol";
 import {RolesUpgradeable} from "../util/RolesUpgradeable.sol";
 
@@ -10,6 +11,8 @@ import {RolesUpgradeable} from "../util/RolesUpgradeable.sol";
 // @notice Strategy is responsible for depositing/withdrawing funds from it and estimating real value
 // @dev Strategy is code-only contract which is called using delegatecall
 contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
+    using SafeERC20 for IERC20;
+
     // @notice list of strategies
     address[] public strategies;
     // @notice Timestamp of the last rebalance operation
@@ -67,7 +70,7 @@ contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
         lastRebalanceTimestamp = block.timestamp;
     }
 
-    function executeOperations(Operation[] calldata _operations) internal returns (int256 totalLoss) {
+    function executeOperations(Operation[] memory _operations) internal returns (int256 totalLoss) {
         totalLoss = 0;
         for (uint256 i = 0; i < _operations.length; i++) {
             Operation memory _operation = _operations[i];
@@ -101,6 +104,58 @@ contract AutomatedVault is Initializable, ContextUpgradeable, RolesUpgradeable {
             states: states,
             timestamp: block.timestamp
         });
+    }
+
+    /**
+ * @notice Callback function for Morpho flash loans
+ * @dev Called by Morpho after sending flash loaned tokens to this contract
+ * @param token The token that was borrowed
+ * @param amount The amount that was borrowed
+ * @param data Raw bytes data to be used for operations
+ */
+    function onMorphoFlashLoan(
+        address token,
+        uint256 amount,
+        bytes calldata data
+    ) external {
+        // Ensure the caller is the Morpho contract
+        address morphoAddress = getMorphoAddress();
+        require(msg.sender == morphoAddress, "Caller must be Morpho");
+
+        // Execute operations with the borrowed funds
+        // data should be encoded as Operation[] by the caller
+        Operation[] memory operations = abi.decode(data, (Operation[]));
+        // state timestamp was checked
+        executeOperations(operations);
+
+        // Transfer tokens back to Morpho to repay the loan
+        // This will automatically revert if there aren't enough tokens
+        IERC20(token).safeTransfer(morphoAddress, amount);
+
+        // Any profit stays in the vault
+    }
+
+    /**
+     * @notice Helper function to get the Morpho address from a strategy
+     * @dev Finds a strategy that implements getMorphoAddress and calls it
+     * @return The Morpho contract address
+     */
+    function getMorphoAddress() internal view returns (address) {
+        // In a real implementation, you might store this address or implement
+        // a more efficient lookup mechanism
+
+        for (uint16 i = 0; i < strategies.length; i++) {
+            // Try to call getMorphoAddress on each strategy
+            (bool success, bytes memory returnData) = strategies[i].staticcall(
+                abi.encodeWithSignature("getMorphoAddress()")
+            );
+
+            if (success && returnData.length == 32) {
+                return abi.decode(returnData, (address));
+            }
+        }
+
+        revert("Morpho address not found");
     }
 
 }
