@@ -23,6 +23,10 @@ const config: HardhatUserConfig = {
 			chainId: 534352,
 			timeout: 60000,
 		},
+		mainnet: {
+			accounts: [process.env.ADMIN_PRIVATE_KEY!],
+			url: "https://eth.llamarpc.com",
+		},
 		arbitrum: {
 			accounts: [process.env.ADMIN_PRIVATE_KEY!],
 			url: "https://1rpc.io/arb",
