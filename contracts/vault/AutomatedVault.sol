@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+import "@aave/core-v3/contracts/flashloan/interfaces/IFlashLoanSimpleReceiver.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {DelegateCall} from "../util/DelegateCall.sol";
-import {RolesUpgradeable} from "../util/RolesUpgradeable.sol";
 import {HasOperation} from "./HasOperation.sol";
+import {RolesUpgradeable} from "../util/RolesUpgradeable.sol";
 
 // @notice Vault manages funds. It can have several strategies inside
 // @notice Strategy is responsible for depositing/withdrawing funds from it and estimating real value
 // @dev Strategy is code-only contract which is called using delegatecall
-contract AutomatedVault is HasOperation, Initializable, ContextUpgradeable, RolesUpgradeable {
+contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable, ContextUpgradeable, RolesUpgradeable {
     using SafeERC20 for IERC20;
 
     // @notice list of strategies
@@ -23,6 +24,8 @@ contract AutomatedVault is HasOperation, Initializable, ContextUpgradeable, Role
     event Loss(int256 loss);
     event Deposit(address token, uint amount);
     event Withdraw(address token, uint amount);
+
+    bool private rebalancing;
 
     struct State {
         uint timestamp;
@@ -64,11 +67,13 @@ contract AutomatedVault is HasOperation, Initializable, ContextUpgradeable, Role
 
     // @dev Rebalances the vault
     function rebalance(uint256 stateTimestamp, int256 _maxLoss, Operation[] calldata _operations) external onlyOperator returns (int256 loss) {
+        rebalancing = true;
         require(stateTimestamp > lastRebalanceTimestamp, "StaleState!");
         loss = executeOperations(_operations);
         emit Loss(loss);
         require(loss <= _maxLoss, "!LossExceeds");
         lastRebalanceTimestamp = block.timestamp;
+        rebalancing = false;
     }
 
     function executeOperations(Operation[] memory _operations) internal returns (int256 totalLoss) {
@@ -108,12 +113,12 @@ contract AutomatedVault is HasOperation, Initializable, ContextUpgradeable, Role
     }
 
     /**
- * @notice Callback function for Morpho flash loans
- * @dev Called by Morpho after sending flash loaned tokens to this contract
- * @param token The token that was borrowed
- * @param amount The amount that was borrowed
- * @param data Raw bytes data to be used for operations
- */
+     * @notice Callback function for Morpho flash loans
+     * @dev Called by Morpho after sending flash loaned tokens to this contract
+     * @param token The token that was borrowed
+     * @param amount The amount that was borrowed
+     * @param data Raw bytes data to be used for operations
+     */
     function onMorphoFlashLoan(
         address token,
         uint256 amount,
@@ -121,6 +126,7 @@ contract AutomatedVault is HasOperation, Initializable, ContextUpgradeable, Role
     ) external {
         // Ensure the caller is the Morpho contract
         address morphoAddress = getMorphoAddress();
+        require(rebalancing, "!NotRebalancing");
         require(msg.sender == morphoAddress, "Caller must be Morpho");
 
         // Execute operations with the borrowed funds
@@ -134,6 +140,28 @@ contract AutomatedVault is HasOperation, Initializable, ContextUpgradeable, Role
         IERC20(token).safeTransfer(morphoAddress, amount);
 
         // Any profit stays in the vault
+    }
+
+    function executeOperation(
+        address token,
+        uint256 amount,
+        uint256 premium,
+        address initiator,
+        bytes calldata params
+    ) external returns (bool) {
+        require(rebalancing, "!NotRebalancing");
+
+        require(initiator == address(this));
+        // Execute operations with the borrowed funds
+        // data should be encoded as Operation[] by the caller
+        Operation[] memory operations = abi.decode(params, (Operation[]));
+        // state timestamp was checked
+        executeOperations(operations);
+
+        // Transfer tokens back to Morpho to repay the loan
+        // This will automatically revert if there aren't enough tokens
+        IERC20(token).approve(address(POOL()), amount + premium);
+        return true;
     }
 
     /**
@@ -153,6 +181,36 @@ contract AutomatedVault is HasOperation, Initializable, ContextUpgradeable, Role
 
             if (success && returnData.length == 32) {
                 return abi.decode(returnData, (address));
+            }
+        }
+
+        revert("Morpho address not found");
+    }
+
+    function ADDRESSES_PROVIDER() external override view returns (IPoolAddressesProvider) {
+        for (uint16 i = 0; i < strategies.length; i++) {
+            // Try to call getMorphoAddress on each strategy
+            (bool success, bytes memory returnData) = strategies[i].staticcall(
+                abi.encodeWithSignature("getAaveAddressProvider()")
+            );
+
+            if (success && returnData.length == 32) {
+                return IPoolAddressesProvider(abi.decode(returnData, (address)));
+            }
+        }
+
+        revert("Morpho address not found");
+    }
+
+    function POOL() public override view returns (IPool) {
+        for (uint16 i = 0; i < strategies.length; i++) {
+            // Try to call getMorphoAddress on each strategy
+            (bool success, bytes memory returnData) = strategies[i].staticcall(
+                abi.encodeWithSignature("getAavePool()")
+            );
+
+            if (success && returnData.length == 32) {
+                return IPool(abi.decode(returnData, (address)));
             }
         }
 

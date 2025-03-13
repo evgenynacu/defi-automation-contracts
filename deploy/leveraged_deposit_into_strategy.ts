@@ -96,6 +96,8 @@ export async function depositIntoStrategy(
 
 	// Execute rebalance with the operations
 	// maxIterations = 1, slippageParamsBps = 0 (not applicable for this strategy)
+	const data = vault.interface.encodeFunctionData("rebalance", [1, 0, operations])
+	console.log("sending tx: ", data)
 	const tx = await vault.rebalance(1, 0, operations);
 
 	console.log(`Leveraged deposit transaction submitted: ${tx.hash}`);

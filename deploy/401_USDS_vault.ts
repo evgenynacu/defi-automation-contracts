@@ -1,7 +1,7 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
 import { ethers } from 'hardhat'
-import { IsUSDS__factory } from '../typechain-types'
+import { AutomatedVault, IsUSDS__factory } from '../typechain-types'
 
 // Token addresses on Ethereum Mainnet
 const S_USDS_ADDRESS = "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD"; // sUSDS token address
@@ -9,8 +9,7 @@ const S_USDS_ADDRESS = "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD"; // sUSDS to
 // Updated Comet address for USDS
 const COMET_USDS_ADDRESS = "0x5D409e56D886231aDAf00c8775665AD0f9897b56"; // USDS Comet
 
-// Morpho Blue address for flash loan
-const MORPHO_BLUE_ADDRESS = "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb"; // Morpho Blue main contract
+const AAVE_POOL_ADDRESS_PROVIDER = "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts } = hre;
@@ -43,14 +42,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   });
   console.log(`CompoundV3Strategy deployed at: ${compoundStrategy.address}`);
 
-  // 3. Deploy MorphoFlashLoanStrategy
-  console.log("Deploying MorphoFlashLoanStrategy...");
-  const morphoFlashStrategy = await deploy("MorphoFlashLoanStrategy", {
+  // 3. Deploy AaveFlashLoanStrategy
+  console.log("Deploying AaveFlashLoanStrategy...");
+  const aaveFlashStrategy = await deploy("AaveFlashLoanStrategy", {
     from: deployer,
-    args: [MORPHO_BLUE_ADDRESS], // Only takes Morpho Blue address as argument
+    args: [AAVE_POOL_ADDRESS_PROVIDER],
     log: true,
   });
-  console.log(`MorphoFlashLoanStrategy deployed at: ${morphoFlashStrategy.address}`);
+  console.log(`AaveFlashLoanStrategy deployed at: ${aaveFlashStrategy.address}`);
 
   // 4. Deploy AutomatedVault as a proxy contract
   console.log("Deploying AutomatedVault as proxy...");
@@ -58,35 +57,56 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const strategies = [
     usdsStrategy.address,
     compoundStrategy.address,
-    morphoFlashStrategy.address
+    aaveFlashStrategy.address
   ];
   console.log("Strategies to initialize:", strategies);
 
   // Deploy vault as proxy with initialization
-  const automatedVault = await deploy("AutomatedVault", {
-    from: deployer,
-    proxy: {
-      execute: {
-        init: {
-          methodName: "__Vault_init",
-          args: [strategies, []],
+  const deployment = await hre.deployments.getOrNull("AutomatedVault")
+  if (deployment !== null) {
+    console.log("Upgrading the vault")
+    await deploy("AutomatedVault", {
+      from: deployer,
+      proxy: {
+        execute: {
+          init: {
+            methodName: "__Vault_init",
+            args: [strategies, []],
+          },
         },
       },
-    },
-    log: true
-  });
+      log: true
+    });
 
-  console.log(`AutomatedVault proxy deployed at: ${automatedVault.address}`);
+    const f = await hre.ethers.getContractFactory("AutomatedVault")
+    const contract: AutomatedVault = f.attach(deployment.address) as AutomatedVault
+    console.log("deployment found. setting strategies", strategies)
+    await contract.setStrategies(strategies)
+  } else {
+    const automatedVault = await deploy("AutomatedVault", {
+      from: deployer,
+      proxy: {
+        execute: {
+          init: {
+            methodName: "__Vault_init",
+            args: [strategies, []],
+          },
+        },
+      },
+      log: true
+    });
 
-  // Additional setup for the vault - just set operator
-  const vaultContract = await ethers.getContractAt("AutomatedVault", automatedVault.address);
+    console.log(`AutomatedVault proxy deployed at: ${automatedVault.address}`);
 
-  // Set deployer as operator
-  await vaultContract.setOperator(deployer, true);
-  console.log(`Set ${deployer} as operator of the vault`);
+    // Additional setup for the vault - just set operator
+    const vaultContract = await ethers.getContractAt("AutomatedVault", automatedVault.address);
+
+    // Set deployer as operator
+    await vaultContract.setOperator(deployer, true);
+    console.log(`Set ${deployer} as operator of the vault`);
+  }
 
   console.log("Deployment complete!");
-
 };
 
 // Add tags for selective deployment
