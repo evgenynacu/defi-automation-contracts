@@ -24,8 +24,7 @@ contract CompoundV3Strategy {
     using SafeERC20 for IERC20;
 
     struct StrategyState {
-        address[] collateralTokens;
-        uint256[] collateralAmounts;
+        uint256 collateralAmount;
         uint256 borrowAmount;
     }
 
@@ -36,7 +35,7 @@ contract CompoundV3Strategy {
     address public immutable BASE_TOKEN;
 
     // Collateral tokens supported by this strategy
-    address[] public COLLATERAL_TOKENS;
+    address public immutable COLLATERAL_TOKEN;
 
     // Events
     event CollateralSupplied(address indexed token, uint256 amount);
@@ -47,20 +46,15 @@ contract CompoundV3Strategy {
     /**
      * @notice Constructor to set the Comet market address and collateral tokens
      * @param _cometAddress The Comet (Compound V3 market) address
-     * @param _collateralTokens Array of collateral token addresses this strategy will use
+     * @param _collateralToken Collateral token address this strategy will use
      */
-    constructor(address _cometAddress, address[] memory _collateralTokens) {
+    constructor(address _cometAddress, address _collateralToken) {
         require(_cometAddress != address(0), "Invalid Comet address");
-        require(_collateralTokens.length > 0, "Must provide at least one collateral token");
+        require(_collateralToken != address(0), "Must provide at least one collateral token");
 
         COMET = IComet(_cometAddress);
         BASE_TOKEN = COMET.baseToken();
-
-        // Store collateral tokens
-        for (uint i = 0; i < _collateralTokens.length; i++) {
-            require(_collateralTokens[i] != address(0), "Invalid collateral token address");
-            COLLATERAL_TOKENS.push(_collateralTokens[i]);
-        }
+        COLLATERAL_TOKEN = _collateralToken;
     }
 
     /**
@@ -169,17 +163,11 @@ contract CompoundV3Strategy {
     function readState() external view returns (bytes memory) {
         // Get borrow balance
         uint256 borrowBalance = COMET.borrowBalanceOf(address(this));
-
-        // Get collateral balances
-        uint256[] memory collateralAmounts = new uint256[](COLLATERAL_TOKENS.length);
-        for (uint i = 0; i < COLLATERAL_TOKENS.length; i++) {
-            collateralAmounts[i] = COMET.collateralBalanceOf(address(this), COLLATERAL_TOKENS[i]);
-        }
+        uint256 collaterAmount = COMET.collateralBalanceOf(address(this), COLLATERAL_TOKEN);
 
         // Create and encode the state struct
         StrategyState memory state = StrategyState({
-            collateralTokens: COLLATERAL_TOKENS,
-            collateralAmounts: collateralAmounts,
+            collateralAmount: collaterAmount,
             borrowAmount: borrowBalance
         });
 
@@ -194,18 +182,8 @@ contract CompoundV3Strategy {
         // No special initialization needed
     }
 
-    /**
-     * @notice Check if a token is in the list of supported collateral tokens
-     * @param token The token address to check
-     * @return True if the token is supported as collateral
-     */
     function _isValidCollateralToken(address token) internal view returns (bool) {
-        for (uint i = 0; i < COLLATERAL_TOKENS.length; i++) {
-            if (COLLATERAL_TOKENS[i] == token) {
-                return true;
-            }
-        }
-        return false;
+        return token == COLLATERAL_TOKEN;
     }
 
     /**

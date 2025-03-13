@@ -37,7 +37,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("Deploying CompoundV3Strategy...");
   const compoundStrategy = await deploy("CompoundV3Strategy", {
     from: deployer,
-    args: [COMET_USDS_ADDRESS, [S_USDS_ADDRESS]], // Using sUSDS as the only collateral
+    args: [COMET_USDS_ADDRESS, S_USDS_ADDRESS], // Using sUSDS as the only collateral
     log: true,
   });
   console.log(`CompoundV3Strategy deployed at: ${compoundStrategy.address}`);

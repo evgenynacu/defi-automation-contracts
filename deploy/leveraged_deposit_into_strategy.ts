@@ -4,8 +4,8 @@ import {
 	AutomatedVault,
 	USdsStrategy,
 	CompoundV3Strategy,
-	MorphoFlashLoanStrategy,
-} from '../typechain-types';
+	AaveFlashLoanStrategy,
+} from '../typechain-types'
 import { HasOperation } from "../typechain-types/contracts/vault/AutomatedVault"
 
 /**
@@ -27,7 +27,7 @@ export async function depositIntoStrategy(
 	// Strategy indices in the vault
 	const USds_STRATEGY_INDEX = 0;      // USdsStrategy
 	const COMPOUND_STRATEGY_INDEX = 1;  // CompoundV3Strategy
-	const MORPHO_STRATEGY_INDEX = 2;    // MorphoFlashLoanStrategy
+	const AAVE_STRATEGY_INDEX = 2;    // AaveFlashLoanStrategy
 
 	// Load the vault contract using TypeChain
 	const vault = (await ethers.getContractAt("AutomatedVault", vaultAddress, signer)) as AutomatedVault;
@@ -36,12 +36,12 @@ export async function depositIntoStrategy(
 	const strategies = await vault.getStrategies();
 	const usdsStrategyAddress = strategies[USds_STRATEGY_INDEX];
 	const compoundStrategyAddress = strategies[COMPOUND_STRATEGY_INDEX];
-	const morphoStrategyAddress = strategies[MORPHO_STRATEGY_INDEX];
+	const aaveStrategyAddress = strategies[AAVE_STRATEGY_INDEX];
 
 	// Load strategy contracts using TypeChain
 	const usdsStrategy = (await ethers.getContractAt("USdsStrategy", usdsStrategyAddress, signer)) as USdsStrategy;
 	const compoundStrategy = (await ethers.getContractAt("CompoundV3Strategy", compoundStrategyAddress, signer)) as CompoundV3Strategy;
-	const morphoStrategy = (await ethers.getContractAt("MorphoFlashLoanStrategy", morphoStrategyAddress, signer)) as MorphoFlashLoanStrategy;
+	const aaveStrategy = (await ethers.getContractAt("AaveFlashLoanStrategy", aaveStrategyAddress, signer)) as AaveFlashLoanStrategy;
 
 	// Get the USDS address from the USdsStrategy
 	const usdsAddress = await usdsStrategy.USDS_TOKEN();
@@ -64,6 +64,7 @@ export async function depositIntoStrategy(
 
 	// 2. Encode the operation to supply sUSDS as collateral on Compound
 	const MAX_UINT = ethers.MaxUint256;
+	console.log("Using sUSDS address: ", sUsdsAddress)
 	const supplyCollateralCallData = compoundStrategy.interface.encodeFunctionData(
 		"supplyCollateral",
 		[sUsdsAddress, MAX_UINT]
@@ -71,9 +72,11 @@ export async function depositIntoStrategy(
 
 
 	// 3. Encode borrowing USDS (same amount as flash loan)
+	const borrowAmount = flashLoanAmount * 10005n / 10000n + 1n;
+	console.log("Borrowing amount: ", borrowAmount)
 	const borrowCallData = compoundStrategy.interface.encodeFunctionData(
 		"borrowBaseToken",
-		[flashLoanAmount]
+		[borrowAmount]
 	);
 
 	// Define the operations that will be executed after the flash loan
@@ -84,14 +87,14 @@ export async function depositIntoStrategy(
 	];
 
 	// Final flash loan call data
-	const flashLoanCallData = morphoStrategy.interface.encodeFunctionData(
+	const flashLoanCallData = aaveStrategy.interface.encodeFunctionData(
 		"executeFlashLoan",
 		[usdsAddress, flashLoanAmount, innerOperations]
 	);
 
 	// Create the operation for the flash loan
 	const operations: HasOperation.OperationStruct[] = [
-		{ position: MORPHO_STRATEGY_INDEX, callData: flashLoanCallData }
+		{ position: AAVE_STRATEGY_INDEX, callData: flashLoanCallData }
 	];
 
 	// Execute rebalance with the operations
