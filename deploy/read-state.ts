@@ -4,6 +4,28 @@ import { AutomatedVault } from "../typechain-types"
 
 const COMET_REWARDS_ADDRESS = "0x1B0e765F6224C21223AeA2af16c1C46E38885a40"
 
+export async function readEzEthState(vaultAddress: string, cometAddress: string) {
+	const cometRewards = await ethers.getContractAt("CometRewards", COMET_REWARDS_ADDRESS)
+	const [token, owed] = await cometRewards.getRewardOwed(cometAddress, vaultAddress)
+	console.log("token", token.toString(), "owed", owed.toString())
+
+	const raw = await readStateRaw(vaultAddress)
+
+	let coder = ethers.AbiCoder.defaultAbiCoder()
+	const decoded: Result = coder.decode(["tuple(uint256 timestamp, bytes[] states)"], raw)
+	const results = (decoded[0] as Result)[1] as Result
+
+	const compoundData = results[1]
+	const parsedCompoundData = coder.decode(["tuple(uint256, uint256)"], "0x" + compoundData.substring(130))[0] as Result
+	const readCompoundData = {
+		collateral: BigInt(parsedCompoundData[0].toString()),
+		debt: BigInt(parsedCompoundData[1].toString()),
+	}
+	return {
+		compound: readCompoundData
+	}
+}
+
 export async function readUsdsState(vaultAddress: string, cometAddress: string) {
 	const cometRewards = await ethers.getContractAt("CometRewards", COMET_REWARDS_ADDRESS)
 	const [token, owed] = await cometRewards.getRewardOwed(cometAddress, vaultAddress)

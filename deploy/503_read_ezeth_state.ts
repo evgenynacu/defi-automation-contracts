@@ -1,17 +1,16 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
-import { readUsdsState } from "./read-state"
+import { readEzEthState, readUsdsState } from "./read-state"
 
 const ONE = BigInt(10) ** BigInt(18)
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-	const { usds, compound } = await readUsdsState("0x4ce2B31a7A1974E46a1Ab4b3fa2D480045462374", "0x5D409e56D886231aDAf00c8775665AD0f9897b56")
-	console.log("price", usds.price)
-	console.log(compound.collateral * usds.price / ONE - compound.debt)
+	const { compound } = await readEzEthState("0xEe53FB92669D19c6C9DB2ae7eFbe9fE9521FdE54", "0xA17581A9E3356d9A858b789D68B4d866e593aE94")
+	console.log("collateral", compound.collateral, "debt", compound.debt)
 };
 
 // Add tags for selective deployment
-func.tags = ['read-vault', 'read-usds-vault', 'ethereum-mainnet'];
+func.tags = ['read-vault', 'read-ezeth-vault', 'ethereum-mainnet'];
 func.dependencies = []; // No dependencies for this deployment
 
 export default func;
