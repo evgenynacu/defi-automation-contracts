@@ -44,7 +44,7 @@ export async function depositIntoStrategy(
 	const morphoStrategy = (await ethers.getContractAt("MorphoFlashLoanStrategy", morphoStrategyAddress, signer)) as MorphoFlashLoanStrategy
 
 	// Calculate flash loan amount (leverage - 1) * amount
-	const flashLoanAmount = amount * BigInt(10000) * BigInt(leverage - 1) / BigInt(10000)
+	const flashLoanAmount = amount * BigInt(10000 * (leverage - 1)) / BigInt(10000)
 	console.log(`Flash loan amount: ${ethers.formatUnits(flashLoanAmount)}`)
 
 	// Total amount after flash loan = amount + flashLoanAmount
@@ -103,7 +103,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	const [deployer] = await ethers.getSigners()
 
 	console.log("Depositing funds using", deployer.address)
-	await depositIntoStrategy(10000000000000000n, 8, "0xF182f8231fF15af0D4640FE7cB4B7AD07749b12B", deployer)
+	await depositIntoStrategy(300000000000000000n, 7.5, "0xEe53FB92669D19c6C9DB2ae7eFbe9fE9521FdE54", deployer)
 }
 
 // Add tags for selective deployment
