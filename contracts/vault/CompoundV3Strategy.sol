@@ -4,6 +4,15 @@ pragma solidity ^0.8.24;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
+interface CometRewards {
+    struct RewardOwed {
+        address token;
+        uint owed;
+    }
+
+    function getRewardOwed(address comet, address account) external view returns (RewardOwed memory);
+}
+
 /**
  * @title IComet
  * @notice Interface for Compound V3 (Comet) interactions
