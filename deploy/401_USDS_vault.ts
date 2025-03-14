@@ -1,7 +1,9 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
 import { ethers } from 'hardhat'
-import { AutomatedVault, IsUSDS__factory } from '../typechain-types'
+import { IsUSDS__factory } from '../typechain-types'
+import { deployCompound } from "./deploy-compound"
+import { deployVault } from "./deploy-or-update-vault"
 
 // Token addresses on Ethereum Mainnet
 const S_USDS_ADDRESS = "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD"; // sUSDS token address
@@ -34,13 +36,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log(`USdsStrategy deployed at: ${usdsStrategy.address}`);
 
   // 2. Deploy CompoundV3Strategy
-  console.log("Deploying CompoundV3Strategy...");
-  const compoundStrategy = await deploy("CompoundV3Strategy", {
-    from: deployer,
-    args: [COMET_USDS_ADDRESS, S_USDS_ADDRESS], // Using sUSDS as the only collateral
-    log: true,
-  });
-  console.log(`CompoundV3Strategy deployed at: ${compoundStrategy.address}`);
+  const compoundStrategy = await deployCompound(deployer, deploy, COMET_USDS_ADDRESS, S_USDS_ADDRESS)
 
   // 3. Deploy AaveFlashLoanStrategy
   console.log("Deploying AaveFlashLoanStrategy...");
@@ -59,52 +55,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     compoundStrategy.address,
     aaveFlashStrategy.address
   ];
-  console.log("Strategies to initialize:", strategies);
 
-  // Deploy vault as proxy with initialization
-  const deployment = await hre.deployments.getOrNull("AutomatedVault")
-  if (deployment !== null) {
-    console.log("Upgrading the vault")
-    await deploy("AutomatedVault", {
-      from: deployer,
-      proxy: {
-        execute: {
-          init: {
-            methodName: "__Vault_init",
-            args: [strategies, []],
-          },
-        },
-      },
-      log: true
-    });
-
-    const f = await hre.ethers.getContractFactory("AutomatedVault")
-    const contract: AutomatedVault = f.attach(deployment.address) as AutomatedVault
-    console.log("deployment found. setting strategies", strategies)
-    await contract.setStrategies(strategies)
-  } else {
-    const automatedVault = await deploy("AutomatedVault", {
-      from: deployer,
-      proxy: {
-        execute: {
-          init: {
-            methodName: "__Vault_init",
-            args: [strategies, []],
-          },
-        },
-      },
-      log: true
-    });
-
-    console.log(`AutomatedVault proxy deployed at: ${automatedVault.address}`);
-
-    // Additional setup for the vault - just set operator
-    const vaultContract = await ethers.getContractAt("AutomatedVault", automatedVault.address);
-
-    // Set deployer as operator
-    await vaultContract.setOperator(deployer, true);
-    console.log(`Set ${deployer} as operator of the vault`);
-  }
+  await deployVault(hre, deployer, deploy, strategies)
 
   console.log("Deployment complete!");
 };

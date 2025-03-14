@@ -66,7 +66,7 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
     }
 
     // @dev Rebalances the vault
-    function rebalance(uint256 stateTimestamp, int256 _maxLoss, Operation[] calldata _operations) external onlyOperator returns (int256 loss) {
+    function rebalance(uint256 stateTimestamp, int256 _maxLoss, Operation[] calldata _operations) external operatorOrOwner returns (int256 loss) {
         rebalancing = true;
         require(stateTimestamp > lastRebalanceTimestamp, "StaleState!");
         loss = executeOperations(_operations);

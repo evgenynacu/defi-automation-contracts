@@ -18,6 +18,11 @@ abstract contract RolesUpgradeable is Initializable, ContextUpgradeable {
         _;
     }
 
+    modifier operatorOrOwner() {
+        require(_isOperator() || _msgSender() == _owner(), "NotOperatorOrOwner");
+        _;
+    }
+
     function _isOperator() internal view returns (bool) {
         return operators[_msgSender()];
     }

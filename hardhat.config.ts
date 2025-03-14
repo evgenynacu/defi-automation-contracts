@@ -27,6 +27,11 @@ const config: HardhatUserConfig = {
 			accounts: [process.env.ADMIN_PRIVATE_KEY!],
 			url: "https://eth.llamarpc.com",
 		},
+		mainnet_ezeth: {
+			url: "http://127.0.0.1:1248",
+			chainId: 1,
+			timeout: 60000,
+		},
 		arbitrum: {
 			accounts: [process.env.ADMIN_PRIVATE_KEY!],
 			url: "https://1rpc.io/arb",
