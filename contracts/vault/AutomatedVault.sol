@@ -115,17 +115,15 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
     /**
      * @notice Callback function for Morpho flash loans
      * @dev Called by Morpho after sending flash loaned tokens to this contract
-     * @param token The token that was borrowed
      * @param amount The amount that was borrowed
      * @param data Raw bytes data to be used for operations
      */
     function onMorphoFlashLoan(
-        address token,
         uint256 amount,
         bytes calldata data
     ) external {
         // Ensure the caller is the Morpho contract
-        address morphoAddress = getMorphoAddress();
+        address morphoAddress = _getMorphoAddress();
         require(rebalancing, "!NotRebalancing");
         require(msg.sender == morphoAddress, "Caller must be Morpho");
 
@@ -137,7 +135,7 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
 
         // Transfer tokens back to Morpho to repay the loan
         // This will automatically revert if there aren't enough tokens
-        IERC20(token).safeTransfer(morphoAddress, amount);
+        IERC20(_getBaseToken()).approve(morphoAddress, amount);
 
         // Any profit stays in the vault
     }
@@ -169,7 +167,7 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
      * @dev Finds a strategy that implements getMorphoAddress and calls it
      * @return The Morpho contract address
      */
-    function getMorphoAddress() internal view returns (address) {
+    function _getMorphoAddress() internal view returns (address) {
         // In a real implementation, you might store this address or implement
         // a more efficient lookup mechanism
 
@@ -185,6 +183,21 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
         }
 
         revert("Morpho address not found");
+    }
+
+    function _getBaseToken() internal view returns (address) {
+        for (uint16 i = 0; i < strategies.length; i++) {
+            // Try to call getMorphoAddress on each strategy
+            (bool success, bytes memory returnData) = strategies[i].staticcall(
+                abi.encodeWithSignature("BASE_TOKEN()")
+            );
+
+            if (success && returnData.length == 32) {
+                return abi.decode(returnData, (address));
+            }
+        }
+
+        revert("Base token not found");
     }
 
     function ADDRESSES_PROVIDER() external override view returns (IPoolAddressesProvider) {
