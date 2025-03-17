@@ -92,9 +92,10 @@ export async function depositIntoStrategy(
 
 	// Execute rebalance with the operations
 	// maxIterations = 1, slippageParamsBps = 0 (not applicable for this strategy)
-	const data = vault.interface.encodeFunctionData("rebalance", [1, 0, operations])
+	const lastRebalanceTimestamp = await vault.lastRebalanceTimestamp()
+	const data = vault.interface.encodeFunctionData("rebalance", [lastRebalanceTimestamp + 1n, 0, operations])
 	console.log("sending tx: ", data)
-	const tx = await vault.rebalance(1, 0, operations)
+	const tx = await vault.rebalance(lastRebalanceTimestamp + 1n, 0, operations)
 
 	console.log(`Leveraged deposit transaction submitted: ${tx.hash}`)
 }
@@ -103,7 +104,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	const [deployer] = await ethers.getSigners()
 
 	console.log("Depositing funds using", deployer.address)
-	await depositIntoStrategy(300000000000000000n, 7.5, "0xEe53FB92669D19c6C9DB2ae7eFbe9fE9521FdE54", deployer)
+	await depositIntoStrategy(5000000000000000000n, 7.5, "0xEe53FB92669D19c6C9DB2ae7eFbe9fE9521FdE54", deployer)
 }
 
 // Add tags for selective deployment

@@ -57,11 +57,12 @@ export async function readUsdsState(vaultAddress: string, cometAddress: string) 
 
 async function readStateRaw(vaultAddress: string) {
 	const vault = await ethers.getContractAt("AutomatedVault", vaultAddress) as AutomatedVault
+	const ownable = await ethers.getContractAt("MyProxy", vaultAddress)
+	const owner = await ownable.owner()
 	const data = vault.interface.encodeFunctionData("readState")
-	const [signer] = await ethers.getSigners()
 	return await ethers.provider.call({
 		to: vaultAddress,
-		from: signer.address,
+		from: owner,
 		data
 	})
 }
