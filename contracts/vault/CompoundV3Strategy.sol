@@ -18,10 +18,19 @@ interface CometRewards {
  * @notice Interface for Compound V3 (Comet) interactions
  */
 interface IComet {
-    function supply(address asset, uint amount) external;
-    function withdraw(address asset, uint amount) external;
+
+    function hasPermission(address owner, address manager) external view returns (bool);
+
+    function allow(address manager, bool isAllowed) external;
+
+    function supplyFrom(address from, address dst, address asset, uint amount) external;
+
+    function withdrawFrom(address src, address to, address asset, uint amount) external;
+
     function borrowBalanceOf(address account) external view returns (uint);
+
     function collateralBalanceOf(address account, address asset) external view returns (uint);
+
     function baseToken() external view returns (address);
 }
 
@@ -47,8 +56,8 @@ contract CompoundV3Strategy {
     address public immutable COLLATERAL_TOKEN;
 
     // Events
-    event CollateralSupplied(address indexed token, uint256 amount);
-    event CollateralWithdrawn(address indexed token, uint256 amount);
+    event CollateralSupplied(uint256 amount);
+    event CollateralWithdrawn(uint256 amount);
     event BaseTokenBorrowed(uint256 amount);
     event BaseTokenRepaid(uint256 amount);
 
@@ -68,18 +77,15 @@ contract CompoundV3Strategy {
 
     /**
      * @notice Supply token as collateral to Compound V3
-     * @param token The token address to supply as collateral
      * @param amount The amount to supply. If type(uint256).max is passed, all available tokens will be supplied
      * @return loss Returns 0 as loss calculation is not applicable here
      */
-    function supplyCollateral(address token, uint256 amount) external returns (int256) {
-        require(_isValidCollateralToken(token), "Token not supported as collateral");
-
+    function supplyCollateral(address from, address dst, uint256 amount) external {
         uint256 supplyAmount;
 
         // If max uint is passed, supply all available tokens
         if (amount == type(uint256).max) {
-            supplyAmount = IERC20(token).balanceOf(address(this));
+            supplyAmount = IERC20(COLLATERAL_TOKEN).balanceOf(address(this));
         } else {
             supplyAmount = amount;
         }
@@ -87,35 +93,26 @@ contract CompoundV3Strategy {
         require(supplyAmount > 0, "Amount must be greater than 0");
 
         // Approve Comet to transfer tokens if needed
-        _approveIfNeeded(token, address(COMET), supplyAmount);
+        _approveIfNeeded(COLLATERAL_TOKEN, address(COMET), supplyAmount);
 
         // Supply the token as collateral
-        COMET.supply(token, supplyAmount);
+        COMET.supplyFrom(from, dst, COLLATERAL_TOKEN, supplyAmount);
 
-        emit CollateralSupplied(token, supplyAmount);
-
-        // No loss calculation for this operation
-        return 0;
+        emit CollateralSupplied(supplyAmount);
     }
-
 
     /**
      * @notice Withdraw token from Compound V3 collateral
-     * @param token The token address to withdraw
      * @param amount The amount to withdraw
      * @return loss Returns 0 as loss calculation is not applicable here
      */
-    function withdrawCollateral(address token, uint256 amount) external returns (int256) {
+    function withdrawCollateral(address from, address to, uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
-        require(_isValidCollateralToken(token), "Token not supported as collateral");
 
         // Withdraw collateral
-        COMET.withdraw(token, amount);
+        COMET.withdrawFrom(from, to, COLLATERAL_TOKEN, amount);
 
-        emit CollateralWithdrawn(token, amount);
-
-        // No loss calculation for this operation
-        return 0;
+        emit CollateralWithdrawn(amount);
     }
 
     /**
@@ -124,16 +121,13 @@ contract CompoundV3Strategy {
      * @param amount The amount to borrow
      * @return loss Returns 0 as loss calculation is not applicable here
      */
-    function borrowBaseToken(uint256 amount) external returns (int256) {
+    function borrowBaseToken(address from, address to, uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
 
         // In Compound V3, borrowing is done by simply withdrawing the base asset
-        COMET.withdraw(BASE_TOKEN, amount);
+        COMET.withdrawFrom(from, to, BASE_TOKEN, amount);
 
         emit BaseTokenBorrowed(amount);
-
-        // No loss calculation for this operation
-        return 0;
     }
 
     /**
@@ -142,7 +136,7 @@ contract CompoundV3Strategy {
      * @param amount The amount to repay (use uint256.max for full repayment)
      * @return loss Returns 0 as loss calculation is not applicable here
      */
-    function repayBaseToken(uint256 amount) external returns (int256) {
+    function repayBaseToken(address from, address dst, uint256 amount) external {
         uint256 borrowBalance = COMET.borrowBalanceOf(address(this));
         require(borrowBalance > 0, "No borrow balance to repay");
 
@@ -156,12 +150,9 @@ contract CompoundV3Strategy {
         _approveIfNeeded(BASE_TOKEN, address(COMET), repayAmount);
 
         // In Compound V3, repaying is done by supplying the base asset
-        COMET.supply(BASE_TOKEN, repayAmount);
+        COMET.supplyFrom(from, dst, BASE_TOKEN, repayAmount);
 
         emit BaseTokenRepaid(repayAmount);
-
-        // No loss calculation for this operation
-        return 0;
     }
 
     /**

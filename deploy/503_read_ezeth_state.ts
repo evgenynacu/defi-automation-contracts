@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
-import { readEzEthState, readUsdsState } from "./read-state"
+import { readEzEthState } from "./read-state"
 
 const ONE = BigInt(10) ** BigInt(18)
 
@@ -14,3 +14,4 @@ func.tags = ['read-vault', 'read-ezeth-vault', 'ethereum-mainnet'];
 func.dependencies = []; // No dependencies for this deployment
 
 export default func;
+//34451018153250065238/34451017848165980909
