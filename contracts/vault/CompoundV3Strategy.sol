@@ -46,45 +46,22 @@ contract CompoundV3Strategy {
         uint256 borrowAmount;
     }
 
-    // The Comet market address this strategy interacts with
-    IComet public immutable COMET;
-
-    // The base token of the Comet market (usually USDC)
-    address public immutable BASE_TOKEN;
-
-    // Collateral tokens supported by this strategy
-    address public immutable COLLATERAL_TOKEN;
-
     // Events
-    event CollateralSupplied(uint256 amount);
-    event CollateralWithdrawn(uint256 amount);
-    event BaseTokenBorrowed(uint256 amount);
-    event BaseTokenRepaid(uint256 amount);
-
-    /**
-     * @notice Constructor to set the Comet market address and collateral tokens
-     * @param _cometAddress The Comet (Compound V3 market) address
-     * @param _collateralToken Collateral token address this strategy will use
-     */
-    constructor(address _cometAddress, address _collateralToken) {
-        require(_cometAddress != address(0), "Invalid Comet address");
-        require(_collateralToken != address(0), "Must provide at least one collateral token");
-
-        COMET = IComet(_cometAddress);
-        BASE_TOKEN = COMET.baseToken();
-        COLLATERAL_TOKEN = _collateralToken;
-    }
+    event CollateralSupplied(address token, uint256 amount);
+    event CollateralWithdrawn(address token, uint256 amount);
+    event BaseTokenBorrowed(address token, uint256 amount);
+    event BaseTokenRepaid(address token, uint256 amount);
 
     /**
      * @notice Supply token as collateral to Compound V3
      * @param amount The amount to supply. If type(uint256).max is passed, all available tokens will be supplied
      */
-    function supplyCollateral(address from, address dst, uint256 amount) external {
+    function supplyCollateralToCaller(IComet comet, IERC20 collateralToken, uint256 amount) external {
         uint256 supplyAmount;
 
         // If max uint is passed, supply all available tokens
         if (amount == type(uint256).max) {
-            supplyAmount = IERC20(COLLATERAL_TOKEN).balanceOf(address(this));
+            supplyAmount = collateralToken.balanceOf(address(this));
         } else {
             supplyAmount = amount;
         }
@@ -92,25 +69,25 @@ contract CompoundV3Strategy {
         require(supplyAmount > 0, "Amount must be greater than 0");
 
         // Approve Comet to transfer tokens if needed
-        _approveIfNeeded(COLLATERAL_TOKEN, address(COMET), supplyAmount);
+        _approveIfNeeded(address(collateralToken), address(comet), supplyAmount);
 
         // Supply the token as collateral
-        COMET.supplyFrom(from, dst, COLLATERAL_TOKEN, supplyAmount);
+        comet.supplyFrom(address(this), msg.sender, address(collateralToken), supplyAmount);
 
-        emit CollateralSupplied(supplyAmount);
+        emit CollateralSupplied(address(collateralToken), supplyAmount);
     }
 
     /**
      * @notice Withdraw token from Compound V3 collateral
      * @param amount The amount to withdraw
      */
-    function withdrawCollateral(address from, address to, uint256 amount) external {
+    function withdrawCollateralFromCaller(IComet comet, IERC20 collateralToken, uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
 
         // Withdraw collateral
-        COMET.withdrawFrom(from, to, COLLATERAL_TOKEN, amount);
+        comet.withdrawFrom(msg.sender, address(this), address(collateralToken), amount);
 
-        emit CollateralWithdrawn(amount);
+        emit CollateralWithdrawn(address(collateralToken), amount);
     }
 
     /**
@@ -118,13 +95,14 @@ contract CompoundV3Strategy {
      * @dev In Compound V3, borrowing is done by withdrawing the base asset
      * @param amount The amount to borrow
      */
-    function borrowBaseToken(address from, address to, uint256 amount) external {
+    function borrowBaseTokenFromCaller(IComet comet, uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
 
+        address baseToken = comet.baseToken();
         // In Compound V3, borrowing is done by simply withdrawing the base asset
-        COMET.withdrawFrom(from, to, BASE_TOKEN, amount);
+        comet.withdrawFrom(msg.sender, address(this), baseToken, amount);
 
-        emit BaseTokenBorrowed(amount);
+        emit BaseTokenBorrowed(baseToken, amount);
     }
 
     /**
@@ -132,8 +110,8 @@ contract CompoundV3Strategy {
      * @dev In Compound V3, repaying is done by supplying the base asset
      * @param amount The amount to repay (use uint256.max for full repayment)
      */
-    function repayBaseToken(address from, address dst, uint256 amount) external {
-        uint256 borrowBalance = COMET.borrowBalanceOf(address(this));
+    function repayBaseTokenToCaller(IComet comet, uint256 amount) external {
+        uint256 borrowBalance = comet.borrowBalanceOf(address(this));
         require(borrowBalance > 0, "No borrow balance to repay");
 
         // If amount is max uint256, repay the full balance
@@ -142,43 +120,14 @@ contract CompoundV3Strategy {
             repayAmount = borrowBalance;
         }
 
+        address baseToken = comet.baseToken();
         // Approve Comet to take base tokens if needed
-        _approveIfNeeded(BASE_TOKEN, address(COMET), repayAmount);
+        _approveIfNeeded(baseToken, address(comet), repayAmount);
 
         // In Compound V3, repaying is done by supplying the base asset
-        COMET.supplyFrom(from, dst, BASE_TOKEN, repayAmount);
+        comet.supplyFrom(address(this), msg.sender, baseToken, repayAmount);
 
-        emit BaseTokenRepaid(repayAmount);
-    }
-
-    /**
-     * @notice Reads the current state of the strategy
-     * @dev Returns encoded information about collateral and borrows
-     */
-    function readState() external view returns (bytes memory) {
-        // Get borrow balance
-        uint256 borrowBalance = COMET.borrowBalanceOf(address(this));
-        uint256 collaterAmount = COMET.collateralBalanceOf(address(this), COLLATERAL_TOKEN);
-
-        // Create and encode the state struct
-        StrategyState memory state = StrategyState({
-            collateralAmount: collaterAmount,
-            borrowAmount: borrowBalance
-        });
-
-        return abi.encode(state);
-    }
-
-    /**
-     * @notice Initialize the strategy
-     * @dev Called via delegatecall from the vault
-     */
-    function init() external {
-        // No special initialization needed
-    }
-
-    function _isValidCollateralToken(address token) internal view returns (bool) {
-        return token == COLLATERAL_TOKEN;
+        emit BaseTokenRepaid(baseToken, repayAmount);
     }
 
     /**

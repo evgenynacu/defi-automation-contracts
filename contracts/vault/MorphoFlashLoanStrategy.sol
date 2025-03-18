@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+import "./HasOperation.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {HasOperation} from "./HasOperation.sol";
+import {StorageUtil} from "../util/StorageUtil.sol";
 
 /**
  * @title IMorpho
@@ -24,6 +26,8 @@ interface IMorpho {
  */
 contract MorphoFlashLoanStrategy is HasOperation {
     using SafeERC20 for IERC20;
+
+    bytes32 private constant FLASH_LOAN_OUT_SLOT = keccak256("flashLoan#output");
 
     // Morpho contract address
     address public immutable MORPHO_ADDRESS;
@@ -63,29 +67,23 @@ contract MorphoFlashLoanStrategy is HasOperation {
      * @param token The token to flash loan
      * @param amount The amount to borrow
      * @param operations operation list for the vault (when flashloan received)
+     * @return out output which was got during flash loan operation
      */
     function executeFlashLoan(
         address token,
         uint256 amount,
         Operation[] calldata operations
-    ) external {
+    ) external returns (uint out) {
         // Execute the flash loan with the provided raw data
+        OperationsWithAddress memory toSend = OperationsWithAddress(token, operations);
         IMorpho(MORPHO_ADDRESS).flashLoan(
             token,
             amount,
-            abi.encode(operations)
+            abi.encode(toSend)
         );
+        out = StorageUtil.readUintSlot(FLASH_LOAN_OUT_SLOT);
+        StorageUtil.setUintSlot(FLASH_LOAN_OUT_SLOT, 0);
 
         emit FlashLoanRequested(token, amount);
-    }
-
-    /**
-     * @notice Reads the current state of the strategy
-     * @dev Called via delegatecall from the vault
-     * @return Empty bytes since this strategy maintains no state
-     */
-    function readState() external pure returns (bytes memory) {
-        // This strategy doesn't maintain any state to be preserved
-        return new bytes(0);
     }
 }

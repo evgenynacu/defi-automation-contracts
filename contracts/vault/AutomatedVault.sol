@@ -8,37 +8,32 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {DelegateCall} from "../util/DelegateCall.sol";
 import {HasOperation} from "./HasOperation.sol";
 import {RolesUpgradeable} from "../util/RolesUpgradeable.sol";
+import {StorageUtil} from "../util/StorageUtil.sol";
 
 // @notice Vault manages funds. It can have several strategies inside
 // @dev Strategy is code-only contract which is called using delegatecall
 contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable, ContextUpgradeable, RolesUpgradeable {
-    using SafeERC20 for IERC20;
+
+    bytes32 private constant FLASH_LOAN_OUT_SLOT = keccak256("flashLoan#output");
 
     // @notice list of strategies
     address[] private strategies;
-    // @notice Timestamp of the last rebalance operation
-    uint256 public lastRebalanceTimestamp;
-
-    event Init();
 
     bool private rebalancing;
 
-    struct State {
-        uint timestamp;
-        bytes[] states;
+    constructor () {
+        _disableInitializers();
     }
 
     // @notice Initialized the vault. It can have any number of initialization calls for the strategies inside
-    function __Vault_init(address[] calldata _strategies, Operation[] calldata _initOperations) external initializer {
+    function __Vault_init(address[] calldata _strategies) external initializer {
         __Context_init_unchained();
         __RolesUpgradeable_init_unchained();
-        __Vault_init_unchained(_strategies, _initOperations);
-        emit Init();
+        __Vault_init_unchained(_strategies);
     }
 
-    function __Vault_init_unchained(address[] calldata _strategies, Operation[] calldata _initOperations) internal {
+    function __Vault_init_unchained(address[] calldata _strategies) internal {
         strategies = _strategies;
-        executeOperations(_initOperations);
     }
 
     // @notice Updates list of strategies
@@ -52,44 +47,23 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
     }
 
     // @dev Rebalances the vault
-    function rebalance(uint256 stateTimestamp, Operation[] calldata _operations) external operatorOrOwner returns (bytes[] memory results) {
+    // @return uint value returned from the swap strategy (if it's used)
+    function rebalance(Operation[] calldata _operations) external operatorOrOwner returns (uint out) {
         rebalancing = true;
-        require(stateTimestamp > lastRebalanceTimestamp, "StaleState!");
-        results = executeOperations(_operations);
-        lastRebalanceTimestamp = block.timestamp;
+        out = executeOperations(_operations);
         rebalancing = false;
     }
 
-    function executeOperations(Operation[] memory _operations) internal returns (bytes[] memory results) {
-        results = new bytes[](_operations.length);
+    function executeOperations(Operation[] memory _operations) internal returns (uint out) {
+        out = 0;
         for (uint256 i = 0; i < _operations.length; i++) {
             Operation memory _operation = _operations[i];
             bytes memory result = DelegateCall.doDelegateCall(strategies[_operation.position], _operation.callData);
-            results[i] = result;
+
+            if (result.length > 0) {
+                out = abi.decode(result, (uint256));
+            }
         }
-    }
-
-    /**
-     * @notice Reads state from all strategies
-     * @dev this is not a view function because some strategies can't have view functions (uniswap)
-     */
-    function readState() external returns (State memory) {
-        require(_msgSender() == address(this) || _msgSender() == _owner());
-
-        uint256 length = strategies.length;
-        bytes[] memory states = new bytes[](length);
-
-        for (uint256 i = 0; i < length; i++) {
-            address _strategy = strategies[i];
-            // Call readState on each strategy using delegatecall
-            bytes memory result = DelegateCall.doDelegateCall(_strategy, abi.encodePacked(AutomatedVault.readState.selector));
-            states[i] = result;
-        }
-
-        return State({
-            states: states,
-            timestamp: block.timestamp
-        });
     }
 
     /**
@@ -109,13 +83,14 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
 
         // Execute operations with the borrowed funds
         // data should be encoded as Operation[] by the caller
-        Operation[] memory operations = abi.decode(data, (Operation[]));
+        OperationsWithAddress memory received = abi.decode(data, (OperationsWithAddress));
         // state timestamp was checked
-        executeOperations(operations);
+        uint out = executeOperations(received.operations);
+        StorageUtil.setUintSlot(FLASH_LOAN_OUT_SLOT, out);
 
         // Transfer tokens back to Morpho to repay the loan
         // This will automatically revert if there aren't enough tokens
-        IERC20(_getBaseToken()).approve(morphoAddress, amount);
+        IERC20(received.token).approve(morphoAddress, amount);
 
         // Any profit stays in the vault
     }
@@ -134,7 +109,8 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
         // data should be encoded as Operation[] by the caller
         Operation[] memory operations = abi.decode(params, (Operation[]));
         // state timestamp was checked
-        executeOperations(operations);
+        uint out = executeOperations(operations);
+        StorageUtil.setUintSlot(FLASH_LOAN_OUT_SLOT, out);
 
         // Transfer tokens back to Morpho to repay the loan
         // This will automatically revert if there aren't enough tokens
@@ -163,21 +139,6 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
         }
 
         revert("Morpho address not found");
-    }
-
-    function _getBaseToken() internal view returns (address) {
-        for (uint16 i = 0; i < strategies.length; i++) {
-            // Try to call getMorphoAddress on each strategy
-            (bool success, bytes memory returnData) = strategies[i].staticcall(
-                abi.encodeWithSignature("BASE_TOKEN()")
-            );
-
-            if (success && returnData.length == 32) {
-                return abi.decode(returnData, (address));
-            }
-        }
-
-        revert("Base token not found");
     }
 
     function ADDRESSES_PROVIDER() external override view returns (IPoolAddressesProvider) {

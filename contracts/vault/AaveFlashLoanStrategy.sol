@@ -1,14 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+import "../util/StorageUtil.sol";
+import "@aave/core-v3/contracts/interfaces/IPool.sol";
+import "@aave/core-v3/contracts/interfaces/IPoolAddressesProvider.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {HasOperation} from "./HasOperation.sol";
-import "@aave/core-v3/contracts/interfaces/IPoolAddressesProvider.sol";
-import "@aave/core-v3/contracts/interfaces/IPool.sol";
 
 contract AaveFlashLoanStrategy is HasOperation {
     using SafeERC20 for IERC20;
+
+    bytes32 private constant FLASH_LOAN_OUT_SLOT = keccak256("flashLoan#output");
 
     IPoolAddressesProvider private immutable ADDRESSES_PROVIDER;
     IPool private immutable POOL;
@@ -19,14 +22,6 @@ contract AaveFlashLoanStrategy is HasOperation {
     constructor(address provider) {
         ADDRESSES_PROVIDER = IPoolAddressesProvider(provider);
         POOL = IPool(IPoolAddressesProvider(provider).getPool());
-    }
-
-    /**
-     * @notice Initializes the strategy
-     * @dev Called via delegatecall from the vault
-     */
-    function init() external {
-        // No initialization needed for this strategy
     }
 
     function getAaveAddressProvider() external view returns (address) {
@@ -43,12 +38,13 @@ contract AaveFlashLoanStrategy is HasOperation {
      * @param token The token to flash loan
      * @param amount The amount to borrow
      * @param operations operation list for the vault (when flashloan received)
+     * @return out output which was got during flash loan operation
      */
     function executeFlashLoan(
         address token,
         uint256 amount,
         Operation[] calldata operations
-    ) external {
+    ) external returns (uint out) {
         // Execute the flash loan with the provided raw data
         POOL.flashLoanSimple(
             address(this),
@@ -57,17 +53,9 @@ contract AaveFlashLoanStrategy is HasOperation {
             abi.encode(operations),
             0
         );
+        out = StorageUtil.readUintSlot(FLASH_LOAN_OUT_SLOT);
+        StorageUtil.setUintSlot(FLASH_LOAN_OUT_SLOT, 0);
 
         emit FlashLoanRequested(token, amount);
-    }
-
-    /**
-     * @notice Reads the current state of the strategy
-     * @dev Called via delegatecall from the vault
-     * @return Empty bytes since this strategy maintains no state
-     */
-    function readState() external pure returns (bytes memory) {
-        // This strategy doesn't maintain any state to be preserved
-        return new bytes(0);
     }
 }

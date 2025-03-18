@@ -11,9 +11,6 @@ import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 contract SwapStrategy {
     error SwapFailed(address router, string reason);
 
-    function readState() external view {
-    }
-
     /**
      * @notice Swaps token0 for token1
      * @dev Returns amount of tokens received
