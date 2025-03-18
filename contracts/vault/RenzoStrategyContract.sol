@@ -13,8 +13,8 @@ interface WETH {
 }
 
 /**
- * @title USdsStrategy
- * @notice Strategy for interacting with USDS and sUSDS using deposit/redeem pattern
+ * @title RenzoStrategy
+ * @notice Strategy for interacting with Renzo protocol (able to deposit ETH and get ezETH)
  */
 contract RenzoStrategy {
     using SafeERC20 for IERC20;

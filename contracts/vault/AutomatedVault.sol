@@ -10,7 +10,6 @@ import {HasOperation} from "./HasOperation.sol";
 import {RolesUpgradeable} from "../util/RolesUpgradeable.sol";
 
 // @notice Vault manages funds. It can have several strategies inside
-// @notice Strategy is responsible for depositing/withdrawing funds from it and estimating real value
 // @dev Strategy is code-only contract which is called using delegatecall
 contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable, ContextUpgradeable, RolesUpgradeable {
     using SafeERC20 for IERC20;
@@ -21,8 +20,6 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
     uint256 public lastRebalanceTimestamp;
 
     event Init();
-    event Deposit(address token, uint amount);
-    event Withdraw(address token, uint amount);
 
     bool private rebalancing;
 
@@ -52,16 +49,6 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
 
     function getStrategies() external view returns (address[] memory) {
         return strategies;
-    }
-
-    function deposit(IERC20 token, uint amount) external onlyOwner {
-        require(token.transferFrom(_msgSender(), address(this), amount));
-        emit Deposit(address(token), amount);
-    }
-
-    function withdraw(IERC20 token, uint amount) external onlyOwner {
-        require(token.transfer(_msgSender(), amount));
-        emit Withdraw(address(token), amount);
     }
 
     // @dev Rebalances the vault
