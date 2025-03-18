@@ -78,7 +78,6 @@ contract CompoundV3Strategy {
     /**
      * @notice Supply token as collateral to Compound V3
      * @param amount The amount to supply. If type(uint256).max is passed, all available tokens will be supplied
-     * @return loss Returns 0 as loss calculation is not applicable here
      */
     function supplyCollateral(address from, address dst, uint256 amount) external {
         uint256 supplyAmount;
@@ -104,7 +103,6 @@ contract CompoundV3Strategy {
     /**
      * @notice Withdraw token from Compound V3 collateral
      * @param amount The amount to withdraw
-     * @return loss Returns 0 as loss calculation is not applicable here
      */
     function withdrawCollateral(address from, address to, uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
@@ -119,7 +117,6 @@ contract CompoundV3Strategy {
      * @notice Borrow base token from Compound V3 by withdrawing it
      * @dev In Compound V3, borrowing is done by withdrawing the base asset
      * @param amount The amount to borrow
-     * @return loss Returns 0 as loss calculation is not applicable here
      */
     function borrowBaseToken(address from, address to, uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
@@ -134,7 +131,6 @@ contract CompoundV3Strategy {
      * @notice Repay borrowed base token to Compound V3
      * @dev In Compound V3, repaying is done by supplying the base asset
      * @param amount The amount to repay (use uint256.max for full repayment)
-     * @return loss Returns 0 as loss calculation is not applicable here
      */
     function repayBaseToken(address from, address dst, uint256 amount) external {
         uint256 borrowBalance = COMET.borrowBalanceOf(address(this));
@@ -158,7 +154,6 @@ contract CompoundV3Strategy {
     /**
      * @notice Reads the current state of the strategy
      * @dev Returns encoded information about collateral and borrows
-     * @return State encoded as bytes
      */
     function readState() external view returns (bytes memory) {
         // Get borrow balance
