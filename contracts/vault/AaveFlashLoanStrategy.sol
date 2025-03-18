@@ -43,13 +43,12 @@ contract AaveFlashLoanStrategy is HasOperation {
      * @param token The token to flash loan
      * @param amount The amount to borrow
      * @param operations operation list for the vault (when flashloan received)
-     * @return loss Returns 0 as loss calculation happens in the callback
      */
     function executeFlashLoan(
         address token,
         uint256 amount,
         Operation[] calldata operations
-    ) external returns (int256) {
+    ) external {
         // Execute the flash loan with the provided raw data
         POOL.flashLoanSimple(
             address(this),
@@ -60,7 +59,6 @@ contract AaveFlashLoanStrategy is HasOperation {
         );
 
         emit FlashLoanRequested(token, amount);
-        return 0;
     }
 
     /**

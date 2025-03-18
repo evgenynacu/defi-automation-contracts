@@ -21,7 +21,6 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
     uint256 public lastRebalanceTimestamp;
 
     event Init();
-    event Loss(int256 loss);
     event Deposit(address token, uint amount);
     event Withdraw(address token, uint amount);
 
@@ -66,26 +65,20 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
     }
 
     // @dev Rebalances the vault
-    function rebalance(uint256 stateTimestamp, int256 _maxLoss, Operation[] calldata _operations) external operatorOrOwner returns (int256 loss) {
+    function rebalance(uint256 stateTimestamp, Operation[] calldata _operations) external operatorOrOwner returns (bytes[] memory results) {
         rebalancing = true;
         require(stateTimestamp > lastRebalanceTimestamp, "StaleState!");
-        loss = executeOperations(_operations);
-        emit Loss(loss);
-        require(loss <= _maxLoss, "!LossExceeds");
+        results = executeOperations(_operations);
         lastRebalanceTimestamp = block.timestamp;
         rebalancing = false;
     }
 
-    function executeOperations(Operation[] memory _operations) internal returns (int256 totalLoss) {
-        totalLoss = 0;
+    function executeOperations(Operation[] memory _operations) internal returns (bytes[] memory results) {
+        results = new bytes[](_operations.length);
         for (uint256 i = 0; i < _operations.length; i++) {
             Operation memory _operation = _operations[i];
             bytes memory result = DelegateCall.doDelegateCall(strategies[_operation.position], _operation.callData);
-
-            if (result.length > 0) {
-                int256 loss = abi.decode(result, (int256));
-                totalLoss += loss;
-            }
+            results[i] = result;
         }
     }
 
