@@ -1,23 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+import "../morpho/IMorpho.sol";
 import "./HasOperation.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {HasOperation} from "./HasOperation.sol";
 import {StorageUtil} from "../util/StorageUtil.sol";
-
-/**
- * @title IMorpho
- * @notice Interface for Morpho's flash loan functionality
- */
-interface IMorpho {
-    function flashLoan(
-        address token,
-        uint256 amount,
-        bytes calldata data
-    ) external;
-}
 
 /**
  * @title MorphoFlashLoanStrategy
