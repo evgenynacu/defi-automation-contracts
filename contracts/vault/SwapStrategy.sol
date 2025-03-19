@@ -31,7 +31,7 @@ contract SwapStrategy {
         }
 
         // 3. Get final value and calculate output
-        uint amountAfter = token0.balanceOf(address(this));
+        uint amountAfter = token1.balanceOf(address(this));
 
         output = amountAfter - amountBefore;
     }

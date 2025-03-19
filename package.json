@@ -19,6 +19,7 @@
     "build": "hardhat compile",
     "clean": "hardhat clean",
     "test": "hardhat test",
+    "test-deploy": "hardhat test deploy-test/*.test.ts --network mainnet_universal",
     "verify": "hardhat --network scroll etherscan-verify --api-url https://api.scrollscan.com --api-key $API_KEY"
   }
 }

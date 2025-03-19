@@ -11,6 +11,7 @@
   "include": [
     "hardhat.config.ts",
     "./deploy",
+    "./deploy-test",
     "./test",
     "./typechain-types/**/*"
   ]

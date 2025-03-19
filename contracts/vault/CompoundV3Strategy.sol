@@ -56,7 +56,7 @@ contract CompoundV3Strategy {
      * @notice Supply token as collateral to Compound V3
      * @param amount The amount to supply. If type(uint256).max is passed, all available tokens will be supplied
      */
-    function supplyCollateralToCaller(IComet comet, IERC20 collateralToken, uint256 amount) external {
+    function supplyCollateral(IComet comet, address to, IERC20 collateralToken, uint256 amount) external {
         uint256 supplyAmount;
 
         // If max uint is passed, supply all available tokens
@@ -72,7 +72,7 @@ contract CompoundV3Strategy {
         _approveIfNeeded(address(collateralToken), address(comet), supplyAmount);
 
         // Supply the token as collateral
-        comet.supplyFrom(address(this), msg.sender, address(collateralToken), supplyAmount);
+        comet.supplyFrom(address(this), to, address(collateralToken), supplyAmount);
 
         emit CollateralSupplied(address(collateralToken), supplyAmount);
     }
@@ -81,11 +81,11 @@ contract CompoundV3Strategy {
      * @notice Withdraw token from Compound V3 collateral
      * @param amount The amount to withdraw
      */
-    function withdrawCollateralFromCaller(IComet comet, IERC20 collateralToken, uint256 amount) external {
+    function withdrawCollateral(IComet comet, address from, IERC20 collateralToken, uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
 
         // Withdraw collateral
-        comet.withdrawFrom(msg.sender, address(this), address(collateralToken), amount);
+        comet.withdrawFrom(from, address(this), address(collateralToken), amount);
 
         emit CollateralWithdrawn(address(collateralToken), amount);
     }
@@ -95,12 +95,12 @@ contract CompoundV3Strategy {
      * @dev In Compound V3, borrowing is done by withdrawing the base asset
      * @param amount The amount to borrow
      */
-    function borrowBaseTokenFromCaller(IComet comet, uint256 amount) external {
+    function borrowBaseToken(IComet comet, address from, uint256 amount) external {
         require(amount > 0, "Amount must be greater than 0");
 
         address baseToken = comet.baseToken();
         // In Compound V3, borrowing is done by simply withdrawing the base asset
-        comet.withdrawFrom(msg.sender, address(this), baseToken, amount);
+        comet.withdrawFrom(from, address(this), baseToken, amount);
 
         emit BaseTokenBorrowed(baseToken, amount);
     }
@@ -110,7 +110,7 @@ contract CompoundV3Strategy {
      * @dev In Compound V3, repaying is done by supplying the base asset
      * @param amount The amount to repay (use uint256.max for full repayment)
      */
-    function repayBaseTokenToCaller(IComet comet, uint256 amount) external {
+    function repayBaseToken(IComet comet, address to, uint256 amount) external {
         uint256 borrowBalance = comet.borrowBalanceOf(address(this));
         require(borrowBalance > 0, "No borrow balance to repay");
 
@@ -125,7 +125,7 @@ contract CompoundV3Strategy {
         _approveIfNeeded(baseToken, address(comet), repayAmount);
 
         // In Compound V3, repaying is done by supplying the base asset
-        comet.supplyFrom(address(this), msg.sender, baseToken, repayAmount);
+        comet.supplyFrom(address(this), to, baseToken, repayAmount);
 
         emit BaseTokenRepaid(baseToken, repayAmount);
     }

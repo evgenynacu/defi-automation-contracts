@@ -14,6 +14,11 @@ import {StorageUtil} from "../util/StorageUtil.sol";
 // @dev Strategy is code-only contract which is called using delegatecall
 contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable, ContextUpgradeable, RolesUpgradeable {
 
+    // Morpho contract address
+    address private immutable MORPHO_ADDRESS;
+    IPoolAddressesProvider public immutable ADDRESSES_PROVIDER;
+    IPool public immutable POOL;
+
     bytes32 private constant FLASH_LOAN_OUT_SLOT = keccak256("flashLoan#output");
 
     // @notice list of strategies
@@ -21,7 +26,10 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
 
     bool private rebalancing;
 
-    constructor () {
+    constructor (address _morpho, address aaveProvider) {
+        MORPHO_ADDRESS = _morpho;
+        ADDRESSES_PROVIDER = IPoolAddressesProvider(aaveProvider);
+        POOL = IPool(IPoolAddressesProvider(aaveProvider).getPool());
         _disableInitializers();
     }
 
@@ -114,61 +122,11 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
 
         // Transfer tokens back to Morpho to repay the loan
         // This will automatically revert if there aren't enough tokens
-        IERC20(token).approve(address(POOL()), amount + premium);
+        IERC20(token).approve(address(POOL), amount + premium);
         return true;
     }
 
-    /**
-     * @notice Helper function to get the Morpho address from a strategy
-     * @dev Finds a strategy that implements getMorphoAddress and calls it
-     * @return The Morpho contract address
-     */
     function _getMorphoAddress() internal view returns (address) {
-        // In a real implementation, you might store this address or implement
-        // a more efficient lookup mechanism
-
-        for (uint16 i = 0; i < strategies.length; i++) {
-            // Try to call getMorphoAddress on each strategy
-            (bool success, bytes memory returnData) = strategies[i].staticcall(
-                abi.encodeWithSignature("getMorphoAddress()")
-            );
-
-            if (success && returnData.length == 32) {
-                return abi.decode(returnData, (address));
-            }
-        }
-
-        revert("Morpho address not found");
+        return MORPHO_ADDRESS;
     }
-
-    function ADDRESSES_PROVIDER() external override view returns (IPoolAddressesProvider) {
-        for (uint16 i = 0; i < strategies.length; i++) {
-            // Try to call getMorphoAddress on each strategy
-            (bool success, bytes memory returnData) = strategies[i].staticcall(
-                abi.encodeWithSignature("getAaveAddressProvider()")
-            );
-
-            if (success && returnData.length == 32) {
-                return IPoolAddressesProvider(abi.decode(returnData, (address)));
-            }
-        }
-
-        revert("Morpho address not found");
-    }
-
-    function POOL() public override view returns (IPool) {
-        for (uint16 i = 0; i < strategies.length; i++) {
-            // Try to call getMorphoAddress on each strategy
-            (bool success, bytes memory returnData) = strategies[i].staticcall(
-                abi.encodeWithSignature("getAavePool()")
-            );
-
-            if (success && returnData.length == 32) {
-                return IPool(abi.decode(returnData, (address)));
-            }
-        }
-
-        revert("Morpho address not found");
-    }
-
 }

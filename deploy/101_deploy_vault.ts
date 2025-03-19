@@ -28,6 +28,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log("Deploying vault or updating the code")
 	const vaultDeployResult = await deploy("AutomatedVault", {
 		from: deployer,
+		args: [MORPHO_BLUE, AAVE_POOL_ADDRESS_PROVIDER],
 		proxy: {
 			proxyContract: "MyProxy",
 			execute: {
