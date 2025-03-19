@@ -13,6 +13,7 @@ import {StorageUtil} from "../util/StorageUtil.sol";
 // @notice Vault manages funds. It can have several strategies inside
 // @dev Strategy is code-only contract which is called using delegatecall
 contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable, ContextUpgradeable, RolesUpgradeable {
+    using SafeERC20 for IERC20;
 
     // Morpho contract address
     address private immutable MORPHO_ADDRESS;
@@ -98,9 +99,7 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
 
         // Transfer tokens back to Morpho to repay the loan
         // This will automatically revert if there aren't enough tokens
-        IERC20(received.token).approve(morphoAddress, amount);
-
-        // Any profit stays in the vault
+        IERC20(received.token).forceApprove(morphoAddress, amount);
     }
 
     function executeOperation(
@@ -120,9 +119,7 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
         uint out = executeOperations(operations);
         StorageUtil.setUintSlot(FLASH_LOAN_OUT_SLOT, out);
 
-        // Transfer tokens back to Morpho to repay the loan
-        // This will automatically revert if there aren't enough tokens
-        IERC20(token).approve(address(POOL), amount + premium);
+        IERC20(token).forceApprove(address(POOL), amount + premium);
         return true;
     }
 

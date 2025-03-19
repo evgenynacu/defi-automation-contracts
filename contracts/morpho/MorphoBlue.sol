@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-interface IMorpho {
+interface MorphoBlue {
     struct MarketParams {
         address loanToken;
         address collateralToken;
@@ -9,6 +9,8 @@ interface IMorpho {
         address irm;
         uint256 lltv;
     }
+
+    function idToMarketParams(bytes32 id) external view returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv);
 
     function supply(
         MarketParams memory marketParams,

@@ -8,6 +8,7 @@ export const SWAP_STRATEGY_INDEX = 1
 export const MORPHO_FLASH_LOAN_STRATEGY_INDEX = 2
 export const AAVE_FLASH_LOAN_STRATEGY_INDEX = 3
 export const COMPOUND_V3_STRATEGY_INDEX = 4
+export const MORPHO_STRATEGY_INDEX = 5
 
 export type TransferErc20FromCallerOperation = {
 	type: 'erc20-transfer-from-caller'
@@ -60,6 +61,22 @@ type CompoundV3Operation =
 	| CompoundV3BorrowOperation
 	| CompoundV3RepayOperation
 
+export type MorphoSupplyOperation = {
+	type: 'morpho-supply'
+	marketId: string
+	amount: bigint
+}
+
+export type MorphoBorrowOperation = {
+	type: 'morpho-borrow'
+	marketId: string
+	amount: bigint
+}
+
+type MorphoOperation =
+	| MorphoSupplyOperation
+	| MorphoBorrowOperation
+
 export type MorphoFlashLoanOperation = {
 	type: 'morpho-flash-loan'
 	token: string
@@ -79,6 +96,7 @@ type InnerStrategyOperation =
 	| TransferErc20ToCallerOperation
 	| SwapOperation
 	| CompoundV3Operation
+	| MorphoOperation
 
 export type StrategyOperation =
 	| InnerStrategyOperation
@@ -104,6 +122,22 @@ async function serializeOperation(vault: address, op: StrategyOperation): Promis
 	const [signer] = await ethers.getSigners()
 	const from = signer.address
 	switch (op["type"]) {
+		case "morpho-supply": {
+			const impl = (await ethers.getContractFactory("MorphoStrategy")).interface
+			return [{
+				position: MORPHO_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("supplyCollateral", [op.marketId, from, op.amount]),
+				info: "",
+			}]
+		}
+		case "morpho-borrow": {
+			const impl = (await ethers.getContractFactory("MorphoStrategy")).interface
+			return [{
+				position: MORPHO_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("borrowFromMarket", [op.marketId, from, op.amount]),
+				info: "",
+			}]
+		}
 		case "compound-v3-supply": {
 			const impl = (await ethers.getContractFactory("CompoundV3Strategy")).interface
 			return [{
@@ -197,14 +231,14 @@ async function fetchAllQuotes(vaultAddress: address, op: SwapOperation) {
 }
 
 export function crossJoin<T>(arrays: T[][]): T[][] {
-	if (arrays.length === 0) return [[]];
+	if (arrays.length === 0) return [[]]
 
-	const firstArray = arrays[0];
-	const remainingCombinations = crossJoin(arrays.slice(1));
+	const firstArray = arrays[0]
+	const remainingCombinations = crossJoin(arrays.slice(1))
 
 	return firstArray.flatMap(item =>
 		remainingCombinations.map(combination =>
 			[item, ...combination]
 		)
-	);
+	)
 }

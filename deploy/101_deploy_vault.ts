@@ -16,13 +16,15 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	const morphoFlashLoanStrategy = await deployStrategy(hre, "MorphoFlashLoanStrategy", [MORPHO_BLUE])
 	const aaveFlashLoanStrategy = await deployStrategy(hre, "AaveFlashLoanStrategy", [AAVE_POOL_ADDRESS_PROVIDER])
 	const compoundV3Strategy = await deployStrategy(hre, "CompoundV3Strategy")
+	const morphoStrategy = await deployStrategy(hre, "MorphoStrategy", [MORPHO_BLUE])
 
 	const strategies = [
 		erc20TransferStrategy.address,
 		swapStrategy.address,
 		morphoFlashLoanStrategy.address,
 		aaveFlashLoanStrategy.address,
-		compoundV3Strategy.address
+		compoundV3Strategy.address,
+		morphoStrategy.address
 	]
 
 	console.log("Deploying vault or updating the code")

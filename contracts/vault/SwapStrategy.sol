@@ -2,6 +2,7 @@
 pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 
 /**
@@ -9,6 +10,8 @@ import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
  * @notice Strategy for swapping assets to other assets
  */
 contract SwapStrategy {
+    using SafeERC20 for IERC20;
+
     error SwapFailed(address router, string reason);
 
     /**
@@ -38,7 +41,7 @@ contract SwapStrategy {
 
     function _approveSwap(IERC20 token0, address exchange) internal {
         if (token0.allowance(address(this), address(exchange)) == 0) {
-            token0.approve(exchange, type(uint256).max);
+            token0.forceApprove(exchange, type(uint256).max);
         }
     }
 }
