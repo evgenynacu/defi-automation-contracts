@@ -1,9 +1,10 @@
 import { ISwapProvider } from "./ISwapProvider"
 import { OneInchProvider } from "./OneInchProvider"
 import { OdosV2Provider } from "./OdosV2Provider"
-import { EnsoProvider, KyberSwapIcarusProvider, OkxProvider, OpenoceanProvider, UsorProvider, ZeroexProvider } from "./IcarusProviders"
+import { EnsoProvider, KyberSwapIcarusProvider, OpenoceanProvider, UsorProvider, ZeroexProvider } from "./IcarusProviders"
 import { SushiSwapProvider } from "./SushiSwapProvider"
 import { KyberSwapProvider } from "./KyberSwapProvider"
+import { PendleProvider } from "./PendleProvider"
 
 export class ProviderRegistry {
   private static instance: ProviderRegistry
@@ -38,6 +39,7 @@ export class ProviderRegistry {
       new OpenoceanProvider(),
       new UsorProvider(),
       new ZeroexProvider(),
+      new PendleProvider(),
     ]
   }
 

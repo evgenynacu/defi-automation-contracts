@@ -5,8 +5,24 @@ import { expect } from "chai"
 import { ProviderRegistry } from "../deploy/swap/providers/ProviderRegistry"
 import { SwapResult } from "../deploy/swap/providers/types"
 import { SwapProviderFacade } from "../deploy/swap/providers/SwapProviderFacade"
+import { PendleProvider } from "../deploy/swap/providers/PendleProvider"
 
 describe("SwapProvider", () => {
+	it("should allow to sell PT", async () => {
+		const p = new PendleProvider()
+		const quote = await p.getQuote({
+			chainId: 1,
+			fromToken: "0xb7de5dFCb74d25c2f21841fbd6230355C50d9308",
+			toToken: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+			swapAmount: 10000000000000000000n,
+			vault: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
+			decimalsIn: 18,
+			decimalsOut: 18,
+			txOrigin: "0x0000000000000000000000000000000000000000",
+		})
+		expect(quote.to).to.be.eq("0x888888888889758F76e7103c6CbF23ABbF58F946")
+	})
+
 	it("should allow to buy curve LP", async () => {
 		const [signer] = await ethers.getSigners()
 
