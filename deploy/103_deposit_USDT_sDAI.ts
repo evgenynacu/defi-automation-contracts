@@ -25,9 +25,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 	const baseToken = await ethers.getContractAt("IERC20", USDT_ADDRESS)
 	const allowance = await baseToken.allowance(sender.address, deployment.address)
-	if (allowance < 1000000000n) {
+	const balance = 4999490087n
+	if (allowance < 5000000000n) {
 		console.log("Allowing to spend base token")
-		const tx = await baseToken.approve(deployment.address, 1000000000n)
+		const tx = await baseToken.approve(deployment.address, 5000000000n)
 		await tx.wait()
 	}
 
@@ -35,18 +36,18 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 		{
 			type: "erc20-transfer-from-caller",
 			token: USDT_ADDRESS,
-			amount: 1000000000n,
+			amount: balance,
 		},
 		{
 			type: "morpho-flash-loan",
 			token: USDT_ADDRESS,
-			amount: 1000000000n * 10n,
+			amount: balance * 9n,
 			innerOperations: [
 				{
 					type: "swap",
 					from: USDT_ADDRESS,
 					to: SDAI_ADDRESS,
-					amount: 1000000000n * 11n
+					amount: balance * 10n
 				},
 				{
 					type: "morpho-supply",
@@ -56,7 +57,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 				{
 					type: "morpho-borrow",
 					marketId: "0x1ca7ff6b26581fe3155f391f3960d32a033b5f7d537b1f1932b2021a6cf4f706",
-					amount: 1000000000n * 10n
+					amount: balance * 9n
 				}
 			]
 		}])

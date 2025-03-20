@@ -1,11 +1,30 @@
 import { ethers } from "hardhat"
-import { EZETH_ADDRESS, WETH_ADDRESS } from "../deploy/addresses"
+import { CURVE_USD0_USD0PP, EZETH_ADDRESS, WETH_ADDRESS } from "../deploy/addresses"
 import { address } from "../deploy/types"
 import { expect } from "chai"
 import { ProviderRegistry } from "../deploy/swap/providers/ProviderRegistry"
 import { SwapResult } from "../deploy/swap/providers/types"
+import { SwapProviderFacade } from "../deploy/swap/providers/SwapProviderFacade"
 
 describe("SwapProvider", () => {
+	it("should allow to buy curve LP", async () => {
+		const [signer] = await ethers.getSigners()
+
+		ProviderRegistry.initializeDefaultProviders()
+		const instance = SwapProviderFacade.getInstance()
+		const quotes = await instance.getAllQuotes({
+			chainId: 1,
+			fromToken: WETH_ADDRESS,
+			toToken: CURVE_USD0_USD0PP,
+			vault: signer.address as address,
+			txOrigin: signer.address as address,
+			swapAmount: 10n ** 18n,
+			decimalsIn: 18,
+			decimalsOut: 18
+		})
+		console.log(quotes.map(it => it.provider))
+	})
+
 	it("all should fetch quote for simpe swap", async () => {
 		const [signer] = await ethers.getSigners()
 
