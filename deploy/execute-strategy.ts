@@ -29,9 +29,9 @@ export async function executeStrategy(vaultAddress: address, operations: Strateg
 async function executeAndGetOut(from: string, vault: AutomatedVault, ops: OperationWithInfo[]): Promise<OutResult> {
 	const info = ops.map(it => it.info).join("")
 	const calldata = vault.interface.encodeFunctionData("rebalance", [ops])
-	// const vaultAddress = await vault.getAddress()
-	// const url =	`https://dashboard.tenderly.co/eugenenacu/project/simulator/new?stateOverrides=&from=${from}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`
-	// console.log(info, "testing url: \"" + url + "\" ")
+	const vaultAddress = await vault.getAddress()
+	const url =	`https://dashboard.tenderly.co/eugenenacu/project/simulator/new?stateOverrides=&from=${from}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`
+	console.log(info, "testing url: \"" + url + "\" ")
 	try {
 		const result = await ethers.provider.call({
 			to: vault,

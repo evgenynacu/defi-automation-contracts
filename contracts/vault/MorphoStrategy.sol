@@ -31,7 +31,7 @@ contract MorphoStrategy {
      * @param amount The amount to supply. If type(uint256).max is passed, all available tokens will be supplied
      */
     function supplyCollateral(bytes32 marketId, address to, uint256 amount) external {
-        MorphoBlue.MarketParams memory params = _getMarketParams(marketId);
+        MorphoBlue.MarketParams memory params = MORPHO.idToMarketParams(marketId);
 
         // If max uint is passed, supply all available tokens
         uint256 supplyAmount;
@@ -40,8 +40,6 @@ contract MorphoStrategy {
         } else {
             supplyAmount = amount;
         }
-
-        require(supplyAmount > 0, "Amount must be greater than 0");
 
         // Approve Comet to transfer tokens if needed
         _approveIfNeeded(params.collateralToken, address(MORPHO), supplyAmount);
@@ -52,13 +50,27 @@ contract MorphoStrategy {
         emit CollateralSupplied(params.collateralToken, supplyAmount);
     }
 
-    function borrowFromMarket(bytes32 marketId, address from, uint256 amount) external {
-        require(amount > 0, "Amount must be greater than 0");
+    function withdrawCollateral(bytes32 marketId, address from, uint amount) external {
+        MorphoBlue.MarketParams memory params = MORPHO.idToMarketParams(marketId);
 
-        MorphoBlue.MarketParams memory params = _getMarketParams(marketId);
+        MORPHO.withdrawCollateral(params, amount, from, address(this));
+        emit CollateralWithdrawn(params.collateralToken, amount);
+    }
+
+    function borrowFromMarket(bytes32 marketId, address from, uint256 amount) external {
+        MorphoBlue.MarketParams memory params = MORPHO.idToMarketParams(marketId);
         MORPHO.borrow(params, amount, 0, from, address(this));
 
         emit BaseTokenBorrowed(params.loanToken, amount);
+    }
+
+    function repayDebt(bytes32 marketId, address to, uint256 amount) external {
+        MorphoBlue.MarketParams memory params = MORPHO.idToMarketParams(marketId);
+
+        _approveIfNeeded(params.loanToken, address(MORPHO), amount);
+        MORPHO.repay(params, amount, 0, to, "");
+
+        emit BaseTokenRepaid(params.loanToken, amount);
     }
 
     /**
@@ -70,11 +82,7 @@ contract MorphoStrategy {
     function _approveIfNeeded(address token, address spender, uint256 amount) internal {
         uint256 allowance = IERC20(token).allowance(address(this), spender);
         if (allowance < amount) {
-            IERC20(token).approve(spender, type(uint256).max);
+            IERC20(token).forceApprove(spender, type(uint256).max);
         }
-    }
-
-    function _getMarketParams(bytes32 id) internal view returns (MorphoBlue.MarketParams memory params) {
-        (params.loanToken, params.collateralToken, params.oracle, params.irm, params.lltv) = MORPHO.idToMarketParams(id);
     }
 }

@@ -67,15 +67,29 @@ export type MorphoSupplyOperation = {
 	amount: bigint
 }
 
+export type MorphoWithdrawOperation = {
+	type: 'morpho-withdraw'
+	marketId: string
+	amount: bigint
+}
+
 export type MorphoBorrowOperation = {
 	type: 'morpho-borrow'
 	marketId: string
 	amount: bigint
 }
 
+export type MorphoRepayOperation = {
+	type: 'morpho-repay'
+	marketId: string
+	amount: bigint
+}
+
 type MorphoOperation =
 	| MorphoSupplyOperation
+	| MorphoWithdrawOperation
 	| MorphoBorrowOperation
+	| MorphoRepayOperation
 
 export type MorphoFlashLoanOperation = {
 	type: 'morpho-flash-loan'
@@ -130,11 +144,27 @@ async function serializeOperation(vault: address, op: StrategyOperation): Promis
 				info: "",
 			}]
 		}
+		case "morpho-withdraw": {
+			const impl = (await ethers.getContractFactory("MorphoStrategy")).interface
+			return [{
+				position: MORPHO_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("withdrawCollateral", [op.marketId, from, op.amount]),
+				info: "",
+			}]
+		}
 		case "morpho-borrow": {
 			const impl = (await ethers.getContractFactory("MorphoStrategy")).interface
 			return [{
 				position: MORPHO_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("borrowFromMarket", [op.marketId, from, op.amount]),
+				info: "",
+			}]
+		}
+		case "morpho-repay": {
+			const impl = (await ethers.getContractFactory("MorphoStrategy")).interface
+			return [{
+				position: MORPHO_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("repayDebt", [op.marketId, from, op.amount]),
 				info: "",
 			}]
 		}

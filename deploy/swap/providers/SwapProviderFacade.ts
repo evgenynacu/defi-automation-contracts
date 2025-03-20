@@ -31,8 +31,7 @@ export class SwapProviderFacade {
       providers.map(provider =>
         provider.getQuote(params)
           .then(quote => this.toSwapQuote(Date.now() - start, provider.getConfig().name, quote, params.decimalsOut))
-          .catch(e => {
-            console.warn(`Failed to get quote from ${provider.getConfig().name}:`, e)
+          .catch(() => {
             return null
           })
       )

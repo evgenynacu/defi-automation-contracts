@@ -23,7 +23,11 @@ abstract class IcarusProvider implements ISwapProvider {
       "outTokenAddress": params.toToken,
       "isExactIn": true,
       "slippage": 100, // Icarus expects slippage in basis points
-      "inTokenAmount": `${Number(params.swapAmount) / 10 ** params.decimalsIn}`,
+      "inTokenAmount": formatAmount(params.swapAmount, params.decimalsIn),
+    }
+
+    if (this.getConfig().name === "enso") {
+      console.log("body is", body, params.swapAmount, params.decimalsIn, params.decimalsOut)
     }
 
     const res = await fetch(url, {
@@ -95,3 +99,24 @@ const chainIdMapping: Record<number, string> = {
   1: "mainnet",
   42161: "arbitrum",
 }
+
+function formatAmount(amount: bigint, decimals: number | bigint): string {
+  const divisor = BigInt(10) ** BigInt(decimals);
+  const integerPart = amount / divisor;
+  const fractionalPart = amount % divisor;
+
+  // Преобразуем дробную часть в строку с ведущими нулями
+  let fractionalStr = fractionalPart.toString();
+  // Дополняем нулями до нужной длины
+  fractionalStr = fractionalStr.padStart(Number(decimals), '0');
+
+  // Удаляем конечные нули
+  fractionalStr = fractionalStr.replace(/0+$/, '');
+
+  // Если дробная часть пуста, возвращаем только целую часть
+  if (fractionalStr === '') {
+    return integerPart.toString();
+  }
+
+  return `${integerPart}.${fractionalStr}`;
+};
