@@ -26,10 +26,6 @@ abstract class IcarusProvider implements ISwapProvider {
       "inTokenAmount": formatAmount(params.swapAmount, params.decimalsIn),
     }
 
-    if (this.getConfig().name === "enso") {
-      console.log("body is", body, params.swapAmount, params.decimalsIn, params.decimalsOut)
-    }
-
     const res = await fetch(url, {
       method: "POST",
       headers: {
@@ -105,18 +101,14 @@ function formatAmount(amount: bigint, decimals: number | bigint): string {
   const integerPart = amount / divisor;
   const fractionalPart = amount % divisor;
 
-  // Преобразуем дробную часть в строку с ведущими нулями
   let fractionalStr = fractionalPart.toString();
-  // Дополняем нулями до нужной длины
   fractionalStr = fractionalStr.padStart(Number(decimals), '0');
 
-  // Удаляем конечные нули
   fractionalStr = fractionalStr.replace(/0+$/, '');
 
-  // Если дробная часть пуста, возвращаем только целую часть
   if (fractionalStr === '') {
     return integerPart.toString();
   }
 
   return `${integerPart}.${fractionalStr}`;
-};
+}
