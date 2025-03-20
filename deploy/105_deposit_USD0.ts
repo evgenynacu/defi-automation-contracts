@@ -5,7 +5,7 @@ import { depositToMorpho } from "./deposit-to-morpho"
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)
 
-	await depositToMorpho(hre, "0xa59b6c3c6d1df322195bfb48ddcdcca1a4c0890540e8ee75815765096c1e8971", 990000000n, 7)
+	await depositToMorpho(hre, "0xddac4d5caa0b1923ef338d53e01876af69c5b68ebf8e268082c7d3e2be2e7f8e", 990000000n, 6.5)
 }
 
 // noinspection JSUnusedGlobalSymbols

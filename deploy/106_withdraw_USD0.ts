@@ -8,7 +8,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 	const [signer] = await ethers.getSigners()
 
-	await withdrawFromMorpho(hre, signer, "0xa59b6c3c6d1df322195bfb48ddcdcca1a4c0890540e8ee75815765096c1e8971", 1)
+	await withdrawFromMorpho(hre, signer, "0xddac4d5caa0b1923ef338d53e01876af69c5b68ebf8e268082c7d3e2be2e7f8e", 1)
 }
 
 // noinspection JSUnusedGlobalSymbols

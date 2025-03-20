@@ -30,7 +30,7 @@ export async function withdrawFromMorpho(hre: HardhatRuntimeEnvironment, signer:
 
 	console.log("total collateral: ", totalCollateral, "total debt: ", totalDebt)
 
-	const debtToWithdraw = totalDebt * BigInt(share * multiplier + 1) / BigInt(multiplier)
+	const debtToWithdraw = totalDebt * BigInt(share * multiplier + 10) / BigInt(multiplier)
 	const collateralToWithdraw = totalCollateral * BigInt(share * multiplier - 100) / BigInt(multiplier)
 
 	console.log("debt to withdraw: ", debtToWithdraw, "collateral to withdraw: ", collateralToWithdraw)
