@@ -11,7 +11,13 @@ contract Erc20TransferStrategy {
         token.safeTransferFrom(from, address(this), amount);
     }
 
-    function transferTo(IERC20 token, address to, uint amount) external {
-        token.transfer(to, amount);
+    function transferTo(IERC20 token, address to, uint amount) external returns (uint) {
+        uint transferAmount = amount;
+        if (amount == type(uint256).max) {
+            transferAmount = token.balanceOf(address(this));
+        }
+
+        token.safeTransfer(to, transferAmount);
+        return transferAmount;
     }
 }

@@ -111,7 +111,7 @@ contract CompoundV3Strategy {
      * @param amount The amount to repay (use uint256.max for full repayment)
      */
     function repayBaseToken(IComet comet, address to, uint256 amount) external {
-        uint256 borrowBalance = comet.borrowBalanceOf(address(this));
+        uint256 borrowBalance = comet.borrowBalanceOf(to);
         require(borrowBalance > 0, "No borrow balance to repay");
 
         // If amount is max uint256, repay the full balance
