@@ -5,6 +5,8 @@ import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers"
 import { executeStrategy } from "./execute-strategy"
 import { address } from "./types"
 
+const multiplier = 10000000
+
 /**
  * Withdraw part of the ezETH position from Compound
  * @param hre
@@ -24,8 +26,8 @@ export async function withdrawEzETH(hre: HardhatRuntimeEnvironment, signer: Hard
 
 	console.log("total collateral: ", ezEthBalance, "total debt: ", totalDebt)
 
-	const debtToWithdraw = totalDebt * BigInt(share * 1000000 + 1) / 1000000n
-	const collateralToWithdraw = ezEthBalance * BigInt(share * 1000000) / 1000000n
+	const debtToWithdraw = totalDebt * BigInt(share * multiplier + 1) / BigInt(multiplier)
+	const collateralToWithdraw = ezEthBalance * BigInt(share * multiplier) / BigInt(multiplier)
 
 	await executeStrategy(deployment.address as address, [
 		{
