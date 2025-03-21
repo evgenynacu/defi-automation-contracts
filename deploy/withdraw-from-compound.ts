@@ -8,55 +8,58 @@ import { address } from "./types"
 const multiplier = 10000000
 
 /**
- * Withdraw part of the ezETH position from Compound
+ * Withdraw part of the Compound positin
  * @param hre
  * @param signer
+ * @param cometAddress
+ * @param collateralToken
  * @param share number from 0 to 1 (part of the position to withdraw)
  */
-export async function withdrawEzETH(hre: HardhatRuntimeEnvironment, signer: HardhatEthersSigner, share: number) {
+export async function withdrawFromCompound(hre: HardhatRuntimeEnvironment, signer: HardhatEthersSigner, cometAddress: address, collateralToken: address, share: number) {
 	const deployment = await hre.deployments.getOrNull("AutomatedVault")
 	if (deployment === undefined || deployment === null) {
 		throw new Error("Vault not deployed")
 	}
 
-	const comet = await ethers.getContractAt("IComet", COMET_WETH_ADDRESS)
+	const comet = await ethers.getContractAt("IComet", cometAddress)
+	const baseToken = await comet.baseToken()
 
-	const ezEthBalance = await comet.collateralBalanceOf(signer.address, EZETH_ADDRESS)
+	const collateralBalance = await comet.collateralBalanceOf(signer.address, collateralToken)
 	const totalDebt = await comet.borrowBalanceOf(signer.address)
 
-	console.log("total collateral: ", ezEthBalance, "total debt: ", totalDebt)
+	console.log("total collateral: ", collateralBalance, "total debt: ", totalDebt)
 
 	const debtToWithdraw = totalDebt * BigInt(share * multiplier + 1) / BigInt(multiplier)
-	const collateralToWithdraw = ezEthBalance * BigInt(share * multiplier) / BigInt(multiplier)
+	const collateralToWithdraw = collateralBalance * BigInt(share * multiplier) / BigInt(multiplier)
 
 	await executeStrategy(deployment.address as address, [
 		{
 			type: "morpho-flash-loan",
-			token: WETH_ADDRESS,
+			token: baseToken,
 			amount: debtToWithdraw,
 			innerOperations: [
 				{
 					type: "compound-v3-repay",
-					comet: COMET_WETH_ADDRESS,
+					comet: cometAddress,
 					amount: debtToWithdraw,
 				},
 				{
 					type: "compound-v3-withdraw",
-					comet: COMET_WETH_ADDRESS,
-					token: EZETH_ADDRESS,
+					comet: cometAddress,
+					token: collateralToken,
 					amount: collateralToWithdraw,
 				},
 				{
 					type: "swap",
-					from: EZETH_ADDRESS,
-					to: WETH_ADDRESS,
+					from: collateralToken,
+					to: baseToken,
 					amount: collateralToWithdraw,
 				},
 			]
 		},
 		{
 			type: "erc20-transfer-to-caller",
-			token: WETH_ADDRESS,
+			token: baseToken,
 			amount: ethers.MaxUint256
 		}
 	])
