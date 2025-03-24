@@ -5,7 +5,7 @@ import { address } from "../../types"
 export class PendleProvider implements ISwapProvider {
 	getConfig(): ProviderConfig {
 		return {
-			name: "Pendle",
+			name: "pendle",
 			enabled: true,
 		}
 	}

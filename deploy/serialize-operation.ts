@@ -82,7 +82,8 @@ export type MorphoBorrowOperation = {
 export type MorphoRepayOperation = {
 	type: 'morpho-repay'
 	marketId: string
-	amount: bigint
+	assets: bigint
+	shares: bigint
 }
 
 type MorphoOperation =
@@ -164,7 +165,7 @@ async function serializeOperation(vault: address, op: StrategyOperation): Promis
 			const impl = (await ethers.getContractFactory("MorphoStrategy")).interface
 			return [{
 				position: MORPHO_STRATEGY_INDEX,
-				callData: impl.encodeFunctionData("repayDebt", [op.marketId, from, op.amount]),
+				callData: impl.encodeFunctionData("repayDebt", [op.marketId, from, op.assets, op.shares]),
 				info: "",
 			}]
 		}

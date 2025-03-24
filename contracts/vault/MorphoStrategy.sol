@@ -8,12 +8,6 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 contract MorphoStrategy {
     using SafeERC20 for IERC20;
 
-    // Events
-    event CollateralSupplied(address token, uint256 amount);
-    event CollateralWithdrawn(address token, uint256 amount);
-    event BaseTokenBorrowed(address token, uint256 amount);
-    event BaseTokenRepaid(address token, uint256 amount);
-
     // Morpho contract address
     MorphoBlue public immutable MORPHO;
 
@@ -46,31 +40,24 @@ contract MorphoStrategy {
 
         // Supply the token as collateral
         MORPHO.supplyCollateral(params, supplyAmount, to, "");
-
-        emit CollateralSupplied(params.collateralToken, supplyAmount);
     }
 
     function withdrawCollateral(bytes32 marketId, address from, uint amount) external {
         MorphoBlue.MarketParams memory params = MORPHO.idToMarketParams(marketId);
 
         MORPHO.withdrawCollateral(params, amount, from, address(this));
-        emit CollateralWithdrawn(params.collateralToken, amount);
     }
 
     function borrowFromMarket(bytes32 marketId, address from, uint256 amount) external {
         MorphoBlue.MarketParams memory params = MORPHO.idToMarketParams(marketId);
         MORPHO.borrow(params, amount, 0, from, address(this));
-
-        emit BaseTokenBorrowed(params.loanToken, amount);
     }
 
-    function repayDebt(bytes32 marketId, address to, uint256 amount) external {
+    function repayDebt(bytes32 marketId, address to, uint256 assets, uint256 shares) external {
         MorphoBlue.MarketParams memory params = MORPHO.idToMarketParams(marketId);
 
-        _approveIfNeeded(params.loanToken, address(MORPHO), amount);
-        MORPHO.repay(params, amount, 0, to, "");
-
-        emit BaseTokenRepaid(params.loanToken, amount);
+        _approveIfNeeded(params.loanToken, address(MORPHO), type(uint128).max);
+        MORPHO.repay(params, assets, shares, to, "");
     }
 
     /**
