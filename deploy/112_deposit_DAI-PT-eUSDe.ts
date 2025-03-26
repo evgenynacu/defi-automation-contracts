@@ -5,9 +5,10 @@ import { depositToMorpho } from "./deposit-to-morpho"
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)
 
-	await depositToMorpho(hre, "0xddac4d5caa0b1923ef338d53e01876af69c5b68ebf8e268082c7d3e2be2e7f8e", 2004010138835419948249n, 6.5)
+	await depositToMorpho(hre, "0xae4571cdcad4191b9a59d1bb27a10a1b05c92c84fe423e4886d5781a30a9c8f1", 23538150045000000000000n, 7.5)
 }
 
 // noinspection JSUnusedGlobalSymbols
 export default func
-func.tags = ['deposit-USD0-curve']
+func.tags = ['deposit-DAI-PT-eUSDe']
+

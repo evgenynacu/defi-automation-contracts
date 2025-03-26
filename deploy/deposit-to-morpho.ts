@@ -1,6 +1,6 @@
 import { ethers } from "hardhat"
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
-import { COMET_WETH_ADDRESS, MORPHO_BLUE } from "./addresses"
+import { MORPHO_BLUE } from "./addresses"
 import { executeStrategy } from "./execute-strategy"
 import { address } from "./types"
 import { MorphoBlue } from "../typechain-types"
