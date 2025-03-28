@@ -2,6 +2,7 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
 import { AAVE_POOL_ADDRESS_PROVIDER, MORPHO_BLUE } from "./addresses"
 import { ethers } from "hardhat"
+import { deployStrategies } from "./deploy-strategies"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)
@@ -11,21 +12,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 	console.log("deploying contracts with the account:", deployer);
 
-	const erc20TransferStrategy = await deployStrategy(hre, "Erc20TransferStrategy")
-	const swapStrategy = await deployStrategy(hre, "SwapStrategy")
-	const morphoFlashLoanStrategy = await deployStrategy(hre, "MorphoFlashLoanStrategy", [MORPHO_BLUE])
-	const aaveFlashLoanStrategy = await deployStrategy(hre, "AaveFlashLoanStrategy", [AAVE_POOL_ADDRESS_PROVIDER])
-	const compoundV3Strategy = await deployStrategy(hre, "CompoundV3Strategy")
-	const morphoStrategy = await deployStrategy(hre, "MorphoStrategy", [MORPHO_BLUE])
-
-	const strategies = [
-		erc20TransferStrategy.address,
-		swapStrategy.address,
-		morphoFlashLoanStrategy.address,
-		aaveFlashLoanStrategy.address,
-		compoundV3Strategy.address,
-		morphoStrategy.address
-	]
+	const strategies = await deployStrategies(hre)
 
 	console.log("Deploying vault or updating the code")
 	const vaultDeployResult = await deploy("AutomatedVault", {
