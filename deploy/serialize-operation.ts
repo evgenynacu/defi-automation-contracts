@@ -9,6 +9,7 @@ export const MORPHO_FLASH_LOAN_STRATEGY_INDEX = 2
 export const AAVE_FLASH_LOAN_STRATEGY_INDEX = 3
 export const COMPOUND_V3_STRATEGY_INDEX = 4
 export const MORPHO_STRATEGY_INDEX = 5
+export const AAVE_STRATEGY_INDEX = 6
 
 export type TransferErc20FromCallerOperation = {
 	type: 'erc20-transfer-from-caller'
@@ -92,6 +93,41 @@ type MorphoOperation =
 	| MorphoBorrowOperation
 	| MorphoRepayOperation
 
+export type AaveSupplyOperation = {
+	type: 'aave-supply'
+	amount: bigint
+}
+
+export type AaveInitOperation = {
+	type: 'aave-init'
+	category: number
+}
+
+export type AaveWithdrawOperation = {
+	type: 'aave-withdraw'
+	amount: bigint
+}
+
+export type AaveBorrowOperation = {
+	type: 'aave-borrow'
+	token: string
+	amount: bigint
+}
+
+export type AaveRepayOperation = {
+	type: 'aave-repay'
+	token: string
+	amount: bigint
+}
+
+type AaveOperation =
+	| AaveSupplyOperation
+	| AaveWithdrawOperation
+	| AaveBorrowOperation
+	| AaveRepayOperation
+  | AaveInitOperation
+
+
 export type MorphoFlashLoanOperation = {
 	type: 'morpho-flash-loan'
 	token: string
@@ -112,6 +148,7 @@ type InnerStrategyOperation =
 	| SwapOperation
 	| CompoundV3Operation
 	| MorphoOperation
+	| AaveOperation
 
 export type StrategyOperation =
 	| InnerStrategyOperation
@@ -137,6 +174,46 @@ async function serializeOperation(vault: address, op: StrategyOperation): Promis
 	const [signer] = await ethers.getSigners()
 	const from = signer.address
 	switch (op["type"]) {
+		case 'aave-init': {
+			const impl = (await ethers.getContractFactory("AaveStrategy")).interface
+			return [{
+				position: AAVE_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("init", [op.category]),
+				info: "",
+			}]
+		}
+		case "aave-supply": {
+			const impl = (await ethers.getContractFactory("AaveStrategy")).interface
+			return [{
+				position: AAVE_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("supplyCollateral", [op.amount]),
+				info: "",
+			}]
+		}
+		case "aave-withdraw": {
+			const impl = (await ethers.getContractFactory("AaveStrategy")).interface
+			return [{
+				position: AAVE_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("withdrawCollateral", [op.amount]),
+				info: "",
+			}]
+		}
+		case "aave-borrow": {
+			const impl = (await ethers.getContractFactory("AaveStrategy")).interface
+			return [{
+				position: AAVE_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("borrowDebt", [op.token, op.amount]),
+				info: "",
+			}]
+		}
+		case "aave-repay": {
+			const impl = (await ethers.getContractFactory("AaveStrategy")).interface
+			return [{
+				position: AAVE_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("repayDebt", [op.token, op.amount]),
+				info: "",
+			}]
+		}
 		case "morpho-supply": {
 			const impl = (await ethers.getContractFactory("MorphoStrategy")).interface
 			return [{

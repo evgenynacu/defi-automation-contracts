@@ -2,11 +2,14 @@
 pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@aave/core-v3/contracts/interfaces/IPool.sol";
 import "../util/StorageUtil.sol";
 import {IPoolDataProvider} from "@aave/core-v3/contracts/interfaces/IPoolDataProvider.sol";
 
 contract AaveStrategy {
+    using SafeERC20 for IERC20;
+
     bytes32 private constant DATA_PROVIDER = "DATA_PROVIDER";
 
     IPool private immutable AAVE_POOL;
@@ -103,7 +106,7 @@ contract AaveStrategy {
     function _approveIfNeeded(address token, address spender, uint256 amount) internal {
         uint256 allowance = IERC20(token).allowance(address(this), spender);
         if (allowance < amount) {
-            IERC20(token).approve(spender, type(uint256).max);
+            IERC20(token).forceApprove(spender, type(uint256).max);
         }
     }
 }

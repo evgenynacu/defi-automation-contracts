@@ -16,9 +16,9 @@ export async function executeStrategy(vaultAddress: address, operations: Strateg
 		.sort((a, b) => a.result === b.result ? 0 : a.result > b.result ? -1 : 1
 		)
 	if (sorted.length > 0) {
-		console.log("swap faults: " + faults, "best: " + sorted[0].info + " with out " + sorted[0].result)
 		const url = `https://dashboard.tenderly.co/eugenenacu/project/simulator/new?stateOverrides=&from=${sender.address}&rawFunctionInput=${sorted[0].calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`
 		console.log("simulate: \"" + url + "\"")
+		console.log("swap faults: " + faults, "best: " + sorted[0].info + " with out " + sorted[0].result)
 		const bestOps = sorted[0].ops
 		await vault.rebalance(bestOps)
 	} else {
@@ -29,7 +29,7 @@ export async function executeStrategy(vaultAddress: address, operations: Strateg
 async function executeAndGetOut(from: string, vault: AutomatedVault, ops: OperationWithInfo[]): Promise<OutResult> {
 	const info = ops.map(it => it.info).join("")
 	const calldata = vault.interface.encodeFunctionData("rebalance", [ops])
-	if (info === "enso" || info === "pendle") {
+	if (info === "aaa") {
 		const vaultAddress = await vault.getAddress()
 		const url =	`https://dashboard.tenderly.co/eugenenacu/project/simulator/new?stateOverrides=&from=${from}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`
 		console.log(info, "testing url: \"" + url + "\" ")
