@@ -155,8 +155,8 @@ export type StrategyOperation =
 	| MorphoFlashLoanOperation
 	| AaveFlashLoanOperation
 
-export async function serializeOperations(vault: address, ops: StrategyOperation[]): Promise<OperationWithInfo[][]> {
-	const serializedOps = await Promise.all(ops.map(op => serializeOperation(vault, op)))
+export async function serializeOperations(from: address, vault: address, ops: StrategyOperation[]): Promise<OperationWithInfo[][]> {
+	const serializedOps = await Promise.all(ops.map(op => serializeOperation(from, vault, op)))
 	return crossJoin(serializedOps)
 }
 
@@ -166,13 +166,12 @@ export type OperationWithInfo = HasOperation.OperationStruct & {
 
 /**
  * Serialized op
+ * @param from who is sending the tx
  * @param vault vault which will execute any swap operation (needed to generate correct calldata for swapping)
  * @param op operation to serialize
  * @return Array of possible operations
  */
-async function serializeOperation(vault: address, op: StrategyOperation): Promise<OperationWithInfo[]> {
-	const [signer] = await ethers.getSigners()
-	const from = signer.address
+async function serializeOperation(from: address, vault: address, op: StrategyOperation): Promise<OperationWithInfo[]> {
 	switch (op["type"]) {
 		case 'aave-init': {
 			const impl = (await ethers.getContractFactory("AaveStrategy")).interface
@@ -280,7 +279,7 @@ async function serializeOperation(vault: address, op: StrategyOperation): Promis
 		}
 		case "morpho-flash-loan": {
 			const impl = (await ethers.getContractFactory("MorphoFlashLoanStrategy")).interface
-			const innerOperations = await Promise.all(op.innerOperations.map(it => serializeOperation(vault, it)))
+			const innerOperations = await Promise.all(op.innerOperations.map(it => serializeOperation(from, vault, it)))
 			const crossJoined = crossJoin(innerOperations)
 			return crossJoined.map(ops => ({
 				position: MORPHO_FLASH_LOAN_STRATEGY_INDEX,
@@ -290,7 +289,7 @@ async function serializeOperation(vault: address, op: StrategyOperation): Promis
 		}
 		case "aave-flash-loan": {
 			const impl = (await ethers.getContractFactory("AaveFlashLoanStrategy")).interface
-			const innerOperations = await Promise.all(op.innerOperations.map(it => serializeOperation(vault, it)))
+			const innerOperations = await Promise.all(op.innerOperations.map(it => serializeOperation(from, vault, it)))
 			const crossJoined = crossJoin(innerOperations)
 			return crossJoined.map(ops => ({
 				position: AAVE_FLASH_LOAN_STRATEGY_INDEX,
@@ -316,7 +315,7 @@ async function serializeOperation(vault: address, op: StrategyOperation): Promis
 		}
 		case "swap": {
 			const impl = (await ethers.getContractFactory("SwapStrategy")).interface
-			const quotes = await fetchAllQuotes(vault, op)
+			const quotes = await fetchAllQuotes(from, vault, op)
 			return quotes.map(quote => ({
 				position: SWAP_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("swap", [op.from, op.to, quote.to, quote.data]),
@@ -326,15 +325,14 @@ async function serializeOperation(vault: address, op: StrategyOperation): Promis
 	}
 }
 
-async function fetchAllQuotes(vaultAddress: address, op: SwapOperation) {
+async function fetchAllQuotes(from: address, vaultAddress: address, op: SwapOperation) {
 	const { chainId } = await ethers.provider.getNetwork()
-	const [signer] = await ethers.getSigners()
 	const fromToken = await ethers.getContractAt("ERC20", op.from)
 	const toToken = await ethers.getContractAt("ERC20", op.to)
 	const fromDecimals = Number(await fromToken.decimals())
 	const toDecimals = Number(await toToken.decimals())
 	return await getSwaps(
-		Number(chainId), vaultAddress, op.amount, op.from as address, op.to as address, signer.address as address, fromDecimals, toDecimals
+		Number(chainId), vaultAddress, op.amount, op.from as address, op.to as address, from, fromDecimals, toDecimals
 	)
 }
 

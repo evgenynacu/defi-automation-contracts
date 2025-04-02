@@ -1,0 +1,27 @@
+import { sleep } from "./sleep"
+
+export async function estimateOutput(waitTimeMs: number, fn: () => Promise<bigint>, intervalMs: number = 10000) {
+	const now = Date.now()
+	const maxTime = now + waitTimeMs
+
+	let minResult = BigInt(2) ** BigInt(256)
+	let maxResult = 0n
+	while (true) {
+		try {
+			const result = await fn()
+			if (result < minResult) {
+				minResult = result
+			}
+			if (result > maxResult) {
+				maxResult = result
+			}
+			console.log("min: " + minResult, "max: " + maxResult, "diff: " + Number(maxResult - minResult) / Number(maxResult))
+		} catch (e) {
+			console.warn("Unable to estimate", e)
+		}
+		if (Date.now() > maxTime) {
+			return
+		}
+		await sleep(intervalMs)
+	}
+}
