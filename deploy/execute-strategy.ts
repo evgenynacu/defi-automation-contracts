@@ -7,9 +7,14 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types'
 export async function executeStrategy(vaultAddress: address, operations: StrategyOperation[], estimateOnly: boolean = false) {
 	const from = await getSignerAddress()
 	if (estimateOnly) {
+		console.log("Estimating result only")
 		const { result } = await calculateResult(vaultAddress, from, operations)
 		return result
 	}
+	if (process.env.DEBUG_FROM) {
+		console.log("DEBUG_FROM is set, but not estimating")
+	}
+
 	const { result, info, ops, faults, calldata } = await calculateResult(vaultAddress, from, operations)
 
 	const [sender] = await ethers.getSigners()
@@ -48,11 +53,11 @@ async function calculateResult(vaultAddress: address, from: address, operations:
 	}
 }
 
-export async function getVaultAddress(hre: HardhatRuntimeEnvironment) {
-	if (process.env.DEBUG_VAULT) {
-		return process.env.DEBUG_VAULT as address
+export async function getVaultAddress(hre: HardhatRuntimeEnvironment, name = "AutomatedVault") {
+	if (process.env.VAULT) {
+		return process.env.VAULT as address
 	} else {
-		const deployment = await hre.deployments.getOrNull("AutomatedVault")
+		const deployment = await hre.deployments.getOrNull(name)
 		if (deployment === undefined || deployment === null) {
 			throw new Error("Vault not deployed")
 		}

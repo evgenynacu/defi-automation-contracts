@@ -3,6 +3,7 @@ import { DeployFunction } from 'hardhat-deploy/types'
 import { AAVE_POOL_ADDRESS_PROVIDER, MORPHO_BLUE } from "./addresses"
 import { ethers } from "hardhat"
 import { deployStrategies } from "./deploy-strategies"
+import { addressesEqual } from "./addresses-equal"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)
@@ -47,11 +48,6 @@ async function deployStrategy(hre: HardhatRuntimeEnvironment, strategyName: stri
 		args,
 		log: true,
 	})
-}
-
-function addressesEqual(a: string[], b: string[]): boolean {
-	if (a.length !== b.length) return false;
-	return a.every((val, index) => val.toLowerCase() === b[index].toLowerCase());
 }
 
 

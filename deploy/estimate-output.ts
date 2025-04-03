@@ -1,6 +1,8 @@
 import { sleep } from "./sleep"
 
 export async function estimateOutput(waitTimeMs: number, fn: () => Promise<bigint>, intervalMs: number = 10000) {
+	console.log("Estimating output")
+
 	const now = Date.now()
 	const maxTime = now + waitTimeMs
 
