@@ -19,7 +19,5 @@ export async function verifyAllowance(token: string, amount: bigint, vault: stri
 		}
 		const tx = await baseToken.approve(vault, ethers.MaxUint256)
 		await tx.wait()
-	} else {
-		console.log("Allowance is sufficient: ", allowance, "amount:", amount)
 	}
 }

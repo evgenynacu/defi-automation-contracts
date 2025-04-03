@@ -72,9 +72,7 @@ export async function depositToMorpho(
 
 async function verifyVaultAuthorized(morpho: MorphoBlue, vault: string) {
 	const signer = await getSignerAddress()
-	if (await morpho.isAuthorized(signer, vault)) {
-		console.log("Vault " + vault + " already has rights to manage caller's positions")
-	} else {
+	if (!(await morpho.isAuthorized(signer, vault))) {
 		if (process.env.DEBUG_FROM) {
 			throw new Error("DEBUG_FROM is set, but vault " + vault + " is not authorized")
 		}
