@@ -1,8 +1,7 @@
 import { ethers } from "hardhat"
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { MORPHO_BLUE } from "./addresses"
-import { executeStrategy, getSignerAddress } from "./execute-strategy"
-import { address } from "./types"
+import { executeStrategy, getSignerAddress, getVaultAddress } from "./execute-strategy"
 import { MorphoBlue } from "../typechain-types"
 import { verifyAllowance } from "./verify-allowance"
 import { ContractTransactionResponse } from "ethers"
@@ -30,19 +29,16 @@ export async function depositToMorpho(
 	leverage: number,
 	estimateOnly: boolean = false
 ): Promise<ContractTransactionResponse | bigint> {
-	const deployment = await hre.deployments.getOrNull("AutomatedVault")
-	if (deployment === undefined || deployment === null) {
-		throw new Error("Vault not deployed")
-	}
+	const vaultAddress = await getVaultAddress(hre)
 
 	const flashLoanAmount = amount * BigInt((leverage - 1) * 10000) / BigInt(10000)
 	const morpho = await ethers.getContractAt("MorphoBlue", MORPHO_BLUE)
 	const [loanToken, collateralToken] = await morpho.idToMarketParams(marketId)
 
-	await verifyVaultAuthorized(morpho, deployment.address)
-	await verifyAllowance(loanToken, amount, deployment.address)
+	await verifyVaultAuthorized(morpho, vaultAddress)
+	await verifyAllowance(loanToken, amount, vaultAddress)
 
-	return await executeStrategy(deployment.address as address, [
+	return await executeStrategy(vaultAddress, [
 		{
 			type: "erc20-transfer-from-caller",
 			token: loanToken,
@@ -77,10 +73,10 @@ export async function depositToMorpho(
 async function verifyVaultAuthorized(morpho: MorphoBlue, vault: string) {
 	const signer = await getSignerAddress()
 	if (await morpho.isAuthorized(signer, vault)) {
-		console.log("Vault already has rights to manage caller's positions")
+		console.log("Vault " + vault + " already has rights to manage caller's positions")
 	} else {
 		if (process.env.DEBUG_FROM) {
-			throw new Error("DEBUG_FROM is set, but vault is not authorized")
+			throw new Error("DEBUG_FROM is set, but vault " + vault + " is not authorized")
 		}
 		console.log("Enabling vault to manage caller's positions")
 		const tx = await morpho.setAuthorization(vault, true)

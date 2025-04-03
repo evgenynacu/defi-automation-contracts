@@ -1,12 +1,17 @@
 import { ethers } from "hardhat"
 import { USDT_ADDRESS } from "./addresses"
+import { getSignerAddress } from "./execute-strategy"
 
 export async function verifyAllowance(token: string, amount: bigint, vault: string) {
-	const [signer] = await ethers.getSigners()
+	const from = await getSignerAddress()
 
 	const baseToken = await ethers.getContractAt("IERC20", token)
-	const allowance = await baseToken.allowance(signer.address, vault)
+	const allowance = await baseToken.allowance(from, vault)
 	if (allowance < amount) {
+		if (process.env.DEBUG_FROM) {
+			throw new Error("DEBUG_FROM is set, but vault " + vault + " is not authorized")
+		}
+
 		console.log("Allowing to spend base token")
 		if (token === USDT_ADDRESS) {
 			const tx = await baseToken.approve(vault, 0)
