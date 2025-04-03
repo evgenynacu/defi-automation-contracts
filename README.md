@@ -19,6 +19,7 @@ Install frame.sh wallet, set it up.
 ## How-to deploy the contract
 1. npm install
 2. 'npx hardhat deploy --network mainnet_universal --tags deploy-new-vault-proxy'. This will deploy proxy contract or update the code and update strategies
+3. instead of setting vault in each call you can set it in .env file. Just set VAULT=<vault_address>
 
 ## How-to deposit
 
