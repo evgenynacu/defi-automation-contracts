@@ -7,7 +7,6 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types'
 export async function executeStrategy(vaultAddress: address, operations: StrategyOperation[], estimateOnly: boolean = false) {
 	const from = await getSignerAddress()
 	if (estimateOnly) {
-		console.log("Estimating result only")
 		const { result } = await calculateResult(vaultAddress, from, operations)
 		return result
 	}
