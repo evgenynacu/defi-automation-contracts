@@ -1,6 +1,7 @@
 import { ISwapProvider } from "./ISwapProvider"
 import { ProviderConfig, SwapParams, SwapResult } from "./types"
 import { address } from "../../types"
+import { MAX_SLIPPAGE_BPS } from "./config"
 
 abstract class IcarusProvider implements ISwapProvider {
   protected constructor(
@@ -22,7 +23,7 @@ abstract class IcarusProvider implements ISwapProvider {
       "inTokenAddress": params.fromToken,
       "outTokenAddress": params.toToken,
       "isExactIn": true,
-      "slippage": 100, // Icarus expects slippage in basis points
+      "slippage": MAX_SLIPPAGE_BPS, // Icarus expects slippage in basis points
       "inTokenAmount": formatAmount(params.swapAmount, params.decimalsIn),
     }
 

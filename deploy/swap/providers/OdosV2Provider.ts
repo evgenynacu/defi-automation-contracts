@@ -1,6 +1,7 @@
 import { ISwapProvider } from "./ISwapProvider"
 import { ProviderConfig, SwapParams, SwapResult } from "./types"
 import { address } from "../../types"
+import { MAX_SLIPPAGE_BPS } from "./config"
 
 export class OdosV2Provider implements ISwapProvider {
   public getConfig(): ProviderConfig {
@@ -53,7 +54,7 @@ export class OdosV2Provider implements ISwapProvider {
           "tokenAddress": params.toToken,
         }
       ],
-      "slippageLimitPercent": 0.5,
+      "slippageLimitPercent": MAX_SLIPPAGE_BPS / 100,
       "sourceBlacklist": [],
       "sourceWhitelist": [],
       "userAddr": params.vault

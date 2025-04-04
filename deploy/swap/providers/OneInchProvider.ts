@@ -3,6 +3,7 @@ import { ProviderConfig, SwapParams, SwapResult } from "./types"
 import { address } from "../../types"
 import process from "process"
 import { sleep } from "../../sleep"
+import { MAX_SLIPPAGE_BPS } from "./config"
 
 export class OneInchProvider implements ISwapProvider {
   private static lastRequest: number = 0
@@ -22,7 +23,7 @@ export class OneInchProvider implements ISwapProvider {
       await sleep(OneInchProvider.minTime - now + OneInchProvider.lastRequest)
     }
 
-    const url = `https://api.1inch.dev/swap/v6.0/${params.chainId}/swap?src=${this.toOneInch(params.fromToken)}&dst=${this.toOneInch(params.toToken)}&amount=${params.swapAmount.toString()}&from=${params.vault}&origin=${params.txOrigin}&slippage=${1}&disableEstimate=${true}`
+    const url = `https://api.1inch.dev/swap/v6.0/${params.chainId}/swap?src=${this.toOneInch(params.fromToken)}&dst=${this.toOneInch(params.toToken)}&amount=${params.swapAmount.toString()}&from=${params.vault}&origin=${params.txOrigin}&slippage=${MAX_SLIPPAGE_BPS/100}&disableEstimate=${true}`
     const res = await fetch(url, { headers: { "Authorization": "Bearer " + process.env.ONEINCH_KEY }})
     OneInchProvider.lastRequest = Date.now()
 

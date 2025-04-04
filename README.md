@@ -32,3 +32,10 @@ Install frame.sh wallet, set it up.
 1. Prepare withdraw file. Copy and change withdraw file (choose file based on lending protocol used)
 2. Choose correct tag, test withdrawal with command: DEBUG_ESTIMATE=86400 VAULT=<vault_address> npx hardhat deploy --network mainnet_universal --tags withdraw-sUSDS-USDT
 3. Withdraw with command VAULT=<vault_address> npx hardhat deploy --network mainnet_universal --tags withdraw-sUSDS-USDT
+
+## Configuration env variables
+
+VAULT - overwrite vault address
+DEBUG_FROM - overwrite tx sender. txs can't be sent if specified. use just for estimation
+DEBUG_CALLDATA - set if you want to check tenderly for specific exchange (odos-v2, enso etc.)
+DEBUG_ESTIMATE - time to monitor output for the strategy (in seconds). In the console it will print timestamp and value for future analysis

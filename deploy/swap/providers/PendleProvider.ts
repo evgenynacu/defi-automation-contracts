@@ -1,6 +1,7 @@
 import { ISwapProvider } from "./ISwapProvider"
 import { ProviderConfig, SwapParams, SwapResult } from "./types"
 import { address } from "../../types"
+import { MAX_SLIPPAGE_BPS } from "./config"
 
 export class PendleProvider implements ISwapProvider {
 	getConfig(): ProviderConfig {
@@ -16,7 +17,7 @@ export class PendleProvider implements ISwapProvider {
 			throw new Error("No pendle market found")
 		}
 
-		const url = `https://api-v2.pendle.finance/core/v1/sdk/${params.chainId}/markets/${market}/swap?receiver=${params.vault}&slippage=0.0005&enableAggregator=true&tokenIn=${params.fromToken}&tokenOut=${params.toToken}&amountIn=${params.swapAmount.toString()}`
+		const url = `https://api-v2.pendle.finance/core/v1/sdk/${params.chainId}/markets/${market}/swap?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&tokenIn=${params.fromToken}&tokenOut=${params.toToken}&amountIn=${params.swapAmount.toString()}`
 		const res = await fetch(url)
 		if (res.status !== 200) {
 			throw new Error("Failed to fetch quote " + await res.text())

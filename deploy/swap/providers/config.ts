@@ -1,0 +1,1 @@
+export const MAX_SLIPPAGE_BPS = process.env.MAX_SLIPPAGE_BPS ? parseInt(process.env.MAX_SLIPPAGE_BPS) : 1

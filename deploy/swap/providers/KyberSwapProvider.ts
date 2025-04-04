@@ -1,6 +1,7 @@
 import { ISwapProvider } from "./ISwapProvider"
 import { ProviderConfig, SwapParams, SwapResult } from "./types"
 import { address } from "../../types"
+import { MAX_SLIPPAGE_BPS } from "./config"
 
 export class KyberSwapProvider implements ISwapProvider {
 	getConfig(): ProviderConfig {
@@ -34,7 +35,7 @@ export class KyberSwapProvider implements ISwapProvider {
 				routeSummary: routeData.data.routeSummary,
 				sender: vault,
 				recipient: vault,
-				slippageTolerance: 20,
+				slippageTolerance: MAX_SLIPPAGE_BPS,
 			}),
 		});
 		const buildData: BuildResponse = await buildRresponse.json();

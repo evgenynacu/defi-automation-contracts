@@ -17,7 +17,8 @@ export async function estimateOutput(waitTimeMs: number, fn: () => Promise<bigin
 			if (result > maxResult) {
 				maxResult = result
 			}
-			console.log("min: " + minResult, "max: " + maxResult, "diff: " + Number(maxResult - minResult) / Number(maxResult))
+			console.log(Math.floor(Date.now() / 1000) + "," + result)
+			// console.log("current: " + result, "min: " + minResult, "max: " + maxResult, "diff: " + Number(maxResult - minResult) / Number(maxResult))
 		} catch (e) {
 			console.warn("Unable to estimate", e)
 		}
