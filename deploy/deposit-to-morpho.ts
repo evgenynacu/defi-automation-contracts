@@ -37,6 +37,7 @@ export async function depositToMorpho(
 
 	await verifyVaultAuthorized(morpho, vaultAddress)
 	await verifyAllowance(loanToken, amount, vaultAddress)
+	console.log("total new debt", flashLoanAmount + amount)
 
 	return await executeStrategy(vaultAddress, [
 		{
