@@ -1,7 +1,7 @@
 import { HasOperation } from "../typechain-types/contracts/vault/AutomatedVault"
 import { ethers } from "hardhat"
 import { address } from "./types"
-import { getSwaps } from "./swap/swap"
+import { getSwaps } from "../common/swap/swap"
 
 export const ERC20_STRATEGY_INDEX = 0
 export const SWAP_STRATEGY_INDEX = 1

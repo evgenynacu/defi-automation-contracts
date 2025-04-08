@@ -1,6 +1,6 @@
 import { ISwapProvider } from "./ISwapProvider"
 import { ProviderConfig, SwapParams, SwapResult } from "./types"
-import { address } from "../../types"
+import { address } from "../../../deploy/types"
 import { MAX_SLIPPAGE_BPS } from "./config"
 
 export class KyberSwapProvider implements ISwapProvider {

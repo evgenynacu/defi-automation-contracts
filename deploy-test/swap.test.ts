@@ -2,10 +2,10 @@ import { ethers } from "hardhat"
 import { CURVE_USD0_USD0PP, EZETH_ADDRESS, WETH_ADDRESS } from "../deploy/addresses"
 import { address } from "../deploy/types"
 import { expect } from "chai"
-import { ProviderRegistry } from "../deploy/swap/providers/ProviderRegistry"
-import { SwapResult } from "../deploy/swap/providers/types"
-import { SwapProviderFacade } from "../deploy/swap/providers/SwapProviderFacade"
-import { PendleProvider } from "../deploy/swap/providers/PendleProvider"
+import { ProviderRegistry } from "../common/swap/providers/ProviderRegistry"
+import { SwapResult } from "../common/swap/providers/types"
+import { SwapProviderFacade } from "../common/swap/providers/SwapProviderFacade"
+import { PendleProvider } from "../common/swap/providers/PendleProvider"
 
 describe("SwapProvider", () => {
 	it("should allow to sell PT", async () => {

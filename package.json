@@ -3,6 +3,8 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-network-helpers": "^1.0.11",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
     "dotenv": "^16.0.3",
     "hardhat": "^2.22.8",
     "hardhat-deploy": "^0.12.4",
@@ -13,10 +15,15 @@
   "dependencies": {
     "@aave/core-v3": "^1.19.3",
     "@openzeppelin/contracts-upgradeable": "^5.1.0",
-    "@uniswap/v3-core": "^1.0.2-solc-0.8-simulate"
+    "@uniswap/v3-core": "^1.0.2-solc-0.8-simulate",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "express-async-handler": "^1.2.0"
   },
   "scripts": {
     "build": "hardhat compile",
+    "build-ts": "tsc",
+    "server": "exec node ./dist/server/index.js",
     "clean": "hardhat clean",
     "test": "hardhat test",
     "test-deploy": "hardhat test deploy-test/*.test.ts --network mainnet_universal",

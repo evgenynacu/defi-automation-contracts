@@ -1,7 +1,7 @@
 import { ISwapProvider } from "./ISwapProvider"
 import { ProviderConfig, SwapParams, SwapResult } from "./types"
-import { address } from "../../types"
-import { sleep } from "../../sleep"
+import { address } from "../../../deploy/types"
+import { sleep } from "../../../deploy/sleep"
 import { MAX_SLIPPAGE_BPS } from "./config"
 
 // Doc: https://app.swaggerhub.com/apis/sushi-labs/sushi/5.0.0#/swap/swap

@@ -1,4 +1,4 @@
-import { address } from "../../types"
+import { address } from "../../../deploy/types"
 
 export type SwapParams = {
   chainId: number

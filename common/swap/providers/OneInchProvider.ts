@@ -1,8 +1,8 @@
 import { ISwapProvider } from "./ISwapProvider"
 import { ProviderConfig, SwapParams, SwapResult } from "./types"
-import { address } from "../../types"
+import { address } from "../../../deploy/types"
 import process from "process"
-import { sleep } from "../../sleep"
+import { sleep } from "../../../deploy/sleep"
 import { MAX_SLIPPAGE_BPS } from "./config"
 
 export class OneInchProvider implements ISwapProvider {
