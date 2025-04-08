@@ -1,26 +1,20 @@
-import { ethers } from "hardhat"
-import { HardhatRuntimeEnvironment } from 'hardhat/types'
-import { MORPHO_BLUE } from "./addresses"
-import { executeStrategy, getSignerAddress, getVaultAddress } from "./execute-strategy"
-import { ContractTransactionResponse } from "ethers"
+import { MORPHO_BLUE } from "../deploy/addresses"
+import { StrategyExecutor } from "./calculate-result"
+import { MorphoBlue__factory } from "../typechain-types"
+import { MaxUint256 } from "ethers"
 
 const multiplier = 1000000
 
-export async function withdrawFromMorpho(hre: HardhatRuntimeEnvironment, marketId: string, share: number, estimateOnly: true): Promise<bigint>
-export async function withdrawFromMorpho(hre: HardhatRuntimeEnvironment, marketId: string, share: number, estimateOnly: false): Promise<ContractTransactionResponse>
-
 /**
  * Withdraw part of the morpho position
- * @param hre
+ * @param ex executor
  * @param marketId
  * @param share number from 0 to 1 (part of the position to withdraw)
- * @param estimateOnly
  */
-export async function withdrawFromMorpho(hre: HardhatRuntimeEnvironment, marketId: string, share: number, estimateOnly: boolean) {
-	const from = await getSignerAddress()
-	const vaultAddress = await getVaultAddress(hre)
+export async function withdrawFromMorpho<T>(ex: StrategyExecutor<T>, marketId: string, share: number): Promise<T> {
+	const from = await ex.getFrom()
 
-	const morpho = await ethers.getContractAt("MorphoBlue", MORPHO_BLUE)
+	const morpho = MorphoBlue__factory.connect(MORPHO_BLUE, ex.runner)
 	const params = await morpho.idToMarketParams(marketId)
 	const market = await morpho.market(marketId)
 	const pos = await morpho.position(marketId, from)
@@ -36,7 +30,7 @@ export async function withdrawFromMorpho(hre: HardhatRuntimeEnvironment, marketI
 
 	console.log("debt shares to withdraw: ", debtSharesToWithdraw, "collateral to withdraw: ", collateralToWithdraw)
 
-	return await executeStrategy(vaultAddress, [
+	return ex.execute([
 		{
 			type: "morpho-flash-loan",
 			token: params.loanToken,
@@ -64,12 +58,7 @@ export async function withdrawFromMorpho(hre: HardhatRuntimeEnvironment, marketI
 		{
 			type: "erc20-transfer-to-caller",
 			token: params.loanToken,
-			amount: ethers.MaxUint256
+			amount: MaxUint256
 		}
-	], estimateOnly)
+	])
 }
-
-//7303183318456727147208
-//7303183318456727147208
-
-//7303183318456728000000

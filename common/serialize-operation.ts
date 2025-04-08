@@ -1,7 +1,14 @@
 import { HasOperation } from "../typechain-types/contracts/vault/AutomatedVault"
-import { ethers } from "hardhat"
+import { type ContractRunner } from "ethers";
 import { address } from "./types"
-import { getSwaps } from "../common/swap/swap"
+import { getSwaps } from "./swap/swap"
+import {
+	AaveFlashLoanStrategy__factory,
+	AaveStrategy__factory,
+	CompoundV3Strategy__factory, ERC20__factory, Erc20TransferStrategy__factory,
+	MorphoFlashLoanStrategy__factory,
+	MorphoStrategy__factory, SwapStrategy__factory
+} from "../typechain-types"
 
 export const ERC20_STRATEGY_INDEX = 0
 export const SWAP_STRATEGY_INDEX = 1
@@ -155,8 +162,8 @@ export type StrategyOperation =
 	| MorphoFlashLoanOperation
 	| AaveFlashLoanOperation
 
-export async function serializeOperations(from: address, vault: address, ops: StrategyOperation[]): Promise<OperationWithInfo[][]> {
-	const serializedOps = await Promise.all(ops.map(op => serializeOperation(from, vault, op)))
+export async function serializeOperations(runner: ContractRunner, from: address, vault: address, ops: StrategyOperation[]): Promise<OperationWithInfo[][]> {
+	const serializedOps = await Promise.all(ops.map(op => serializeOperation(runner, from, vault, op)))
 	return crossJoin(serializedOps)
 }
 
@@ -166,15 +173,16 @@ export type OperationWithInfo = HasOperation.OperationStruct & {
 
 /**
  * Serialized op
+ * @param runner ethers runner
  * @param from who is sending the tx
  * @param vault vault which will execute any swap operation (needed to generate correct calldata for swapping)
  * @param op operation to serialize
  * @return Array of possible operations
  */
-async function serializeOperation(from: address, vault: address, op: StrategyOperation): Promise<OperationWithInfo[]> {
+async function serializeOperation(runner: ContractRunner, from: address, vault: address, op: StrategyOperation): Promise<OperationWithInfo[]> {
 	switch (op["type"]) {
 		case 'aave-init': {
-			const impl = (await ethers.getContractFactory("AaveStrategy")).interface
+			const impl = AaveStrategy__factory.createInterface()
 			return [{
 				position: AAVE_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("init", [op.category]),
@@ -182,7 +190,7 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}]
 		}
 		case "aave-supply": {
-			const impl = (await ethers.getContractFactory("AaveStrategy")).interface
+			const impl = AaveStrategy__factory.createInterface()
 			return [{
 				position: AAVE_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("supplyCollateral", [op.amount]),
@@ -190,7 +198,7 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}]
 		}
 		case "aave-withdraw": {
-			const impl = (await ethers.getContractFactory("AaveStrategy")).interface
+			const impl = AaveStrategy__factory.createInterface()
 			return [{
 				position: AAVE_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("withdrawCollateral", [op.amount]),
@@ -198,7 +206,7 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}]
 		}
 		case "aave-borrow": {
-			const impl = (await ethers.getContractFactory("AaveStrategy")).interface
+			const impl = AaveStrategy__factory.createInterface()
 			return [{
 				position: AAVE_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("borrowDebt", [op.token, op.amount]),
@@ -206,7 +214,7 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}]
 		}
 		case "aave-repay": {
-			const impl = (await ethers.getContractFactory("AaveStrategy")).interface
+			const impl = AaveStrategy__factory.createInterface()
 			return [{
 				position: AAVE_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("repayDebt", [op.token, op.amount]),
@@ -214,7 +222,7 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}]
 		}
 		case "morpho-supply": {
-			const impl = (await ethers.getContractFactory("MorphoStrategy")).interface
+			const impl = MorphoStrategy__factory.createInterface()
 			return [{
 				position: MORPHO_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("supplyCollateral", [op.marketId, from, op.amount]),
@@ -222,7 +230,7 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}]
 		}
 		case "morpho-withdraw": {
-			const impl = (await ethers.getContractFactory("MorphoStrategy")).interface
+			const impl = MorphoStrategy__factory.createInterface()
 			return [{
 				position: MORPHO_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("withdrawCollateral", [op.marketId, from, op.amount]),
@@ -230,7 +238,7 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}]
 		}
 		case "morpho-borrow": {
-			const impl = (await ethers.getContractFactory("MorphoStrategy")).interface
+			const impl = MorphoStrategy__factory.createInterface()
 			return [{
 				position: MORPHO_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("borrowFromMarket", [op.marketId, from, op.amount]),
@@ -238,7 +246,7 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}]
 		}
 		case "morpho-repay": {
-			const impl = (await ethers.getContractFactory("MorphoStrategy")).interface
+			const impl = MorphoStrategy__factory.createInterface()
 			return [{
 				position: MORPHO_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("repayDebt", [op.marketId, from, op.assets, op.shares]),
@@ -246,7 +254,7 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}]
 		}
 		case "compound-v3-supply": {
-			const impl = (await ethers.getContractFactory("CompoundV3Strategy")).interface
+			const impl = CompoundV3Strategy__factory.createInterface()
 			return [{
 				position: COMPOUND_V3_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("supplyCollateral", [op.comet, from, op.token, op.amount]),
@@ -254,7 +262,7 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}]
 		}
 		case "compound-v3-withdraw": {
-			const impl = (await ethers.getContractFactory("CompoundV3Strategy")).interface
+			const impl = CompoundV3Strategy__factory.createInterface()
 			return [{
 				position: COMPOUND_V3_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("withdrawCollateral", [op.comet, from, op.token, op.amount]),
@@ -262,7 +270,7 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}]
 		}
 		case "compound-v3-borrow": {
-			const impl = (await ethers.getContractFactory("CompoundV3Strategy")).interface
+			const impl = CompoundV3Strategy__factory.createInterface()
 			return [{
 				position: COMPOUND_V3_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("borrowBaseToken", [op.comet, from, op.amount]),
@@ -270,7 +278,7 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}]
 		}
 		case "compound-v3-repay": {
-			const impl = (await ethers.getContractFactory("CompoundV3Strategy")).interface
+			const impl = CompoundV3Strategy__factory.createInterface()
 			return [{
 				position: COMPOUND_V3_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("repayBaseToken", [op.comet, from, op.amount]),
@@ -278,8 +286,8 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}]
 		}
 		case "morpho-flash-loan": {
-			const impl = (await ethers.getContractFactory("MorphoFlashLoanStrategy")).interface
-			const innerOperations = await Promise.all(op.innerOperations.map(it => serializeOperation(from, vault, it)))
+			const impl = MorphoFlashLoanStrategy__factory.createInterface()
+			const innerOperations = await Promise.all(op.innerOperations.map(it => serializeOperation(runner, from, vault, it)))
 			const crossJoined = crossJoin(innerOperations)
 			return crossJoined.map(ops => ({
 				position: MORPHO_FLASH_LOAN_STRATEGY_INDEX,
@@ -288,8 +296,8 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}))
 		}
 		case "aave-flash-loan": {
-			const impl = (await ethers.getContractFactory("AaveFlashLoanStrategy")).interface
-			const innerOperations = await Promise.all(op.innerOperations.map(it => serializeOperation(from, vault, it)))
+			const impl = AaveFlashLoanStrategy__factory.createInterface()
+			const innerOperations = await Promise.all(op.innerOperations.map(it => serializeOperation(runner, from, vault, it)))
 			const crossJoined = crossJoin(innerOperations)
 			return crossJoined.map(ops => ({
 				position: AAVE_FLASH_LOAN_STRATEGY_INDEX,
@@ -298,7 +306,7 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}))
 		}
 		case "erc20-transfer-from-caller": {
-			const impl = (await ethers.getContractFactory("Erc20TransferStrategy")).interface
+			const impl = Erc20TransferStrategy__factory.createInterface()
 			return [{
 				position: ERC20_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("transferFrom", [op.token, from, op.amount]),
@@ -306,7 +314,7 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}]
 		}
 		case "erc20-transfer-to-caller": {
-			const impl = (await ethers.getContractFactory("Erc20TransferStrategy")).interface
+			const impl = Erc20TransferStrategy__factory.createInterface()
 			return [{
 				position: ERC20_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("transferTo", [op.token, from, op.amount]),
@@ -314,8 +322,8 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 			}]
 		}
 		case "swap": {
-			const impl = (await ethers.getContractFactory("SwapStrategy")).interface
-			const quotes = await fetchAllQuotes(from, vault, op)
+			const impl = SwapStrategy__factory.createInterface()
+			const quotes = await fetchAllQuotes(runner, from, vault, op)
 			return quotes.map(quote => ({
 				position: SWAP_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("swap", [op.from, op.to, quote.to, quote.data]),
@@ -325,10 +333,10 @@ async function serializeOperation(from: address, vault: address, op: StrategyOpe
 	}
 }
 
-async function fetchAllQuotes(from: address, vaultAddress: address, op: SwapOperation) {
-	const { chainId } = await ethers.provider.getNetwork()
-	const fromToken = await ethers.getContractAt("ERC20", op.from)
-	const toToken = await ethers.getContractAt("ERC20", op.to)
+async function fetchAllQuotes(runner: ContractRunner, from: address, vaultAddress: address, op: SwapOperation) {
+	const { chainId } = await runner.provider!.getNetwork()
+	const fromToken = ERC20__factory.connect(op.from, runner)
+	const toToken = ERC20__factory.connect(op.to, runner)
 	const fromDecimals = Number(await fromToken.decimals())
 	const toDecimals = Number(await toToken.decimals())
 	return await getSwaps(

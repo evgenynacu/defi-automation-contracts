@@ -1,6 +1,6 @@
 import { ISwapProvider } from "./ISwapProvider"
 import { ProviderConfig, SwapParams, SwapResult } from "./types"
-import { address } from "../../../deploy/types"
+import { address } from "../../types"
 import { MAX_SLIPPAGE_BPS } from "./config"
 
 abstract class IcarusProvider implements ISwapProvider {

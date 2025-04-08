@@ -1,6 +1,6 @@
 import { ethers } from "hardhat"
 import { CURVE_USD0_USD0PP, EZETH_ADDRESS, WETH_ADDRESS } from "../deploy/addresses"
-import { address } from "../deploy/types"
+import { address } from "../common/types"
 import { expect } from "chai"
 import { ProviderRegistry } from "../common/swap/providers/ProviderRegistry"
 import { SwapResult } from "../common/swap/providers/types"

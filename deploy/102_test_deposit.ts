@@ -3,7 +3,7 @@ import { DeployFunction } from 'hardhat-deploy/types'
 import { executeStrategy } from "./execute-strategy"
 import { COMET_WETH_ADDRESS, EZETH_ADDRESS, WETH_ADDRESS } from "./addresses"
 import { ethers } from "hardhat"
-import { address } from "./types"
+import { address } from "../common/types"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)

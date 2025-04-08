@@ -1,6 +1,6 @@
 import { SwapProviderFacade, SwapQuote } from "./providers/SwapProviderFacade"
 import { ProviderRegistry } from "./providers/ProviderRegistry"
-import { address } from "../../deploy/types"
+import { address } from "../types"
 
 // Initialize providers
 ProviderRegistry.initializeDefaultProviders()

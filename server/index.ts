@@ -1,6 +1,8 @@
 import dotenv from "dotenv"
 import express, { Application } from "express"
 import cors from "cors"
+import { ethers } from "ethers"
+import { AutomatedVault__factory } from "../typechain-types"
 
 dotenv.config();
 

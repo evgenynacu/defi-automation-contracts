@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
-import { withdrawFromMorpho } from "./withdraw-from-morpho"
+import { withdrawFromMorpho } from "../common/withdraw-from-morpho"
 import { estimateOutput } from "./estimate-output"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {

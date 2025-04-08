@@ -1,7 +1,7 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
 import { ethers } from "hardhat"
-import { withdrawFromMorpho } from "./withdraw-from-morpho"
+import { withdrawFromMorpho } from "../common/withdraw-from-morpho"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`withdrawing on network ${hre.network.name}`)

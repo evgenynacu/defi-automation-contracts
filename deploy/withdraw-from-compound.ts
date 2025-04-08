@@ -1,7 +1,7 @@
 import { ethers } from "hardhat"
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { executeStrategy, getSignerAddress, getVaultAddress } from "./execute-strategy"
-import { address } from "./types"
+import { address } from "../common/types"
 import { ContractTransactionResponse } from "ethers"
 
 const multiplier = 10000000
