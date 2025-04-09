@@ -21,9 +21,11 @@
     "express-async-handler": "^1.2.0"
   },
   "scripts": {
-    "build": "hardhat compile",
+    "build": "npm run build-contracts && npm run build-ts",
+    "build-contracts": "hardhat compile",
     "build-ts": "tsc",
     "server": "exec node ./dist/server/index.js",
+    "server-ts": "ts-node server/index.ts",
     "clean": "hardhat clean",
     "test": "hardhat test",
     "test-deploy": "hardhat test deploy-test/*.test.ts --network mainnet_universal",
