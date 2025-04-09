@@ -13,6 +13,7 @@
     "hardhat.config.ts",
     "./server",
     "./common",
+    "./cron",
     "./deploy",
     "./deploy-test",
     "./test",

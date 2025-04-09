@@ -5,6 +5,7 @@
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
+    "@types/node-cron": "^3.0.11",
     "dotenv": "^16.0.3",
     "hardhat": "^2.22.8",
     "hardhat-deploy": "^0.12.4",
@@ -18,14 +19,17 @@
     "@uniswap/v3-core": "^1.0.2-solc-0.8-simulate",
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "express-async-handler": "^1.2.0"
+    "express-async-handler": "^1.2.0",
+    "node-cron": "^3.0.3"
   },
   "scripts": {
     "build": "npm run build-contracts && npm run build-ts",
     "build-contracts": "hardhat compile",
     "build-ts": "tsc",
     "server": "exec node ./dist/server/index.js",
-    "server-ts": "ts-node server/index.ts",
+    "server:dev": "ts-node server/index.ts",
+    "cron": "exec node ./dist/cron/index.js",
+    "cron:dev": "ts-node cron/index.ts",
     "clean": "hardhat clean",
     "test": "hardhat test",
     "test-deploy": "hardhat test deploy-test/*.test.ts --network mainnet_universal",
