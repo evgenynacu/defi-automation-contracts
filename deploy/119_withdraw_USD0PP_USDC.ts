@@ -1,17 +1,12 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
 import { withdrawFromMorpho } from "../common/withdraw-from-morpho"
-import { estimateOutput } from "./estimate-output"
+import { sendOrEstimate } from "./send-or-estimate"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`withdrawing on network ${hre.network.name}`)
 
-	if (process.env.DEBUG_ESTIMATE) {
-		const debugEstimate = parseInt(process.env.DEBUG_ESTIMATE)
-		await estimateOutput(debugEstimate * 1000, () => withdrawFromMorpho(hre, "0x1eda1b67414336cab3914316cb58339ddaef9e43f939af1fed162a989c98bc20", 1, true))
-	} else {
-		await withdrawFromMorpho(hre, "0x1eda1b67414336cab3914316cb58339ddaef9e43f939af1fed162a989c98bc20", 1, false)
-	}
+	await sendOrEstimate(hre, ex => withdrawFromMorpho(ex, "0x1eda1b67414336cab3914316cb58339ddaef9e43f939af1fed162a989c98bc20", 1))
 }
 // noinspection JSUnusedGlobalSymbols
 export default func

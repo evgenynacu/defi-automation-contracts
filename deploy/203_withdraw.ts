@@ -2,17 +2,12 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
 import { withdrawFromAave } from "./withdraw-from-aave"
 import { sUSDe_ADDRESS, USDT_ADDRESS } from "./addresses"
-import { estimateOutput } from "./estimate-output"
+import { sendOrEstimate } from "./send-or-estimate"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`withdrawing on network ${hre.network.name}`)
 
-	if (process.env.DEBUG_ESTIMATE) {
-		const debugEstimate = parseInt(process.env.DEBUG_ESTIMATE)
-		await estimateOutput(debugEstimate * 1000, () => withdrawFromAave(hre, sUSDe_ADDRESS, USDT_ADDRESS, 1, true))
-	} else {
-		await withdrawFromAave(hre, sUSDe_ADDRESS, USDT_ADDRESS, 1, false)
-	}
+	await sendOrEstimate(hre, ex => withdrawFromAave(ex, sUSDe_ADDRESS, USDT_ADDRESS, 1), "AaveVaultProxy")
 }
 
 // noinspection JSUnusedGlobalSymbols

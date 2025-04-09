@@ -22,8 +22,8 @@ export async function executeStrategy(vaultAddress: address, operations: Strateg
 	return await vault.rebalance(ops)
 }
 
-export async function createSendExecutor(hre: HardhatRuntimeEnvironment): Promise<StrategyExecutor<ContractTransactionResponse>> {
-	const vault = await getVaultAddress(hre)
+export async function createSendExecutor(hre: HardhatRuntimeEnvironment, name = "AutomatedVault"): Promise<StrategyExecutor<ContractTransactionResponse>> {
+	const vault = await getVaultAddress(hre, name)
 	const [signer] = await ethers.getSigners()
 	return {
 		runner: signer,

@@ -64,7 +64,7 @@ async function callAndGetOut(runner: ContractRunner, from: string, vault: Automa
 	}
 }
 
-type CalculateResult = Omit<OutOkResult, "ok"> & {
+export type CalculateResult = Omit<OutOkResult, "ok"> & {
 	faults: string[]
 }
 

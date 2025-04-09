@@ -1,35 +1,17 @@
 import { ethers } from "hardhat"
-import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { MORPHO_BLUE } from "./addresses"
-import { executeStrategy, getSignerAddress, getVaultAddress } from "./execute-strategy"
+import { getSignerAddress } from "./execute-strategy"
 import { MorphoBlue } from "../typechain-types"
 import { verifyAllowance } from "./verify-allowance"
-import { ContractTransactionResponse } from "ethers"
+import { StrategyExecutor } from "../common/calculate-result"
 
-export async function depositToMorpho(
-	hre: HardhatRuntimeEnvironment,
+export async function depositToMorpho<T>(
+	ex: StrategyExecutor<T>,
 	marketId: string,
 	amount: bigint,
-	leverage: number,
-	estimateOnly: true
-): Promise<bigint>
-
-export async function depositToMorpho(
-	hre: HardhatRuntimeEnvironment,
-	marketId: string,
-	amount: bigint,
-	leverage: number,
-	estimateOnly: false
-): Promise<ContractTransactionResponse>
-
-export async function depositToMorpho(
-	hre: HardhatRuntimeEnvironment,
-	marketId: string,
-	amount: bigint,
-	leverage: number,
-	estimateOnly: boolean = false
-): Promise<ContractTransactionResponse | bigint> {
-	const vaultAddress = await getVaultAddress(hre)
+	leverage: number
+): Promise<T> {
+	const vaultAddress = await ex.getVaultAddress()
 
 	const flashLoanAmount = amount * BigInt((leverage - 1) * 10000) / BigInt(10000)
 	const morpho = await ethers.getContractAt("MorphoBlue", MORPHO_BLUE)
@@ -39,7 +21,7 @@ export async function depositToMorpho(
 	await verifyAllowance(loanToken, amount, vaultAddress)
 	console.log("total new debt", flashLoanAmount + amount)
 
-	return await executeStrategy(vaultAddress, [
+	return ex.execute([
 		{
 			type: "erc20-transfer-from-caller",
 			token: loanToken,
@@ -68,7 +50,7 @@ export async function depositToMorpho(
 				}
 			]
 		}
-	], estimateOnly)
+	])
 }
 
 async function verifyVaultAuthorized(morpho: MorphoBlue, vault: string) {

@@ -1,42 +1,21 @@
 import { ethers } from "hardhat"
-import { HardhatRuntimeEnvironment } from 'hardhat/types'
-import { executeStrategy, getVaultAddress } from "./execute-strategy"
 import { verifyAllowance } from "./verify-allowance"
-import { ContractTransactionResponse } from "ethers"
+import { StrategyExecutor } from "../common/calculate-result"
 
-export async function depositToAave(
-	hre: HardhatRuntimeEnvironment,
+export async function depositToAave<T>(
+	ex: StrategyExecutor<T>,
 	amount: bigint,
 	collateralToken: string,
 	debtToken: string,
 	leverage: number,
-	onlyEstimate: false
-): Promise<ContractTransactionResponse>
-
-export async function depositToAave(
-	hre: HardhatRuntimeEnvironment,
-	amount: bigint,
-	collateralToken: string,
-	debtToken: string,
-	leverage: number,
-	onlyEstimate: true
-): Promise<bigint>
-
-export async function depositToAave(
-	hre: HardhatRuntimeEnvironment,
-	amount: bigint,
-	collateralToken: string,
-	debtToken: string,
-	leverage: number,
-	onlyEstimate: boolean = false
 ) {
-	const vaultAddress = await getVaultAddress(hre, "AaveVaultProxy")
+	const vaultAddress = await ex.getVaultAddress()
 
 	const flashLoanAmount = amount * BigInt((leverage - 1) * 10000) / BigInt(10000)
 
 	await verifyAllowance(debtToken, amount, vaultAddress)
 
-	return await executeStrategy(vaultAddress, [
+	return ex.execute([
 		{
 			type: "erc20-transfer-from-caller",
 			token: debtToken,
@@ -64,5 +43,5 @@ export async function depositToAave(
 				}
 			]
 		}
-	], onlyEstimate)
+	])
 }

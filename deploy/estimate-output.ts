@@ -1,6 +1,7 @@
 import { sleep } from "./sleep"
+import { CalculateResult } from "../common/calculate-result"
 
-export async function estimateOutput(waitTimeMs: number, fn: () => Promise<bigint>, intervalMs: number = 10000) {
+export async function estimateOutput(waitTimeMs: number, fn: () => Promise<CalculateResult>, intervalMs: number = 10000) {
 	console.log("Estimating output")
 
 	const now = Date.now()
@@ -10,7 +11,7 @@ export async function estimateOutput(waitTimeMs: number, fn: () => Promise<bigin
 	let maxResult = 0n
 	while (true) {
 		try {
-			const result = await fn()
+			const { result } = await fn()
 			if (result < minResult) {
 				minResult = result
 			}
