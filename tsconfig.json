@@ -12,6 +12,7 @@
   "include": [
     "hardhat.config.ts",
     "./server",
+    "./context",
     "./common",
     "./cron",
     "./deploy",
