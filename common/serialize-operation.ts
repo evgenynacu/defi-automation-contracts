@@ -172,7 +172,6 @@ export type OperationWithInfo = HasOperation.OperationStruct & {
 	info?: string,
 	in?: number,
 	out?: number,
-	rate?: number
 }
 
 /**
@@ -286,7 +285,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 				info: ops.map(it => it.info).join(""),
 				in: ops.map(it => it.in).find(it => it !== undefined),
 				out: ops.map(it => it.out).find(it => it !== undefined),
-				rate: ops.map(it => it.rate).find(it => it !== undefined),
 			}))
 		}
 		case "aave-flash-loan": {
@@ -299,7 +297,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 				info: ops.map(it => it.info).join(""),
 				in: ops.map(it => it.in).find(it => it !== undefined),
 				out: ops.map(it => it.out).find(it => it !== undefined),
-				rate: ops.map(it => it.rate).find(it => it !== undefined),
 			}))
 		}
 		case "erc20-transfer-from-caller": {
@@ -325,7 +322,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 				info: quote.ex,
 				in: quote.in,
 				out: quote.out,
-				rate: quote.rate
 			}))
 		}
 	}

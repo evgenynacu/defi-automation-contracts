@@ -1,4 +1,4 @@
-import { AAVE_DATA_PROVIDER } from "./addresses"
+import { AAVE_DATA_PROVIDER } from "../common/addresses"
 import { StrategyExecutor } from "../common/calculate-result"
 import { IPoolDataProvider__factory } from "../typechain-types"
 import { MaxUint256 } from "ethers"

@@ -1,7 +1,7 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
 import { executeStrategy } from "./execute-strategy"
-import { COMET_WETH_ADDRESS, EZETH_ADDRESS, WETH_ADDRESS } from "./addresses"
+import { COMET_WETH_ADDRESS, EZETH_ADDRESS, WETH_ADDRESS } from "../common/addresses"
 import { ethers } from "hardhat"
 import { address } from "../common/types"
 

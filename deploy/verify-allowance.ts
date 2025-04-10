@@ -1,5 +1,5 @@
 import { ethers } from "hardhat"
-import { USDT_ADDRESS } from "./addresses"
+import { USDT_ADDRESS } from "../common/addresses"
 import { getSignerAddress } from "./execute-strategy"
 
 export async function verifyAllowance(token: string, amount: bigint, vault: string) {

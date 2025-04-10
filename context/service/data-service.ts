@@ -9,44 +9,60 @@ export class DataService {
 	constructor(private readonly runner: ContractRunner) {
 	}
 
-	async getData(request: DataRequest): Promise<Omit<DataResult, "calldata" | "ops" | "result">> {
+	async getData(request: DataRequest): Promise<Omit<DataResult, "calldata" | "ops">> {
 		const executor = createCalculateExecutor(this.runner, request.vault, request.from)
-
-		const { calldata, ops, result, ...response } = await getData(executor, request)
-		return response
+		return getData(executor, request)
 	}
 }
 
 async function getData(executor: StrategyExecutor<CalculateResult>, request: DataRequest): Promise<DataResult> {
 	switch (request.type) {
 		case "morpho-withdraw": {
-			const result = await withdrawFromMorpho(executor, request.marketId, 1)
-			return {
-				id: `morpho-withdraw-${request.from}-${request.marketId}`,
-				...result
-			}
+			return toDataResult(
+				`morpho-withdraw-${request.from}-${request.marketId}`,
+				await withdrawFromMorpho(executor, request.marketId, 1)
+			)
 		}
 		case "aave-withdraw": {
-			const result = await withdrawFromAave(executor, request.collateralToken, request.debtToken, 1)
-			return {
-				id: `aave-withdraw-${request.vault}-${request.collateralToken}-${request.debtToken}`,
-				...result,
-			}
+			return toDataResult(
+				`aave-withdraw-${request.vault}-${request.collateralToken}-${request.debtToken}`,
+				await withdrawFromAave(executor, request.collateralToken, request.debtToken, 1)
+			)
 		}
 		case "compound-withdraw": {
-			const result = await withdrawFromCompound(executor, request.comet, request.collateralToken, 1)
-			return {
-				id: `compound-withdraw-${request.from}-${request.comet}-${request.collateralToken}`,
-				...result,
-			}
+			return toDataResult(
+				`compound-withdraw-${request.from}-${request.comet}-${request.collateralToken}`,
+				await withdrawFromCompound(executor, request.comet, request.collateralToken, 1),
+			)
 		}
 		default:
 			throw new Error("Unknown request type " + JSON.stringify(request))
 	}
 }
 
-type DataResult = CalculateResult & {
+function toDataResult(id: string, { result, ops, calldata, ...data }: CalculateResult): DataResult {
+	let numResult: number
+	if (result > 10n ** 17n) {
+		numResult = Number(result) / 10 ** 18
+	} else {
+		numResult = Number(result) / 10 ** 6
+	}
+	let rate: number | undefined
+	if (data.in && data.out) {
+		rate = data.out / data.in
+	}
+	return {
+		id,
+		result: numResult,
+		rate,
+		...data
+	}
+}
+
+type DataResult = Omit<CalculateResult, "calldata" | "ops" | "result"> & {
 	id: string
+	result: number
+	rate?: number
 }
 
 export type DataRequest = CommonPart &

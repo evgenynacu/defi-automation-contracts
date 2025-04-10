@@ -1,5 +1,5 @@
 import { ethers } from "hardhat"
-import { MORPHO_BLUE } from "./addresses"
+import { MORPHO_BLUE } from "../common/addresses"
 import { MorphoBlue } from "../typechain-types"
 import { verifyAllowance } from "./verify-allowance"
 import { StrategyExecutor } from "../common/calculate-result"

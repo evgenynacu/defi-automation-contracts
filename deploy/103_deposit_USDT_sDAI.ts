@@ -1,7 +1,7 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
 import { executeStrategy } from "./execute-strategy"
-import { MORPHO_BLUE, SDAI_ADDRESS, USDT_ADDRESS } from "./addresses"
+import { MORPHO_BLUE, SDAI_ADDRESS, USDT_ADDRESS } from "../common/addresses"
 import { ethers } from "hardhat"
 import { address } from "../common/types"
 

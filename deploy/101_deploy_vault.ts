@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
-import { AAVE_POOL_ADDRESS_PROVIDER, MORPHO_BLUE } from "./addresses"
+import { AAVE_POOL_ADDRESS_PROVIDER, MORPHO_BLUE } from "../common/addresses"
 import { ethers } from "hardhat"
 import { deployStrategies } from "./deploy-strategies"
 import { addressesEqual } from "./addresses-equal"

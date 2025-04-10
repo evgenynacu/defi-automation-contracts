@@ -10,7 +10,6 @@ export type SwapData = {
 	ex: string,
 	in: number,
 	out: number,
-	rate: number,
 	to: address,
 	data: `0x${string}`
 }
@@ -47,7 +46,6 @@ function quoteToSwapData(swapAmount: bigint, decimalsIn: number, quote: SwapQuot
 		ex: quote.provider,
 		in: inAmount,
 		out: quote.outAmount,
-		rate: quote.outAmount / inAmount,
 		to: quote.to as address,
 		data: quote.data
 	}

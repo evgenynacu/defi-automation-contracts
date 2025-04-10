@@ -26,7 +26,6 @@ export async function calculateResult(runner: ContractRunner, vaultAddress: addr
 			info: best.info,
 			in: best.in,
 			out: best.out,
-			rate: best.out,
 			ops: best.ops,
 			calldata: best.calldata,
 			faults,
@@ -40,7 +39,6 @@ async function callAndGetOut(runner: ContractRunner, from: string, vault: Automa
 	const info = ops.map(it => it.info).join("")
 	const inAmount = ops.map(it => it.in).find(it => it !== undefined)
 	const outAmount = ops.map(it => it.out).find(it => it !== undefined)
-	const rate = ops.map(it => it.rate).find(it => it !== undefined)
 	const calldata = vault.interface.encodeFunctionData("rebalance", [ops])
 	if (process.env.DEBUG_CALLDATA && info === process.env.DEBUG_CALLDATA) {
 		const vaultAddress = await vault.getAddress()
@@ -60,7 +58,6 @@ async function callAndGetOut(runner: ContractRunner, from: string, vault: Automa
 			info,
 			in: inAmount,
 			out: outAmount,
-			rate,
 			result: parsed[0] as bigint,
 			calldata: calldata,
 			ops,
@@ -84,7 +81,6 @@ type OutOkResult = {
 	result: bigint
 	in?: number,
 	out?: number,
-	rate?: number,
 	ok: true
 	ops: OperationWithInfo[]
 	calldata: string

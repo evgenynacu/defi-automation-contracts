@@ -1,7 +1,7 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
 import { withdrawFromCompound } from "./withdraw-from-compound"
-import { COMET_WETH_ADDRESS, EZETH_ADDRESS } from "./addresses"
+import { COMET_WETH_ADDRESS, EZETH_ADDRESS } from "../common/addresses"
 import { sendOrEstimate } from "./send-or-estimate"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {

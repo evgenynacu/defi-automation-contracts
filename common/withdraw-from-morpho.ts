@@ -1,4 +1,4 @@
-import { MORPHO_BLUE } from "../deploy/addresses"
+import { MORPHO_BLUE } from "./addresses"
 import { StrategyExecutor } from "./calculate-result"
 import { MorphoBlue__factory } from "../typechain-types"
 import { MaxUint256 } from "ethers"

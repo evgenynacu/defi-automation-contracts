@@ -1,4 +1,4 @@
-import { AAVE_POOL_ADDRESS_PROVIDER, MORPHO_BLUE, sUSDe_ADDRESS } from "./addresses"
+import { AAVE_POOL_ADDRESS_PROVIDER, MORPHO_BLUE, sUSDe_ADDRESS } from "../common/addresses"
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 
 export async function deployStrategies(hre: HardhatRuntimeEnvironment) {

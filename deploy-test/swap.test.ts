@@ -1,5 +1,5 @@
 import { ethers } from "hardhat"
-import { CURVE_USD0_USD0PP, EZETH_ADDRESS, WETH_ADDRESS } from "../deploy/addresses"
+import { CURVE_USD0_USD0PP, EZETH_ADDRESS, WETH_ADDRESS } from "../common/addresses"
 import { address } from "../common/types"
 import { expect } from "chai"
 import { ProviderRegistry } from "../common/swap/providers/ProviderRegistry"
