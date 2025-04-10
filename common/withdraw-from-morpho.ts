@@ -2,6 +2,7 @@ import { MORPHO_BLUE } from "../deploy/addresses"
 import { StrategyExecutor } from "./calculate-result"
 import { MorphoBlue__factory } from "../typechain-types"
 import { MaxUint256 } from "ethers"
+import { getDecimals } from "./decimals"
 
 const multiplier = 1000000
 
@@ -30,7 +31,7 @@ export async function withdrawFromMorpho<T>(ex: StrategyExecutor<T>, marketId: s
 
 	console.log("debt shares to withdraw: ", debtSharesToWithdraw, "collateral to withdraw: ", collateralToWithdraw)
 
-	return ex.execute([
+	const result = await ex.execute([
 		{
 			type: "morpho-flash-loan",
 			token: params.loanToken,
@@ -61,4 +62,11 @@ export async function withdrawFromMorpho<T>(ex: StrategyExecutor<T>, marketId: s
 			amount: MaxUint256
 		}
 	])
+
+	return {
+		...result,
+		debt: Number(totalDebt) / (10 ** getDecimals(params.loanToken)),
+		debtShares: Number(pos.borrowShares) / (10 ** 18),
+		collateral: Number(totalCollateral) / (10 ** getDecimals(params.collateralToken)),
+	}
 }

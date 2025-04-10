@@ -1,9 +1,7 @@
-import { ethers } from "hardhat"
-import { HardhatRuntimeEnvironment } from 'hardhat/types'
-import { executeStrategy, getSignerAddress, getVaultAddress } from "./execute-strategy"
 import { address } from "../common/types"
-import { ContractTransactionResponse } from "ethers"
 import { StrategyExecutor } from "../common/calculate-result"
+import { IComet__factory } from "../typechain-types"
+import { MaxUint256 } from "ethers"
 
 const multiplier = 10000000
 
@@ -15,10 +13,10 @@ const multiplier = 10000000
  * @param share number from 0 to 1 (part of the position to withdraw)
  */
 export async function withdrawFromCompound<T>(ex: StrategyExecutor<T>, cometAddress: address, collateralToken: address, share: number): Promise<T> {
-	const comet = await ethers.getContractAt("IComet", cometAddress)
+	const comet = IComet__factory.connect(cometAddress, ex.runner)
 	const baseToken = await comet.baseToken()
 
-	const from = await getSignerAddress()
+	const from = await ex.getFrom()
 	const collateralBalance = await comet.collateralBalanceOf(from, collateralToken)
 	const totalDebt = await comet.borrowBalanceOf(from)
 
@@ -55,7 +53,7 @@ export async function withdrawFromCompound<T>(ex: StrategyExecutor<T>, cometAddr
 		{
 			type: "erc20-transfer-to-caller",
 			token: baseToken,
-			amount: ethers.MaxUint256
+			amount: MaxUint256
 		}
 	])
 }

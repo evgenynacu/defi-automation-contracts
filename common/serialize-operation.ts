@@ -5,10 +5,11 @@ import { getSwaps } from "./swap/swap"
 import {
 	AaveFlashLoanStrategy__factory,
 	AaveStrategy__factory,
-	CompoundV3Strategy__factory, ERC20__factory, Erc20TransferStrategy__factory,
+	CompoundV3Strategy__factory, Erc20TransferStrategy__factory,
 	MorphoFlashLoanStrategy__factory,
 	MorphoStrategy__factory, SwapStrategy__factory
 } from "../typechain-types"
+import { getDecimals } from "./decimals"
 
 export const ERC20_STRATEGY_INDEX = 0
 export const SWAP_STRATEGY_INDEX = 1
@@ -168,7 +169,10 @@ export async function serializeOperations(runner: ContractRunner, from: address,
 }
 
 export type OperationWithInfo = HasOperation.OperationStruct & {
-	info: string
+	info?: string,
+	in?: number,
+	out?: number,
+	rate?: number
 }
 
 /**
@@ -186,7 +190,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: AAVE_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("init", [op.category]),
-				info: "",
 			}]
 		}
 		case "aave-supply": {
@@ -194,7 +197,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: AAVE_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("supplyCollateral", [op.amount]),
-				info: "",
 			}]
 		}
 		case "aave-withdraw": {
@@ -202,7 +204,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: AAVE_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("withdrawCollateral", [op.amount]),
-				info: "",
 			}]
 		}
 		case "aave-borrow": {
@@ -210,7 +211,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: AAVE_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("borrowDebt", [op.token, op.amount]),
-				info: "",
 			}]
 		}
 		case "aave-repay": {
@@ -218,7 +218,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: AAVE_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("repayDebt", [op.token, op.amount]),
-				info: "",
 			}]
 		}
 		case "morpho-supply": {
@@ -226,7 +225,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: MORPHO_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("supplyCollateral", [op.marketId, from, op.amount]),
-				info: "",
 			}]
 		}
 		case "morpho-withdraw": {
@@ -234,7 +232,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: MORPHO_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("withdrawCollateral", [op.marketId, from, op.amount]),
-				info: "",
 			}]
 		}
 		case "morpho-borrow": {
@@ -242,7 +239,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: MORPHO_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("borrowFromMarket", [op.marketId, from, op.amount]),
-				info: "",
 			}]
 		}
 		case "morpho-repay": {
@@ -250,7 +246,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: MORPHO_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("repayDebt", [op.marketId, from, op.assets, op.shares]),
-				info: "",
 			}]
 		}
 		case "compound-v3-supply": {
@@ -258,7 +253,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: COMPOUND_V3_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("supplyCollateral", [op.comet, from, op.token, op.amount]),
-				info: "",
 			}]
 		}
 		case "compound-v3-withdraw": {
@@ -266,7 +260,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: COMPOUND_V3_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("withdrawCollateral", [op.comet, from, op.token, op.amount]),
-				info: "",
 			}]
 		}
 		case "compound-v3-borrow": {
@@ -274,7 +267,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: COMPOUND_V3_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("borrowBaseToken", [op.comet, from, op.amount]),
-				info: "",
 			}]
 		}
 		case "compound-v3-repay": {
@@ -282,7 +274,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: COMPOUND_V3_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("repayBaseToken", [op.comet, from, op.amount]),
-				info: "",
 			}]
 		}
 		case "morpho-flash-loan": {
@@ -292,7 +283,10 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return crossJoined.map(ops => ({
 				position: MORPHO_FLASH_LOAN_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("executeFlashLoan", [op.token, op.amount, ops]),
-				info: ops.map(it => it.info).join("")
+				info: ops.map(it => it.info).join(""),
+				in: ops.map(it => it.in).find(it => it !== undefined),
+				out: ops.map(it => it.out).find(it => it !== undefined),
+				rate: ops.map(it => it.rate).find(it => it !== undefined),
 			}))
 		}
 		case "aave-flash-loan": {
@@ -302,7 +296,10 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return crossJoined.map(ops => ({
 				position: AAVE_FLASH_LOAN_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("executeFlashLoan", [op.token, op.amount, ops]),
-				info: ops.map(it => it.info).join("")
+				info: ops.map(it => it.info).join(""),
+				in: ops.map(it => it.in).find(it => it !== undefined),
+				out: ops.map(it => it.out).find(it => it !== undefined),
+				rate: ops.map(it => it.rate).find(it => it !== undefined),
 			}))
 		}
 		case "erc20-transfer-from-caller": {
@@ -310,7 +307,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: ERC20_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("transferFrom", [op.token, from, op.amount]),
-				info: "",
 			}]
 		}
 		case "erc20-transfer-to-caller": {
@@ -318,7 +314,6 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: ERC20_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("transferTo", [op.token, from, op.amount]),
-				info: "",
 			}]
 		}
 		case "swap": {
@@ -327,7 +322,10 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return quotes.map(quote => ({
 				position: SWAP_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("swap", [op.from, op.to, quote.to, quote.data]),
-				info: quote.ex
+				info: quote.ex,
+				in: quote.in,
+				out: quote.out,
+				rate: quote.rate
 			}))
 		}
 	}
@@ -335,10 +333,8 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 
 async function fetchAllQuotes(runner: ContractRunner, from: address, vaultAddress: address, op: SwapOperation) {
 	const { chainId } = await runner.provider!.getNetwork()
-	const fromToken = ERC20__factory.connect(op.from, runner)
-	const toToken = ERC20__factory.connect(op.to, runner)
-	const fromDecimals = Number(await fromToken.decimals())
-	const toDecimals = Number(await toToken.decimals())
+	const fromDecimals = getDecimals(op.from)
+	const toDecimals = getDecimals(op.to)
 	return await getSwaps(
 		Number(chainId), vaultAddress, op.amount, op.from as address, op.to as address, from, fromDecimals, toDecimals
 	)

@@ -1,6 +1,7 @@
-import { ethers } from "hardhat"
 import { AAVE_DATA_PROVIDER } from "./addresses"
 import { StrategyExecutor } from "../common/calculate-result"
+import { IPoolDataProvider__factory } from "../typechain-types"
+import { MaxUint256 } from "ethers"
 
 const multiplier = 10000000
 
@@ -12,7 +13,7 @@ export async function withdrawFromAave<T>(
 ): Promise<T> {
 	const vaultAddress = await ex.getVaultAddress()
 	console.log("vault address: ", vaultAddress)
-	const data = await ethers.getContractAt("IPoolDataProvider", AAVE_DATA_PROVIDER)
+	const data = IPoolDataProvider__factory.connect(AAVE_DATA_PROVIDER, ex.runner)
 
 	const [, , totalDebt] = await data.getUserReserveData(debtToken, vaultAddress)
 	const [collateralBalance] = await data.getUserReserveData(collateralToken, vaultAddress);
@@ -48,7 +49,7 @@ export async function withdrawFromAave<T>(
 		{
 			type: "erc20-transfer-to-caller",
 			token: debtToken,
-			amount: ethers.MaxUint256
+			amount: MaxUint256
 		}
 	])
 }

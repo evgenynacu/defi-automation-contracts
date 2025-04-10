@@ -8,7 +8,9 @@ ProviderRegistry.initializeDefaultProviders()
 export type SwapData = {
 	time: number
 	ex: string,
+	in: number,
 	out: number,
+	rate: number,
 	to: address,
 	data: `0x${string}`
 }
@@ -35,14 +37,17 @@ export async function getSwaps(
 		decimalsOut
 	})
 
-	return quotes.map(quoteToSwapData)
+	return quotes.map(quote => quoteToSwapData(swapAmount, decimalsIn, quote))
 }
 
-function quoteToSwapData(quote: SwapQuote): SwapData {
+function quoteToSwapData(swapAmount: bigint, decimalsIn: number, quote: SwapQuote): SwapData {
+	const inAmount = Number(swapAmount) / (10 ** decimalsIn)
 	return {
 		time: quote.time,
 		ex: quote.provider,
+		in: inAmount,
 		out: quote.outAmount,
+		rate: quote.outAmount / inAmount,
 		to: quote.to as address,
 		data: quote.data
 	}

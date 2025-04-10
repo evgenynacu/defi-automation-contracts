@@ -1,9 +1,9 @@
 import { ethers } from "hardhat"
 import { MORPHO_BLUE } from "./addresses"
-import { getSignerAddress } from "./execute-strategy"
 import { MorphoBlue } from "../typechain-types"
 import { verifyAllowance } from "./verify-allowance"
 import { StrategyExecutor } from "../common/calculate-result"
+import { address } from "../common/types"
 
 export async function depositToMorpho<T>(
 	ex: StrategyExecutor<T>,
@@ -17,7 +17,7 @@ export async function depositToMorpho<T>(
 	const morpho = await ethers.getContractAt("MorphoBlue", MORPHO_BLUE)
 	const [loanToken, collateralToken] = await morpho.idToMarketParams(marketId)
 
-	await verifyVaultAuthorized(morpho, vaultAddress)
+	await verifyVaultAuthorized(await ex.getFrom(), morpho, vaultAddress)
 	await verifyAllowance(loanToken, amount, vaultAddress)
 	console.log("total new debt", flashLoanAmount + amount)
 
@@ -53,9 +53,8 @@ export async function depositToMorpho<T>(
 	])
 }
 
-async function verifyVaultAuthorized(morpho: MorphoBlue, vault: string) {
-	const signer = await getSignerAddress()
-	if (!(await morpho.isAuthorized(signer, vault))) {
+async function verifyVaultAuthorized(from: address, morpho: MorphoBlue, vault: string) {
+	if (!(await morpho.isAuthorized(from, vault))) {
 		if (process.env.DEBUG_FROM) {
 			throw new Error("DEBUG_FROM is set, but vault " + vault + " is not authorized")
 		}
