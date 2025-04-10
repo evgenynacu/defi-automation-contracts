@@ -11,6 +11,9 @@ COPY . .
 
 RUN npm run build
 
+RUN mkdir -p /app/dist/context/db/migrations
+COPY context/db/migrations/ /app/dist/context/db/migrations/
+
 EXPOSE 8080
 
 ENV START_COMMAND="server"
