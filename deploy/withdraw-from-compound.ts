@@ -2,6 +2,7 @@ import { address } from "../common/types"
 import { StrategyExecutor } from "../common/calculate-result"
 import { IComet__factory } from "../typechain-types"
 import { MaxUint256 } from "ethers"
+import { getDecimals } from "../common/decimals"
 
 const multiplier = 10000000
 
@@ -25,7 +26,7 @@ export async function withdrawFromCompound<T>(ex: StrategyExecutor<T>, cometAddr
 	const debtToWithdraw = totalDebt * BigInt(share * multiplier + 1) / BigInt(multiplier)
 	const collateralToWithdraw = collateralBalance * BigInt(share * multiplier) / BigInt(multiplier)
 
-	return ex.execute([
+	const result = await ex.execute([
 		{
 			type: "morpho-flash-loan",
 			token: baseToken,
@@ -56,4 +57,10 @@ export async function withdrawFromCompound<T>(ex: StrategyExecutor<T>, cometAddr
 			amount: MaxUint256
 		}
 	])
+
+	return {
+		...result,
+		debt: Number(totalDebt) / (10 ** getDecimals(baseToken)),
+		collateral: Number(collateralBalance) / (10 ** getDecimals(collateralToken)),
+	}
 }

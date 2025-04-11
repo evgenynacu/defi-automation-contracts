@@ -2,6 +2,7 @@ import { AAVE_DATA_PROVIDER } from "../common/addresses"
 import { StrategyExecutor } from "../common/calculate-result"
 import { IPoolDataProvider__factory } from "../typechain-types"
 import { MaxUint256 } from "ethers"
+import { getDecimals } from "../common/decimals"
 
 const multiplier = 10000000
 
@@ -23,7 +24,7 @@ export async function withdrawFromAave<T>(
 	const debtToWithdraw = totalDebt * BigInt(share * multiplier + 1) / BigInt(multiplier)
 	const collateralToWithdraw = collateralBalance * BigInt(share * multiplier) / BigInt(multiplier)
 
-	return ex.execute([
+	const result = await ex.execute([
 		{
 			type: "morpho-flash-loan",
 			token: debtToken,
@@ -52,4 +53,9 @@ export async function withdrawFromAave<T>(
 			amount: MaxUint256
 		}
 	])
+	return {
+		...result,
+		debt: Number(totalDebt) / (10 ** getDecimals(debtToken)),
+		collateral: Number(collateralBalance) / (10 ** getDecimals(collateralToken)),
+	}
 }
