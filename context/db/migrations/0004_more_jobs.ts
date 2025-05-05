@@ -12,7 +12,4 @@ export function up(pgm: MigrationBuilder): void {
 
 // noinspection JSUnusedGlobalSymbols
 export function down(pgm: MigrationBuilder): void {
-	pgm.sql(`
-      DROP TABLE IF EXISTS jobs;
-	`)
 }
