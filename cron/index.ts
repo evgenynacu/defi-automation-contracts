@@ -1,7 +1,6 @@
 import { createContext } from "../context"
 import { runMigrations } from "../context/db/run-migrations"
 import { logAsync } from "../common/log-async"
-import { COMET_WETH_ADDRESS, EZETH_ADDRESS, sUSDe_ADDRESS, USDT_ADDRESS } from "../common/addresses"
 
 async function runJobs() {
 	console.log("Starting cron jobs")
@@ -53,26 +52,36 @@ async function runJobs() {
 			})
 		)
 		// aave sUSDE
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "aave-withdraw",
+		// 		from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
+		// 		vault: "0xe87c1cb159E0bC50817642F82a1e6F1C7283eE23",
+		// 		collateralToken: sUSDe_ADDRESS,
+		// 		debtToken: USDT_ADDRESS,
+		// 	})
+		// )
+
+		// morpho cusd0-USD
 		logAsync(
 			syncService.syncData({
-				type: "aave-withdraw",
+				type: "morpho-withdraw",
 				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
-				vault: "0xe87c1cb159E0bC50817642F82a1e6F1C7283eE23",
-				collateralToken: sUSDe_ADDRESS,
-				debtToken: USDT_ADDRESS,
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0x457b54a03c6bba984470d5687ec6df7967c0168bdc0052315713bfd287cd576c"
 			})
 		)
 
 		//ezETH
-		logAsync(
-			syncService.syncData({
-				type: "compound-withdraw",
-				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				comet: COMET_WETH_ADDRESS,
-				collateralToken: EZETH_ADDRESS,
-			})
-		)
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "compound-withdraw",
+		// 		from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
+		// 		vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+		// 		comet: COMET_WETH_ADDRESS,
+		// 		collateralToken: EZETH_ADDRESS,
+		// 	})
+		// )
 	})
 
 	console.log("Initialized cron jobs")
