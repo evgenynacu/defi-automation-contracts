@@ -111,6 +111,15 @@ async function runJobs() {
 			})
 		)
 
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0xb81eaed0df42ff6646c8daf4fe38afab93b13b6a89c9750d08e705223a45e2ef"
+			})
+		)
+
 		//ezETH
 		// logAsync(
 		// 	syncService.syncData({
