@@ -6,9 +6,11 @@ import { sendOrEstimate } from "./send-or-estimate"
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)
 
-	await sendOrEstimate(hre, ex => depositToMorpho(ex, "0xb81eaed0df42ff6646c8daf4fe38afab93b13b6a89c9750d08e705223a45e2ef", 21084388644787559863465n, 8))
+	await sendOrEstimate(hre, ex => depositToMorpho(ex, "0xeec6c7e2ddb7578f2a7d86fc11cf9da005df34452ad9b9189c51266216f5d71b", 15000000000n, 8))
 }
 
 // noinspection JSUnusedGlobalSymbols
 export default func
-func.tags = ['deposit-PT-sUSDe-DAI-JUL']
+func.tags = ['deposit-PT-wstUSR-SEP']
+
+//11484214555n
