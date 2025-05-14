@@ -140,6 +140,15 @@ async function runJobs() {
 				marketId: "0xeec6c7e2ddb7578f2a7d86fc11cf9da005df34452ad9b9189c51266216f5d71b"
 			})
 		)
+		//btc
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0xeec6c7e2ddb7578f2a7d86fc11cf9da005df34452ad9b9189c51266216f5d71b"
+			})
+		)
 
 		//csUSDL-JUL
 		logAsync(
