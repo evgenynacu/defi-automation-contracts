@@ -51,6 +51,17 @@ async function runJobs() {
 				marketId: "0xb5b0ff0fccf16dff5bef6d2d001d60f5c4ab49df1020a01073d3ad635c80e8d5"
 			})
 		)
+
+		//sUSDS/USDT BTC
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0xb5b0ff0fccf16dff5bef6d2d001d60f5c4ab49df1020a01073d3ad635c80e8d5"
+			})
+		)
+
 		// aave sUSDE
 		// logAsync(
 		// 	syncService.syncData({
