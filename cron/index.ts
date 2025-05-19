@@ -130,6 +130,15 @@ async function runJobs() {
 				marketId: "0xb81eaed0df42ff6646c8daf4fe38afab93b13b6a89c9750d08e705223a45e2ef"
 			})
 		)
+		//debt = usdc
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0xbc552f0b14dd6f8e60b760a534ac1d8613d3539153b4d9675d697e048f2edc7e"
+			})
+		)
 
 		//wstUSR-SEP
 		logAsync(

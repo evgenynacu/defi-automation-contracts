@@ -1,13 +1,14 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
-import { withdrawFromMorpho } from "../common/withdraw-from-morpho"
+import { depositToMorpho } from "./deposit-to-morpho"
 import { sendOrEstimate } from "./send-or-estimate"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-	console.log(`withdrawing on network ${hre.network.name}`)
+	console.log(`deploying contracts on network ${hre.network.name}`)
 
-	await sendOrEstimate(hre, ex => withdrawFromMorpho(ex, "0x457b54a03c6bba984470d5687ec6df7967c0168bdc0052315713bfd287cd576c", 0.9))
+	await sendOrEstimate(hre, ex => depositToMorpho(ex, "0xbc552f0b14dd6f8e60b760a534ac1d8613d3539153b4d9675d697e048f2edc7e", 10002985967n, 8))
 }
+
 // noinspection JSUnusedGlobalSymbols
 export default func
-func.tags = ['withdraw-PT-cusdo-USDC']
+func.tags = ['deposit-PT-sUSDe-JUL-USDC']
