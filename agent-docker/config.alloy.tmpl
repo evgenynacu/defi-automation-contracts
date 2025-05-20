@@ -1,0 +1,19 @@
+local "metrics_url" {
+  value = env("METRICS_URL")
+}
+
+prometheus.scrape "app" {
+  targets = [
+    local.metrics_url,
+  ]
+}
+
+prometheus.remote_write "grafana_cloud" {
+  endpoint {
+    url = env("GRAFANA_REMOTE_WRITE_URL")
+    basic_auth {
+      username = env("GRAFANA_USERNAME")
+      password = env("GRAFANA_API_KEY")
+    }
+  }
+}
