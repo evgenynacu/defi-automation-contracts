@@ -20,7 +20,7 @@ if (process.env.ADMIN_PRIVATE_KEY) {
 		url: "https://eth.llamarpc.com",
 	}
 	networks.mainnet_universal = {
-		url: "http://127.0.0.1:1248",
+		url: "http://localhost:4000/rpc/fff",
 		chainId: 1,
 		timeout: 60000,
 	}
