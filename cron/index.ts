@@ -32,6 +32,16 @@ async function runJobs() {
 			})
 		)
 
+		//srUSD/USDC BTC
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0xbfed072faee09b963949defcdb91094465c34c6c62d798b906274ef3563c9cac"
+			})
+		)
+
 		//PT-DAI <-> sUSDe
 		logAsync(
 			syncService.syncData({
