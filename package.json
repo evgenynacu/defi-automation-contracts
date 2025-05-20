@@ -37,6 +37,7 @@
     "express-async-handler": "^1.2.0",
     "node-cron": "^3.0.3",
     "node-pg-migrate": "^7.9.1",
-    "pg": "^8.14.1"
+    "pg": "^8.14.1",
+    "prom-client": "^15.1.3"
   }
 }

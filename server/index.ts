@@ -3,21 +3,29 @@ import express, { Application } from "express"
 import cors from "cors"
 import { createContext } from "../context"
 import { toAddress, toHex } from "../common/types"
+import { register } from './metrics'
+import cron from "node-cron"
+import { exportLatestData } from "./exporter"
 
-dotenv.config();
+dotenv.config()
 
-const app: Application = express();
+const app: Application = express()
 
-app.use(express.json());
+app.use(express.json())
 
 // Enable CORS for all routes
 app.use(cors({
 	origin: "*",
-}));
+}))
 
-createContext().then(({ dataService }) => {
+createContext().then(async ({ connectionPool, dataService }) => {
 	app.get("/", (_, res) => {
 		res.status(200).json({ status: "OK" })
+	})
+
+	app.get('/metrics', async (_req, res) => {
+		res.set('Content-Type', register.contentType)
+		res.end(await register.metrics())
 	})
 
 	app.get("/results/morpho/:from/:vault/:marketId", async (req, res) => {
@@ -31,7 +39,11 @@ createContext().then(({ dataService }) => {
 		res.status(200).json(data)
 	})
 
-	const PORT = process.env.PORT || 8080;
+	const PORT = process.env.PORT || 8080
 
-	app.listen(PORT, (): void => console.log(`Server is running on ${PORT}`));
+	app.listen(PORT, (): void => console.log(`Server is running on ${PORT}`))
+
+	cron.schedule("* * * * *", () => {
+		exportLatestData(connectionPool).then()
+	})
 })
