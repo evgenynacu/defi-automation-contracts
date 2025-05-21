@@ -4,7 +4,6 @@ import cors from "cors"
 import { createContext } from "../context"
 import { toAddress, toHex } from "../common/types"
 import { register } from './metrics'
-import cron from "node-cron"
 import { exportLatestData } from "./exporter"
 
 dotenv.config()
@@ -43,7 +42,8 @@ createContext().then(async ({ connectionPool, dataService }) => {
 
 	app.listen(PORT, (): void => console.log(`Server is running on ${PORT}`))
 
-	cron.schedule("* * * * *", () => {
+
+	setInterval(() => {
 		exportLatestData(connectionPool).then()
-	})
+	}, 5000)
 })
