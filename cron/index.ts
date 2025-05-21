@@ -84,23 +84,23 @@ async function runJobs() {
 		// )
 
 		// morpho cusd0-USD
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0x457b54a03c6bba984470d5687ec6df7967c0168bdc0052315713bfd287cd576c"
-			})
-		)
-
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0x457b54a03c6bba984470d5687ec6df7967c0168bdc0052315713bfd287cd576c"
-			})
-		)
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "morpho-withdraw",
+		// 		from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
+		// 		vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+		// 		marketId: "0x457b54a03c6bba984470d5687ec6df7967c0168bdc0052315713bfd287cd576c"
+		// 	})
+		// )
+		//
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "morpho-withdraw",
+		// 		from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
+		// 		vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+		// 		marketId: "0x457b54a03c6bba984470d5687ec6df7967c0168bdc0052315713bfd287cd576c"
+		// 	})
+		// )
 
 		// morpho PT-rUSD
 		logAsync(
