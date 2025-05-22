@@ -27,17 +27,12 @@ export class ReservoirProvider implements ISwapProvider {
 			const price = await module.currentPrice()
 			const fee = await module.redeemFee()
 			const outAmount = (params.swapAmount * price / 100000000n) * (1000000n - fee) / 1000000n
-			try {
-				const data = reservoirInterface.encodeFunctionData("redeem", [outAmount])
+			const data = reservoirInterface.encodeFunctionData("redeem", [outAmount])
 
-				return {
-					to: savingModule,
-					data: toHex(data),
-					outAmount,
-				}
-			} catch (e) {
-				console.error(e)
-				throw e
+			return {
+				to: savingModule,
+				data: toHex(data),
+				outAmount,
 			}
 		}
 
