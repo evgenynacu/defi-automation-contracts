@@ -47,7 +47,7 @@ async function updateJobs(pool: Pool) {
 	for (const wallet of Object.keys(wallets)) {
 		for (const marketId of Object.keys(marketIds)) {
 			const id = `morpho-withdraw-${wallet}-${marketId}`
-			const name = `Morpho ${marketIds[marketId]} ${wallets[wallet]}`
+			const name = `Morpho ${marketIds[marketId]} [${wallets[wallet]}]`
 			jobs.push({ id, name })
 		}
 	}
