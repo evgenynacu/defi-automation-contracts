@@ -19,7 +19,7 @@ export async function depositToMorpho<T>(
 
 	await verifyVaultAuthorized(await ex.getFrom(), morpho, vaultAddress)
 	await verifyAllowance(loanToken, amount, vaultAddress)
-	console.log("total new debt", flashLoanAmount + amount)
+	console.log("total new debt:", flashLoanAmount, "own assets:", amount)
 
 	return ex.execute([
 		{

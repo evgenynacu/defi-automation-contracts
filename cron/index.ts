@@ -160,6 +160,15 @@ async function runJobs() {
 				marketId: "0xbc552f0b14dd6f8e60b760a534ac1d8613d3539153b4d9675d697e048f2edc7e"
 			})
 		)
+		//USD wallet
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0xbc552f0b14dd6f8e60b760a534ac1d8613d3539153b4d9675d697e048f2edc7e"
+			})
+		)
 
 		//wstUSR-SEP
 		logAsync(
