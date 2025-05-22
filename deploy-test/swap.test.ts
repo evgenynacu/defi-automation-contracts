@@ -11,6 +11,7 @@ describe("SwapProvider", () => {
 	it("should allow to sell PT", async () => {
 		const p = new PendleProvider()
 		const quote = await p.getQuote({
+			runner: null as any,
 			chainId: 1,
 			fromToken: "0xb7de5dFCb74d25c2f21841fbd6230355C50d9308",
 			toToken: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
@@ -29,6 +30,7 @@ describe("SwapProvider", () => {
 		ProviderRegistry.initializeDefaultProviders()
 		const instance = SwapProviderFacade.getInstance()
 		const quotes = await instance.getAllQuotes({
+			runner: null as any,
 			chainId: 1,
 			fromToken: WETH_ADDRESS,
 			toToken: CURVE_USD0_USD0PP,
@@ -49,6 +51,7 @@ describe("SwapProvider", () => {
 		const results = await Promise.all(providers.map(async provider => {
 				try {
 					let res = await provider.getQuote({
+						runner: null as any,
 						chainId: 1,
 						fromToken: WETH_ADDRESS,
 						toToken: EZETH_ADDRESS,
