@@ -332,7 +332,7 @@ async function fetchAllQuotes(runner: ContractRunner, from: address, vaultAddres
 	const fromDecimals = getDecimals(op.from)
 	const toDecimals = getDecimals(op.to)
 	return await getSwaps(
-		Number(chainId), vaultAddress, op.amount, op.from as address, op.to as address, from, fromDecimals, toDecimals
+		runner, Number(chainId), vaultAddress, op.amount, op.from as address, op.to as address, from, fromDecimals, toDecimals
 	)
 }
 

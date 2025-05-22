@@ -1,6 +1,8 @@
 import { address } from "../../types"
+import { type ContractRunner } from "ethers"
 
 export type SwapParams = {
+  runner: ContractRunner
   chainId: number
   vault: address
   swapAmount: bigint

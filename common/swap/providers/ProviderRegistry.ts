@@ -5,6 +5,7 @@ import { EnsoProvider, KyberSwapIcarusProvider, OpenoceanProvider, UsorProvider,
 import { SushiSwapProvider } from "./SushiSwapProvider"
 import { KyberSwapProvider } from "./KyberSwapProvider"
 import { PendleProvider } from "./PendleProvider"
+import { ReservoirProvider } from "./ReservoirProvider"
 
 export class ProviderRegistry {
   private static instance: ProviderRegistry
@@ -40,6 +41,7 @@ export class ProviderRegistry {
       new UsorProvider(),
       new ZeroexProvider(),
       new PendleProvider(),
+      new ReservoirProvider(),
     ]
   }
 
