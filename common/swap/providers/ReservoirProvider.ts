@@ -1,12 +1,12 @@
 import { ISwapProvider } from "./ISwapProvider"
 import { ProviderConfig, SwapParams, SwapResult } from "./types"
-import { address, toAddress, toHex } from "../../types"
-import { ReservoirSavingModule__factory } from "../../../typechain-types"
+import { toAddress, toHex } from "../../types"
+import { ReservoirSavingModule__factory, ReservoirSwap__factory } from "../../../typechain-types"
+import { reservoirSavingModule, rUSD, srUSD, usdc } from "../../addresses"
+import { type ContractRunner } from "ethers"
 
-const rUSD: address = toAddress("0x09D4214C03D01F49544C0448DBE3A27f768F2b34".toLowerCase())
-const srUSD: address = toAddress("0x738d1115b90efa71ae468f1287fc864775e23a31".toLowerCase())
-const savingModule: address = toAddress("0x5475611Dffb8ef4d697Ae39df9395513b6E947d7")
 const reservoirInterface = ReservoirSavingModule__factory.createInterface()
+const swapInterface = ReservoirSwap__factory.createInterface()
 
 export class ReservoirProvider implements ISwapProvider {
 	getConfig(): ProviderConfig {
@@ -22,20 +22,34 @@ export class ReservoirProvider implements ISwapProvider {
 		}
 
 		if (params.toToken.toLowerCase() === rUSD) {
-			console.log("redeeming srUSD")
-			const module = ReservoirSavingModule__factory.connect(savingModule, params.runner)
-			const price = await module.currentPrice()
-			const fee = await module.redeemFee()
-			const outAmount = (params.swapAmount * price / 100000000n) * (1000000n - fee) / 1000000n
+			const outAmount = await calculateOutAmount(params.runner, params.swapAmount)
 			const data = reservoirInterface.encodeFunctionData("redeem", [outAmount])
 
 			return {
-				to: savingModule,
+				to: reservoirSavingModule,
 				data: toHex(data),
+				outAmount,
+			}
+		}
+
+		if (params.toToken.toLowerCase() === usdc) {
+			const rUsdAmount = await calculateOutAmount(params.runner, params.swapAmount)
+			const outAmount = rUsdAmount / (10n ** 12n)
+
+			return {
+				to: toAddress("0x4dae3083a3bC2c562d5642dd668d996EAB7Dde12"),
+				data: toHex(swapInterface.encodeFunctionData("swapSavingsToUSDC", [params.swapAmount])),
 				outAmount,
 			}
 		}
 
 		throw new Error("toToken is not supported: " + params.toToken)
 	}
+}
+
+async function calculateOutAmount(runner: ContractRunner, amount: bigint) {
+	const module = ReservoirSavingModule__factory.connect(reservoirSavingModule, runner)
+	const price = await module.currentPrice()
+	const fee = await module.redeemFee()
+	return amount * price / (100n * (1000000n + fee))
 }

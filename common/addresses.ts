@@ -1,3 +1,5 @@
+import { address, toAddress } from "./types"
+
 export const MORPHO_BLUE = "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb"
 export const AAVE_POOL_ADDRESS_PROVIDER = "0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e"
 export const AAVE_DATA_PROVIDER = "0x497a1994c46d4f6C864904A9f1fac6328Cb7C8a6"
@@ -13,4 +15,11 @@ export const SDAI_ADDRESS = "0x83F20F44975D03b1b09e64809B757c47f942BEeA"
 //curve LP tokens
 export const CURVE_USD0_USD0PP = "0x1d08E7adC263CfC70b1BaBe6dC5Bb339c16Eec52"
 export const sUSDe_ADDRESS = "0x9D39A5DE30e57443BfF2A8307A4256c8797A3497"
+
+export const rUSD: address = toAddress("0x09D4214C03D01F49544C0448DBE3A27f768F2b34".toLowerCase())
+export const srUSD: address = toAddress("0x738d1115b90efa71ae468f1287fc864775e23a31".toLowerCase())
+export const reservoirSavingModule: address = toAddress("0x5475611Dffb8ef4d697Ae39df9395513b6E947d7")
+export const reservoirPsm: address = toAddress("0x4809010926aec940b550D34a46A52739f996D75D")
+export const usdc: address = toAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48".toLowerCase())
+
 
