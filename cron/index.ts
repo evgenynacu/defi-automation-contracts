@@ -113,14 +113,14 @@ async function runJobs() {
 		)
 
 		// morpho slvlUSD
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0x8b1bc4d682b04a16309a8adf77b35de0c42063a7944016cfc37a79ccac0007b6"
-			})
-		)
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "morpho-withdraw",
+		// 		from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
+		// 		vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+		// 		marketId: "0x8b1bc4d682b04a16309a8adf77b35de0c42063a7944016cfc37a79ccac0007b6"
+		// 	})
+		// )
 
 		// morpho PT-USDe/July
 		logAsync(
