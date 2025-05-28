@@ -51,14 +51,15 @@ async function updateJobs(pool: Pool) {
 			const id = `morpho-withdraw-${wallet}-${marketId}`
 			const name = `Morpho ${marketIds[marketId]} [${wallets[wallet]}]`
 			jobs.push({ id, name })
-			console.log("Registered job " + id)
+			console.log("Registered job " + id + " = " + name)
 		}
 	}
 
 	for(const vault of aaveVaults) {
 		const id = `aave-withdraw-${vault.vault}-${vault.collateral}-${vault.debt}`
-		jobs.push({ id, name: `Aave ${tokens[vault.collateral]} [${wallets[vault.owner]}]` })
-		console.log("Registered job " + id)
+		const name = `Aave ${tokens[vault.collateral]} [${wallets[vault.owner]}]`
+		jobs.push({ id, name })
+		console.log("Registered job " + id + " = " + name)
 	}
 
 	const client = await pool.connect()
