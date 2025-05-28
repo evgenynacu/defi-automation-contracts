@@ -1,4 +1,4 @@
-import { AAVE_POOL_ADDRESS_PROVIDER, MORPHO_BLUE, sUSDe_ADDRESS } from "../common/addresses"
+import { AAVE_POOL_ADDRESS_PROVIDER, MORPHO_BLUE, PT_eUSDe_AUG, sUSDe_ADDRESS } from "../common/addresses"
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 
 export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
@@ -8,7 +8,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const aaveFlashLoanStrategy = await deployStrategy(hre, "AaveFlashLoanStrategy", [AAVE_POOL_ADDRESS_PROVIDER])
 	const compoundV3Strategy = await deployStrategy(hre, "CompoundV3Strategy")
 	const morphoStrategy = await deployStrategy(hre, "MorphoStrategy", [MORPHO_BLUE])
-	const aaveUSDeStrategy = await deployStrategy(hre, "AaveStrategy", [AAVE_POOL_ADDRESS_PROVIDER, sUSDe_ADDRESS])
+	const aaveUSDeStrategy = await deployStrategy(hre, "AaveStrategy", [AAVE_POOL_ADDRESS_PROVIDER, PT_eUSDe_AUG])
 	return [
 		erc20TransferStrategy.address,
 		swapStrategy.address,

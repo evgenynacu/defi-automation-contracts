@@ -2,6 +2,9 @@ import { Pool } from "pg"
 import { openPositionSizeGauge } from "./metrics"
 import { marketIds } from "../context/morpho"
 import { wallets } from "../context/wallets"
+import { aaveVaults } from "../context/aave"
+import { tokens } from "../context/tokens"
+import { address } from "../common/types"
 
 export async function exportLatestData(pool: Pool) {
 	const res = await pool.query<DataResultRow>(
@@ -31,6 +34,18 @@ function parseJobId(jobId: string): { wallet: string, positionId: string } | und
 		return {
 			wallet: wallets[wallet] || wallet,
 			positionId: marketIds[positionId] || positionId,
+		}
+	}
+	if (jobId.startsWith("aave-withdraw")) {
+		const parts = jobId.split("-")
+		const vault = parts[2] as address
+		const collateral = parts[3] as address
+		const desc = aaveVaults.find(it => it.vault === vault)
+		if (desc !== undefined) {
+			return {
+				wallet: wallets[desc.owner] || desc.owner,
+				positionId: tokens[collateral] || collateral,
+			}
 		}
 	}
 	return undefined

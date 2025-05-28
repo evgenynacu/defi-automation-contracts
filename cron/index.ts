@@ -1,6 +1,7 @@
 import { createContext } from "../context"
 import { runMigrations } from "../context/db/run-migrations"
 import { logAsync } from "../common/log-async"
+import { PT_eUSDe_AUG, USDT_ADDRESS } from "../common/addresses"
 
 async function runJobs() {
 	console.log("Starting cron jobs")
@@ -82,6 +83,17 @@ async function runJobs() {
 		// 		debtToken: USDT_ADDRESS,
 		// 	})
 		// )
+
+		//aave PT-eUSDE-Aug
+		logAsync(
+			syncService.syncData({
+				type: "aave-withdraw",
+				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
+				vault: "0xE92096ecf53E4Ed58c8Dbc15af62249FaA76a7C8",
+				collateralToken: PT_eUSDe_AUG,
+				debtToken: USDT_ADDRESS,
+			})
+		)
 
 		// morpho cusd0-USD
 		// logAsync(

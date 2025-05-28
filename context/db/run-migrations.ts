@@ -4,6 +4,8 @@ import { Pool } from 'pg'
 import path from 'path'
 import { wallets } from "../wallets"
 import { marketIds } from "../morpho"
+import { aaveVaults } from "../aave"
+import { tokens } from "../tokens"
 
 export async function runMigrations(pool: Pool) {
 	try {
@@ -49,7 +51,14 @@ async function updateJobs(pool: Pool) {
 			const id = `morpho-withdraw-${wallet}-${marketId}`
 			const name = `Morpho ${marketIds[marketId]} [${wallets[wallet]}]`
 			jobs.push({ id, name })
+			console.log("Registered job " + id)
 		}
+	}
+
+	for(const vault of aaveVaults) {
+		const id = `aave-withdraw-${vault.vault}-${vault.collateral}-${vault.debt}`
+		jobs.push({ id, name: `Aave ${tokens[vault.collateral]} [${wallets[vault.owner]}]` })
+		console.log("Registered job " + id)
 	}
 
 	const client = await pool.connect()
@@ -71,5 +80,4 @@ async function updateJobs(pool: Pool) {
 	} finally {
 		client.release()
 	}
-
 }
