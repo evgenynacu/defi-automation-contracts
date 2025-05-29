@@ -11,4 +11,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 // noinspection JSUnusedGlobalSymbols
 export default func
-func.tags = ['withdraw-DAI-PT-sUSDE']
+func.tags = ['withdraw-DAI-PT-sUSDe']

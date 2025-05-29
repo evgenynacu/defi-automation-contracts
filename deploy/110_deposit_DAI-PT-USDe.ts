@@ -12,3 +12,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 // noinspection JSUnusedGlobalSymbols
 export default func
 func.tags = ['deposit-DAI-PT-USDe']
+
+//11927.638348240259121152 +

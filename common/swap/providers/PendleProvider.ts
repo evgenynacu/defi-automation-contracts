@@ -12,36 +12,67 @@ export class PendleProvider implements ISwapProvider {
 	}
 
 	async getQuote(params: SwapParams): Promise<SwapResult> {
-		const market = await findMarket(params.fromToken, params.toToken)
-		if (!market) {
-			throw new Error("No pendle market found")
+		const market = await findActiveMarket(params.fromToken, params.toToken)
+		if (market) {
+			const url = `https://api-v2.pendle.finance/core/v1/sdk/${params.chainId}/markets/${market}/swap?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&tokenIn=${params.fromToken}&tokenOut=${params.toToken}&amountIn=${params.swapAmount.toString()}`
+			const res = await fetch(url)
+			if (res.status !== 200) {
+				throw new Error("Failed to fetch quote " + await res.text())
+			}
+
+			const quote: QuoteResponse = await res.json()
+
+			return {
+				to: quote.tx.to,
+				data: quote.tx.data,
+				outAmount: BigInt(quote.data.amountOut),
+			}
 		}
 
-		const url = `https://api-v2.pendle.finance/core/v1/sdk/${params.chainId}/markets/${market}/swap?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&tokenIn=${params.fromToken}&tokenOut=${params.toToken}&amountIn=${params.swapAmount.toString()}`
-		const res = await fetch(url)
-		if (res.status !== 200) {
-			throw new Error("Failed to fetch quote " + await res.text())
+		const inactiveMarket = await findInactiveMarket(params.fromToken, params.toToken)
+		if (inactiveMarket) {
+			const exitUrl = `https://api-v2.pendle.finance/core/v1/sdk/1/markets/${inactiveMarket}/exit-positions?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&ptAmount=${params.swapAmount.toString()}&ytAmount=0&lpAmount=0&tokenOut=${params.toToken}`
+			const res = await fetch(exitUrl)
+
+			if (res.status !== 200) {
+				throw new Error("Failed to fetch quote " + await res.text())
+			}
+
+			const quote: QuoteResponse = await res.json()
+
+			return {
+				to: quote.tx.to,
+				data: quote.tx.data,
+				outAmount: BigInt(quote.data.amountOut),
+			}
 		}
 
-		const quote: QuoteResponse = await res.json()
+		throw new Error("No pendle market found")
 
-		return {
-			to: quote.tx.to,
-			data: quote.tx.data,
-			outAmount: BigInt(quote.data.amountOut),
-		}
+
 	}
 
 }
 
-async function findMarket(tokenIn: string, tokenOut: string): Promise<string | undefined> {
-	const res = await fetch("https://api-v2.pendle.finance/core/v1/1/markets/active")
+async function findActiveMarket(tokenIn: string, tokenOut: string): Promise<string | undefined> {
+	return findMarketByUrl("https://api-v2.pendle.finance/core/v1/1/markets/active", tokenIn, tokenOut)
+}
+
+async function findInactiveMarket(tokenIn: string, tokenOut: string): Promise<string | undefined> {
+	return findMarketByUrl("https://api-v2.pendle.finance/core/v1/1/markets/inactive", tokenIn, tokenOut, true)
+}
+
+async function findMarketByUrl(url: string, tokenIn: string, tokenOut: string, onlyExit = false): Promise<string | undefined> {
+	const res = await fetch(url)
 	if (res.status !== 200) {
 		throw new Error("Failed to fetch markets " + await res.text())
 	}
 	const markets: Markets = await res.json()
 	for (const market of markets.markets) {
-		if (market.pt && (market.pt.toLowerCase().indexOf(tokenIn.toLowerCase()) !== -1 || market.pt.toLowerCase().indexOf(tokenOut.toLowerCase()) !== -1)) {
+		if (market.pt && market.pt.toLowerCase().indexOf(tokenIn.toLowerCase()) !== -1) {
+			return market.address
+		}
+		if (!onlyExit && market.pt && market.pt.toLowerCase().indexOf(tokenOut.toLowerCase()) !== -1) {
 			return market.address
 		}
 	}

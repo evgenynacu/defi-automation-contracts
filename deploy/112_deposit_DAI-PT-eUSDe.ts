@@ -13,3 +13,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 export default func
 func.tags = ['deposit-DAI-PT-eUSDe']
 
+//23538.150045 + 6086.657858153802863659 + 11712.310443
