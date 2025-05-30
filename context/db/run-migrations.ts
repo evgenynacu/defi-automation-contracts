@@ -52,7 +52,7 @@ async function updateJobs(pool: Pool) {
 			const name = `Morpho ${marketIds[marketId]} [${wallets[wallet]}]`
 			const maturityDate = marketMaturityDates[marketId]
 			jobs.push({ id, name, maturityDate })
-			console.log("Registered job " + id + " = " + name)
+			console.log("Registered job " + id + " = " + name + " " + maturityDate)
 		}
 	}
 
@@ -61,7 +61,7 @@ async function updateJobs(pool: Pool) {
 		const name = `Aave ${tokens[vault.collateral]} [${wallets[vault.owner]}]`
 		const maturityDate = tokenMaturityDates[vault.collateral]
 		jobs.push({ id, name, maturityDate })
-		console.log("Registered job " + id + " = " + name)
+		console.log("Registered job " + id + " = " + name + " " + maturityDate)
 	}
 
 	const client = await pool.connect()
