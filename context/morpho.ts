@@ -13,3 +13,14 @@ export const marketIds: Record<string, string> = {
 	"0xeec6c7e2ddb7578f2a7d86fc11cf9da005df34452ad9b9189c51266216f5d71b": "PT-wstUSR-25SEP2025/USDC",
 	"0x544b0a093b130a3fb01b72a1279ab848575f049c73da3b5c9c718f9350a1519c": "PT-csUSDL-31JUL2025/USDC",
 }
+
+export const marketMaturityDates: Record<string, Date> = {
+	"0xae4571cdcad4191b9a59d1bb27a10a1b05c92c84fe423e4886d5781a30a9c8f1": new Date(2025, 4, 29),
+	"0x407d8c123443d362ffdfe73208068ef158a21d1a44a988c9acc23a51bade7905": new Date(2025, 4, 29),
+	"0x10b401f4254a7039b7168c5a614c81ea8be698186cfb33aa56ac2adbcf0e88f9": new Date(2025, 6, 31),
+	"0x760b14c9003f08ac4bf0cfb02596ee4d6f0548a4fde5826bfd56befb9ed62ae9": new Date(2025, 6, 31),
+	"0xb81eaed0df42ff6646c8daf4fe38afab93b13b6a89c9750d08e705223a45e2ef": new Date(2025, 6, 31),
+	"0xbc552f0b14dd6f8e60b760a534ac1d8613d3539153b4d9675d697e048f2edc7e": new Date(2025, 6, 31),
+	"0xeec6c7e2ddb7578f2a7d86fc11cf9da005df34452ad9b9189c51266216f5d71b": new Date(2025, 8, 25),
+	"0x544b0a093b130a3fb01b72a1279ab848575f049c73da3b5c9c718f9350a1519c": new Date(2025, 6, 31),
+}

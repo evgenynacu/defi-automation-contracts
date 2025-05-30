@@ -3,8 +3,8 @@ import migrate from 'node-pg-migrate'
 import { Pool } from 'pg'
 import path from 'path'
 import { wallets } from "../wallets"
-import { marketIds } from "../morpho"
-import { aaveVaults } from "../aave"
+import { marketIds, marketMaturityDates } from "../morpho"
+import { aaveVaults, tokenMaturityDates } from "../aave"
 import { tokens } from "../tokens"
 
 export async function runMigrations(pool: Pool) {
@@ -45,12 +45,13 @@ export async function runMigrations(pool: Pool) {
 }
 
 async function updateJobs(pool: Pool) {
-	const jobs: { id: string, name: string }[] = []
+	const jobs: { id: string, name: string, maturityDate?: Date }[] = []
 	for (const wallet of Object.keys(wallets)) {
 		for (const marketId of Object.keys(marketIds)) {
 			const id = `morpho-withdraw-${wallet}-${marketId}`
 			const name = `Morpho ${marketIds[marketId]} [${wallets[wallet]}]`
-			jobs.push({ id, name })
+			const maturityDate = marketMaturityDates[marketId]
+			jobs.push({ id, name, maturityDate })
 			console.log("Registered job " + id + " = " + name)
 		}
 	}
@@ -58,7 +59,8 @@ async function updateJobs(pool: Pool) {
 	for(const vault of aaveVaults) {
 		const id = `aave-withdraw-${vault.vault}-${vault.collateral}-${vault.debt}`
 		const name = `Aave ${tokens[vault.collateral]} [${wallets[vault.owner]}]`
-		jobs.push({ id, name })
+		const maturityDate = tokenMaturityDates[vault.collateral]
+		jobs.push({ id, name, maturityDate })
 		console.log("Registered job " + id + " = " + name)
 	}
 
@@ -68,11 +70,11 @@ async function updateJobs(pool: Pool) {
 			client.query("BEGIN")
 			await client.query(
 				`
-          INSERT INTO jobs (id, name)
-          VALUES ($1, $2)
+          INSERT INTO jobs (id, name, maturity_date)
+          VALUES ($1, $2, $3)
           ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name
 			`,
-				[job.id, job.name],
+				[job.id, job.name, job.maturityDate || null],
 			)
 		}
 		client.query("COMMIT")
