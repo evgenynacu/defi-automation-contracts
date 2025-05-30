@@ -10,6 +10,17 @@ async function runJobs() {
 	await runMigrations(connectionPool)
 
 	const cron = await import("node-cron")
+	cron.schedule('*/30 * * * *', () => {
+		console.log("Updating views")
+
+		logAsync(
+			connectionPool.query("REFRESH MATERIALIZED VIEW main_data_week")
+		)
+		logAsync(
+			connectionPool.query("REFRESH MATERIALIZED VIEW main_data_day")
+		)
+	})
+
 	cron.schedule('* * * * *', () => {
 		console.log("Running cron job")
 
@@ -144,6 +155,16 @@ async function runJobs() {
 			})
 		)
 		//debt = usdc
+		//eth
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0xbc552f0b14dd6f8e60b760a534ac1d8613d3539153b4d9675d697e048f2edc7e"
+			})
+		)
+		//BTC wallet
 		logAsync(
 			syncService.syncData({
 				type: "morpho-withdraw",
