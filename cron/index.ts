@@ -14,10 +14,12 @@ async function runJobs() {
 		console.log("Updating views")
 
 		logAsync(
-			connectionPool.query("REFRESH MATERIALIZED VIEW main_data_week")
+			connectionPool.query("REFRESH MATERIALIZED VIEW main_data_week"),
+			"refreshing main_data_week"
 		)
 		logAsync(
-			connectionPool.query("REFRESH MATERIALIZED VIEW main_data_day")
+			connectionPool.query("REFRESH MATERIALIZED VIEW main_data_day"),
+			"refreshing main_data_day"
 		)
 	})
 
@@ -31,7 +33,8 @@ async function runJobs() {
 				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0xc84cdb5a63207d8c2e7251f758a435c6bd10b4eaefdaf36d7650159bf035962e"
-			})
+			}),
+			"syncing rUSD"
 		)
 
 		//srUSD/USDC BTC
@@ -41,7 +44,8 @@ async function runJobs() {
 				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0xbfed072faee09b963949defcdb91094465c34c6c62d798b906274ef3563c9cac"
-			})
+			}),
+			"syncing srUSD/USDC BTC"
 		)
 
 		//sUSDS/USDT
@@ -51,7 +55,8 @@ async function runJobs() {
 				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0xb5b0ff0fccf16dff5bef6d2d001d60f5c4ab49df1020a01073d3ad635c80e8d5"
-			})
+			}),
+			"syncing sUSDS/USDT [USD]"
 		)
 
 		//sUSDS/USDT BTC
@@ -61,7 +66,8 @@ async function runJobs() {
 				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0xb5b0ff0fccf16dff5bef6d2d001d60f5c4ab49df1020a01073d3ad635c80e8d5"
-			})
+			}),
+			"syncing sUSDS/USDT [BTC]"
 		)
 
 		// aave sUSDE
@@ -83,7 +89,8 @@ async function runJobs() {
 				vault: "0xE92096ecf53E4Ed58c8Dbc15af62249FaA76a7C8",
 				collateralToken: PT_eUSDe_AUG,
 				debtToken: USDT_ADDRESS,
-			})
+			}),
+			"syncing Aave PT-eUSDE-Aug"
 		)
 
 		// morpho cusd0-USD
@@ -112,7 +119,8 @@ async function runJobs() {
 				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0x10b401f4254a7039b7168c5a614c81ea8be698186cfb33aa56ac2adbcf0e88f9"
-			})
+			}),
+			"syncing PT-rUSD"
 		)
 
 		// morpho slvlUSD
@@ -126,14 +134,14 @@ async function runJobs() {
 		// )
 
 		// morpho PT-USDe/July
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0x760b14c9003f08ac4bf0cfb02596ee4d6f0548a4fde5826bfd56befb9ed62ae9"
-			})
-		)
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "morpho-withdraw",
+		// 		from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
+		// 		vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+		// 		marketId: "0x760b14c9003f08ac4bf0cfb02596ee4d6f0548a4fde5826bfd56befb9ed62ae9"
+		// 	})
+		// )
 
 		// morpho PT-sUSDe/July ETH
 		logAsync(
@@ -142,7 +150,8 @@ async function runJobs() {
 				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0xb81eaed0df42ff6646c8daf4fe38afab93b13b6a89c9750d08e705223a45e2ef"
-			})
+			}),
+			"syncing PT-sUSDe/July [ETH]"
 		)
 
 		// morpho PT-sUSDe/July BTC
@@ -152,7 +161,8 @@ async function runJobs() {
 				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0xb81eaed0df42ff6646c8daf4fe38afab93b13b6a89c9750d08e705223a45e2ef"
-			})
+			}),
+			"syncing PT-sUSDe/July [BTC]"
 		)
 		//debt = usdc
 		//eth
@@ -162,7 +172,8 @@ async function runJobs() {
 				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0xbc552f0b14dd6f8e60b760a534ac1d8613d3539153b4d9675d697e048f2edc7e"
-			})
+			}),
+			"syncing PT-sUSDe/July-USDC [ETH]"
 		)
 		//BTC wallet
 		logAsync(
@@ -171,7 +182,8 @@ async function runJobs() {
 				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0xbc552f0b14dd6f8e60b760a534ac1d8613d3539153b4d9675d697e048f2edc7e"
-			})
+			}),
+			"syncing PT-sUSDe/July-USDC [BTC]"
 		)
 		//USD wallet
 		logAsync(
@@ -180,7 +192,8 @@ async function runJobs() {
 				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0xbc552f0b14dd6f8e60b760a534ac1d8613d3539153b4d9675d697e048f2edc7e"
-			})
+			}),
+			"syncing PT-sUSDe/July-USDC [USD]"
 		)
 
 		//wstUSR-SEP
@@ -190,7 +203,8 @@ async function runJobs() {
 				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0xeec6c7e2ddb7578f2a7d86fc11cf9da005df34452ad9b9189c51266216f5d71b"
-			})
+			}),
+			"syncing wstUSR-SEP [ETH]"
 		)
 		//btc
 		logAsync(
@@ -199,7 +213,8 @@ async function runJobs() {
 				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0xeec6c7e2ddb7578f2a7d86fc11cf9da005df34452ad9b9189c51266216f5d71b"
-			})
+			}),
+			"syncing wstUSR-SEP [BTC]"
 		)
 
 		//csUSDL-JUL
@@ -209,7 +224,8 @@ async function runJobs() {
 				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0x544b0a093b130a3fb01b72a1279ab848575f049c73da3b5c9c718f9350a1519c"
-			})
+			}),
+			"syncing csUSDL-JUL [ETH]"
 		)
 
 		//ezETH
