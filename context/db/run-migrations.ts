@@ -72,7 +72,7 @@ async function updateJobs(pool: Pool) {
 				`
           INSERT INTO jobs (id, name, maturity_date)
           VALUES ($1, $2, $3)
-          ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name
+          ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, maturity_date = EXCLUDED.maturity_date
 			`,
 				[job.id, job.name, job.maturityDate || null],
 			)
