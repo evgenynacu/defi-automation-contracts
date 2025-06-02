@@ -1,5 +1,5 @@
 import { Pool } from "pg"
-import { ltvGauge, openPositionSizeGauge } from "./metrics"
+import { ltvGauge, openPositionSizeGauge, walletHFGauge } from "./metrics"
 import { marketIds } from "../context/morpho"
 import { wallets } from "../context/wallets"
 import { aaveVaults } from "../context/aave"
@@ -14,7 +14,7 @@ export async function exportLatestData(pool: Pool) {
 	)
 	res.rows.forEach(row => {
 		const info = parseJobId(row.job_id)
-		if (info !== undefined) {
+		if (info !== undefined && !info.positionId.startsWith("aave-hf")) {
 			openPositionSizeGauge.set(
 				{
 					wallet: info.wallet,
@@ -23,14 +23,22 @@ export async function exportLatestData(pool: Pool) {
 				row.data.result
 			)
 			if (row.data.ltv) {
-			ltvGauge.set(
-				{
-					wallet: info.wallet,
-					position_id: info.positionId
-				},
-				row.data.ltv
-			)
+				ltvGauge.set(
+					{
+						wallet: info.wallet,
+						position_id: info.positionId
+					},
+					row.data.ltv
+				)
 			}
+		}
+		if (info !== undefined && info.positionId.startsWith("aave-hf")) {
+			walletHFGauge.set(
+				{
+					wallet: info.wallet
+				},
+				row.data.result
+			)
 		}
 	})
 }
@@ -55,6 +63,14 @@ function parseJobId(jobId: string): { wallet: string, positionId: string } | und
 				wallet: wallets[desc.owner] || desc.owner,
 				positionId: tokens[collateral] || collateral,
 			}
+		}
+	}
+	if (jobId.startsWith("aave-hf")) {
+		const parts = jobId.split("-")
+		const wallet = parts[2]
+		return {
+			wallet: wallets[wallet] || wallet,
+			positionId: "aave-hf-" + wallet,
 		}
 	}
 	return undefined

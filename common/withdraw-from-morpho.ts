@@ -65,9 +65,12 @@ export async function withdrawFromMorpho<T>(ex: StrategyExecutor<T>, marketId: s
 
 	const oracle = MorphoOracle__factory.connect(params.oracle, ex.runner)
 	const price = await oracle.price()
+	const ltv = Number(totalDebt * 1000000n / (totalCollateral * price / 10n ** 36n)) / 1000000
+	const lltv = Number(1000000n * params.lltv / 10n ** 18n) / 1000000
 	return {
 		...result,
 		ltv: Number(totalDebt * 1000000n / (totalCollateral * price / 10n ** 36n)) / 1000000,
+		hf: lltv / ltv,
 		debt: Number(totalDebt) / (10 ** getDecimals(params.loanToken)),
 		debtShares: Number(pos.borrowShares) / (10 ** 18),
 		collateral: Number(totalCollateral) / (10 ** getDecimals(params.collateralToken)),

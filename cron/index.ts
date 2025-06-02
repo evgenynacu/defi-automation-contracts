@@ -26,6 +26,28 @@ async function runJobs() {
 	cron.schedule('* * * * *', () => {
 		console.log("Running cron job")
 
+		logAsync(
+			syncService.syncData({
+				type: "aave-health-factor",
+				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
+			}),
+			"syncing BTC HF"
+		)
+		logAsync(
+			syncService.syncData({
+				type: "aave-health-factor",
+				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
+			}),
+			"syncing ETH HF"
+		)
+		logAsync(
+			syncService.syncData({
+				type: "aave-health-factor",
+				from: "0x5764CfcFb4C206f497C5B65684Dd187dF8E30543",
+			}),
+			"syncing Misc HF"
+		)
+
 		//rUSD
 		logAsync(
 			syncService.syncData({

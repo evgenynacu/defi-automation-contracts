@@ -4,14 +4,19 @@ import { ContractRunner } from "ethers"
 import { withdrawFromMorpho } from "../../common/withdraw-from-morpho"
 import { withdrawFromCompound } from "../../deploy/withdraw-from-compound"
 import { withdrawFromAave } from "../../deploy/withdraw-from-aave"
+import { getAaveHealthFactor } from "../../common/get-aave-health-factor"
 
 export class DataService {
 	constructor(private readonly runner: ContractRunner) {
 	}
 
-	async getData(request: DataRequest): Promise<Omit<DataResult, "calldata" | "ops">> {
-		const executor = createCalculateExecutor(this.runner, request.vault, request.from)
-		return getData(executor, request)
+	async getData(request: DataRequest): Promise<DataResult> {
+		if (request.type === "aave-health-factor") {
+			return getAaveHealthFactor(this.runner, request.from)
+		} else {
+			const executor = createCalculateExecutor(this.runner, request.vault, request.from)
+			return getData(executor, request)
+		}
 	}
 }
 
@@ -59,14 +64,19 @@ function toDataResult(id: string, { result, ops, calldata, ...data }: CalculateR
 	}
 }
 
-type DataResult = Omit<CalculateResult, "calldata" | "ops" | "result"> & {
+type DataResult = {
 	id: string
-	result: number
-	rate?: number
+	[key: string]: any;
 }
 
-export type DataRequest = CommonPart &
-	(MorphoWithdrawDataRequest | AaveWithdrawDataRequest | CompoundWithdrawDataRequest)
+export type DataRequest = AaveHealthFactorRequest |
+	(CommonPart &
+		(MorphoWithdrawDataRequest | AaveWithdrawDataRequest | CompoundWithdrawDataRequest))
+
+export type AaveHealthFactorRequest = {
+	type: "aave-health-factor"
+	from: address
+}
 
 type CommonPart = {
 	vault: address
