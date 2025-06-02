@@ -8,4 +8,11 @@ export const openPositionSizeGauge = new Gauge({
 	labelNames: ['position_id', 'wallet'],
 })
 
+export const ltvGauge = new Gauge({
+	name: 'ltv',
+	help: 'LTV of every open position',
+	labelNames: ['position_id', 'wallet'],
+})
+
 register.registerMetric(openPositionSizeGauge)
+register.registerMetric(ltvGauge)

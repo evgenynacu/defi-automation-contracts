@@ -77,3 +77,7 @@ interface MorphoBlue {
         bytes calldata data
     ) external;
 }
+
+interface MorphoOracle {
+    function price() external view returns (uint);
+}

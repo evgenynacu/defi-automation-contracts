@@ -1,6 +1,6 @@
 import { MORPHO_BLUE } from "./addresses"
 import { StrategyExecutor } from "./calculate-result"
-import { MorphoBlue__factory } from "../typechain-types"
+import { MorphoBlue__factory, MorphoOracle__factory } from "../typechain-types"
 import { MaxUint256 } from "ethers"
 import { getDecimals } from "./decimals"
 
@@ -63,8 +63,11 @@ export async function withdrawFromMorpho<T>(ex: StrategyExecutor<T>, marketId: s
 		}
 	])
 
+	const oracle = MorphoOracle__factory.connect(params.oracle, ex.runner)
+	const price = await oracle.price()
 	return {
 		...result,
+		ltv: Number(totalDebt * 1000000n / (totalCollateral * price / 10n ** 36n)) / 1000000,
 		debt: Number(totalDebt) / (10 ** getDecimals(params.loanToken)),
 		debtShares: Number(pos.borrowShares) / (10 ** 18),
 		collateral: Number(totalCollateral) / (10 ** getDecimals(params.collateralToken)),

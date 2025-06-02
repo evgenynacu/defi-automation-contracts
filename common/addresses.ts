@@ -24,3 +24,4 @@ export const reservoirPsm: address = toAddress("0x4809010926aec940b550D34a46A527
 export const usdc: address = toAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48".toLowerCase())
 
 
+// 89284351019019534672035 * 985118577061080184000000 / 10**36 = 87955672829

@@ -1,5 +1,5 @@
 import { Pool } from "pg"
-import { openPositionSizeGauge } from "./metrics"
+import { ltvGauge, openPositionSizeGauge } from "./metrics"
 import { marketIds } from "../context/morpho"
 import { wallets } from "../context/wallets"
 import { aaveVaults } from "../context/aave"
@@ -22,6 +22,15 @@ export async function exportLatestData(pool: Pool) {
 				},
 				row.data.result
 			)
+			if (row.data.ltv) {
+			ltvGauge.set(
+				{
+					wallet: info.wallet,
+					position_id: info.positionId
+				},
+				row.data.ltv
+			)
+			}
 		}
 	})
 }
@@ -56,5 +65,6 @@ type DataResultRow = {
 	updated_at: Date
 	data: {
 		result: number
+		ltv?: number
 	}
 }
