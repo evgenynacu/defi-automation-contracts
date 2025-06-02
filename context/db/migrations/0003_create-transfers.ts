@@ -8,7 +8,7 @@ export function up(pgm: MigrationBuilder): void {
 	pgm.sql(`
       CREATE TABLE transfers
       (
-          job_id      VARCHAR PRIMARY KEY,
+          job_id      VARCHAR,
           created_at  TIMESTAMP NOT NULL,
           debt        DOUBLE PRECISION,
 		      leverage    REAL
