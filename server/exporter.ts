@@ -1,5 +1,5 @@
 import { Pool } from "pg"
-import { ltvGauge, openPositionSizeGauge, walletHFGauge } from "./metrics"
+import { hfGauge, ltvGauge, openPositionSizeGauge, walletHFGauge } from "./metrics"
 import { marketIds } from "../context/morpho"
 import { wallets } from "../context/wallets"
 import { aaveVaults } from "../context/aave"
@@ -32,7 +32,7 @@ export async function exportLatestData(pool: Pool) {
 				)
 			}
 			if (row.data.hf) {
-				ltvGauge.set(
+				hfGauge.set(
 					{
 						wallet: info.wallet,
 						position_id: info.positionId
