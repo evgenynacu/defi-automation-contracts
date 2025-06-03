@@ -31,6 +31,15 @@ export async function exportLatestData(pool: Pool) {
 					row.data.ltv
 				)
 			}
+			if (row.data.hf) {
+				ltvGauge.set(
+					{
+						wallet: info.wallet,
+						position_id: info.positionId
+					},
+					row.data.hf
+				)
+			}
 		}
 		if (info !== undefined && info.positionId.startsWith("aave-hf")) {
 			walletHFGauge.set(
@@ -82,5 +91,6 @@ type DataResultRow = {
 	data: {
 		result: number
 		ltv?: number
+		hf?: number
 	}
 }

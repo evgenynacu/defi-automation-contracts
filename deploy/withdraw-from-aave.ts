@@ -3,6 +3,7 @@ import { StrategyExecutor } from "../common/calculate-result"
 import { IPoolDataProvider__factory } from "../typechain-types"
 import { MaxUint256 } from "ethers"
 import { getDecimals } from "../common/decimals"
+import { getAaveHealthFactor } from "../common/get-aave-health-factor"
 
 const multiplier = 10000000
 
@@ -53,8 +54,10 @@ export async function withdrawFromAave<T>(
 			amount: MaxUint256
 		}
 	])
+	const hf = await getAaveHealthFactor(ex.runner, vaultAddress)
 	return {
 		...result,
+		hf: hf.result,
 		debt: Number(totalDebt) / (10 ** getDecimals(debtToken)),
 		collateral: Number(collateralBalance) / (10 ** getDecimals(collateralToken)),
 	}

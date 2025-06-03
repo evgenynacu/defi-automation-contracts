@@ -20,6 +20,14 @@ export const ltvGauge = new Gauge({
 	labelNames: ['position_id', 'wallet'],
 })
 
+export const hfGauge = new Gauge({
+	name: 'hf',
+	help: 'Health factor of every open position',
+	labelNames: ['position_id', 'wallet'],
+})
+
+
 register.registerMetric(walletHFGauge)
 register.registerMetric(openPositionSizeGauge)
 register.registerMetric(ltvGauge)
+register.registerMetric(hfGauge)
