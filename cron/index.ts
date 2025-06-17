@@ -10,6 +10,7 @@ async function runJobs() {
 	await runMigrations(connectionPool)
 
 	const cron = await import("node-cron")
+
 	cron.schedule('*/30 * * * *', () => {
 		console.log("Updating views")
 
