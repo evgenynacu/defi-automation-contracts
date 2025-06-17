@@ -1,7 +1,7 @@
 import { createContext } from "../context"
 import { runMigrations } from "../context/db/run-migrations"
 import { logAsync } from "../common/log-async"
-import { PT_eUSDe_AUG, USDT_ADDRESS } from "../common/addresses"
+import { PT_eUSDe_AUG, USDT_ADDRESS, WEETH_ADDRESS, WETH_ADDRESS, WSTETH_ADDRESS } from "../common/addresses"
 
 async function runJobs() {
 	console.log("Starting cron jobs")
@@ -25,6 +25,43 @@ async function runJobs() {
 
 	cron.schedule('* * * * *', () => {
 		console.log("Running cron job")
+
+		logAsync(
+			syncService.syncData({
+				type: "swap-rate",
+				fromToken: WETH_ADDRESS,
+				toToken: WEETH_ADDRESS,
+				amount: 100000000000000000000n,
+			}),
+			"checking WETH-weETH rate"
+		)
+		logAsync(
+			syncService.syncData({
+				type: "swap-rate",
+				fromToken: WETH_ADDRESS,
+				toToken: WSTETH_ADDRESS,
+				amount: 100000000000000000000n,
+			}),
+			"checking WETH-wstETH rate"
+		)
+		logAsync(
+			syncService.syncData({
+				type: "swap-rate",
+				fromToken: WEETH_ADDRESS,
+				toToken: WETH_ADDRESS,
+				amount: 100000000000000000000n,
+			}),
+			"checking weETH-WETH rate"
+		)
+		logAsync(
+			syncService.syncData({
+				type: "swap-rate",
+				fromToken: WSTETH_ADDRESS,
+				toToken: WETH_ADDRESS,
+				amount: 100000000000000000000n,
+			}),
+			"checking wstETH-WETH rate"
+		)
 
 		logAsync(
 			syncService.syncData({

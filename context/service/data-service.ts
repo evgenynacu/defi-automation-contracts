@@ -5,6 +5,8 @@ import { withdrawFromMorpho } from "../../common/withdraw-from-morpho"
 import { withdrawFromCompound } from "../../deploy/withdraw-from-compound"
 import { withdrawFromAave } from "../../deploy/withdraw-from-aave"
 import { getAaveHealthFactor } from "../../common/get-aave-health-factor"
+import { testSwap } from "../../common/test-swap"
+import { tokens } from "../tokens"
 
 export class DataService {
 	constructor(private readonly runner: ContractRunner) {
@@ -13,10 +15,22 @@ export class DataService {
 	async getData(request: DataRequest): Promise<DataResult> {
 		if (request.type === "aave-health-factor") {
 			return getAaveHealthFactor(this.runner, request.from)
+		} else if (request.type === "swap-rate") {
+			return getSwapRate(request)
 		} else {
 			const executor = createCalculateExecutor(this.runner, request.vault, request.from)
 			return getData(executor, request)
 		}
+	}
+}
+
+async function getSwapRate(request: SwapRateRequest) {
+	const result = await testSwap(request.fromToken, request.amount, request.toToken)
+	const mul = 10000000000
+	const rate = Number(result * BigInt(mul) / request.amount) / mul
+	return {
+		id: `swap-rate-${tokens[request.fromToken]}-${tokens[request.toToken]}`,
+		result: rate
 	}
 }
 
@@ -69,13 +83,20 @@ type DataResult = {
 	[key: string]: any;
 }
 
-export type DataRequest = AaveHealthFactorRequest |
+export type DataRequest = AaveHealthFactorRequest | SwapRateRequest |
 	(CommonPart &
 		(MorphoWithdrawDataRequest | AaveWithdrawDataRequest | CompoundWithdrawDataRequest))
 
 export type AaveHealthFactorRequest = {
 	type: "aave-health-factor"
 	from: address
+}
+
+export type SwapRateRequest = {
+	type: "swap-rate"
+	fromToken: address,
+	toToken: address,
+	amount: bigint,
 }
 
 type CommonPart = {

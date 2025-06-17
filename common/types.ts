@@ -13,3 +13,9 @@ export function toHex(possibly: string): `0x${string}` {
 	}
 	throw new Error("Invalid hex " + possibly)
 }
+
+export type StateDiff = Record<address, {
+	stateDiff: {
+		[key: `0x${string}`]: `0x${string}`
+	}
+}>
