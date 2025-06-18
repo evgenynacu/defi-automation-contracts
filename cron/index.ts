@@ -107,6 +107,16 @@ async function runJobs() {
 			}),
 			"syncing srUSD/USDC BTC"
 		)
+		//srUSD/USDC USD
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0xbfed072faee09b963949defcdb91094465c34c6c62d798b906274ef3563c9cac"
+			}),
+			"syncing srUSD/USDC USD"
+		)
 
 		//sUSDS/USDT
 		logAsync(
@@ -286,6 +296,17 @@ async function runJobs() {
 				marketId: "0x544b0a093b130a3fb01b72a1279ab848575f049c73da3b5c9c718f9350a1519c"
 			}),
 			"syncing csUSDL-JUL [ETH]"
+		)
+
+		//PT-USDS Aug
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0xa458018cf1a6e77ebbcc40ba5776ac7990e523b7cc5d0c1e740a4bbc13190d8f"
+			}),
+			"syncing PT-USDS Aug [ETH]"
 		)
 
 		logAsync(

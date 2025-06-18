@@ -2,11 +2,13 @@ import { ISwapProvider } from "./ISwapProvider"
 import { ProviderConfig, SwapParams, SwapResult } from "./types"
 import { toAddress, toHex } from "../../types"
 import { ReservoirSavingModule__factory, ReservoirSwap__factory } from "../../../typechain-types"
-import { reservoirSavingModule, rUSD, srUSD, usdc } from "../../addresses"
+import { reservoirCreditEnforcer, reservoirSavingModule, rUSD, srUSD, usdc } from "../../addresses"
 import { type ContractRunner } from "ethers"
 
 const reservoirInterface = ReservoirSavingModule__factory.createInterface()
 const swapInterface = ReservoirSwap__factory.createInterface()
+
+const RESERVOIR_SWAP = toAddress("0x78F92Fe8a0672279BB8da3C433730067D8Cf59f9")
 
 export class ReservoirProvider implements ISwapProvider {
 	getConfig(): ProviderConfig {
@@ -17,11 +19,19 @@ export class ReservoirProvider implements ISwapProvider {
 	}
 
 	async getQuote(params: SwapParams): Promise<SwapResult> {
-		if (params.fromToken.toLowerCase() !== srUSD) {
-			throw new Error("only from srUSD is supported")
+		if (params.toToken.toLowerCase() === srUSD && params.fromToken.toLowerCase() === usdc) {
+			return {
+				to: RESERVOIR_SWAP,
+				data: toHex(swapInterface.encodeFunctionData("swapUSDCToSavings", [params.swapAmount])),
+				outAmount: params.swapAmount, //todo it's not 100% correct, though it's not used
+			}
 		}
 
 		if (params.toToken.toLowerCase() === rUSD) {
+			if (params.fromToken.toLowerCase() !== srUSD) {
+				throw new Error("only from srUSD is supported")
+			}
+
 			const outAmount = await calculateOutAmount(params.runner, params.swapAmount)
 			const data = reservoirInterface.encodeFunctionData("redeem", [outAmount])
 
@@ -33,11 +43,15 @@ export class ReservoirProvider implements ISwapProvider {
 		}
 
 		if (params.toToken.toLowerCase() === usdc) {
-			const rUsdAmount = await calculateOutAmount(params.runner, params.swapAmount)
+			if (params.fromToken.toLowerCase() !== srUSD) {
+				throw new Error("only from srUSD is supported")
+			}
+
+ 			const rUsdAmount = await calculateOutAmount(params.runner, params.swapAmount)
 			const outAmount = rUsdAmount / (10n ** 12n)
 
 			return {
-				to: toAddress("0x4dae3083a3bC2c562d5642dd668d996EAB7Dde12"),
+				to: RESERVOIR_SWAP,
 				data: toHex(swapInterface.encodeFunctionData("swapSavingsToUSDC", [params.swapAmount])),
 				outAmount,
 			}

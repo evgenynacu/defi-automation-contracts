@@ -10,7 +10,7 @@ import { ContractTransactionResponse } from "ethers"
  */
 export async function executeStrategy(vaultAddress: address, operations: StrategyOperation[]) {
 	const [signer] = await ethers.getSigners()
-	const { result, info, ops, faults, calldata } = await calculateResult(ethers.provider, vaultAddress, signer.address as address, operations)
+	const { result, info, ops, faults, calldata, working } = await calculateResult(ethers.provider, vaultAddress, signer.address as address, operations)
 
 	const vault = await ethers.getContractAt("AutomatedVault", vaultAddress)
 
@@ -18,7 +18,7 @@ export async function executeStrategy(vaultAddress: address, operations: Strateg
 		const url = `https://dashboard.tenderly.co/eugenenacu/project/simulator/new?stateOverrides=&from=${signer.address}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`
 		console.log("simulate: \"" + url + "\"")
 	}
-	console.log("swap faults: " + faults, "best: " + info + " with out " + result)
+	console.log("swap faults: " + faults, "best: " + info + " with out " + result, "working: " + working)
 	return await vault.rebalance(ops)
 }
 

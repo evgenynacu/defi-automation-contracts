@@ -80,6 +80,18 @@ export class OpenoceanProvider extends IcarusProvider {
   }
 }
 
+export class VeloraProvider extends IcarusProvider {
+  constructor() {
+    super("velora")
+  }
+}
+
+export class UnizenProvider extends IcarusProvider {
+  constructor() {
+    super("unizen")
+  }
+}
+
 export class UsorProvider extends IcarusProvider {
   constructor() {
     super("usor")

@@ -30,6 +30,7 @@ export async function calculateResult(
 		return {
 			result: best.result,
 			info: best.info,
+			working: sorted.map(it => it.info),
 			in: best.in,
 			out: best.out,
 			ops: best.ops,
@@ -70,6 +71,7 @@ async function callAndGetOut(
 		return {
 			ok: true,
 			info,
+			working: [info],
 			in: inAmount,
 			out: outAmount,
 			result: parsed[0] as bigint,
@@ -92,6 +94,7 @@ type OutResult = OutOkResult | OutErrorResult
 
 type OutOkResult = {
 	info: string
+	working: string[]
 	result: bigint
 	in?: number,
 	out?: number,
