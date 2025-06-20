@@ -1,7 +1,15 @@
 import { createContext } from "../context"
 import { runMigrations } from "../context/db/run-migrations"
 import { logAsync } from "../common/log-async"
-import { PT_eUSDe_AUG, USDT_ADDRESS, WEETH_ADDRESS, WETH_ADDRESS, WSTETH_ADDRESS } from "../common/addresses"
+import {
+	DAI_ADDRESS,
+	PT_eUSDe_AUG, SDAI_ADDRESS, sUSDe_ADDRESS,
+	USDe_ADDRESS,
+	USDT_ADDRESS,
+	WEETH_ADDRESS,
+	WETH_ADDRESS,
+	WSTETH_ADDRESS
+} from "../common/addresses"
 
 async function runJobs() {
 	console.log("Starting cron jobs")
@@ -62,6 +70,42 @@ async function runJobs() {
 				amount: 100000000000000000000n,
 			}),
 			"checking wstETH-WETH rate"
+		)
+		logAsync(
+			syncService.syncData({
+				type: "swap-rate",
+				fromToken: USDe_ADDRESS,
+				toToken: sUSDe_ADDRESS,
+				amount: 100000000000000000000000n,
+			}),
+			"checking USDe-sUSDe rate"
+		)
+		logAsync(
+			syncService.syncData({
+				type: "swap-rate",
+				fromToken: sUSDe_ADDRESS,
+				toToken: USDe_ADDRESS,
+				amount: 100000000000000000000000n,
+			}),
+			"checking sUSDe-USDe rate"
+		)
+		logAsync(
+			syncService.syncData({
+				type: "swap-rate",
+				fromToken: SDAI_ADDRESS,
+				toToken: DAI_ADDRESS,
+				amount: 100000000000000000000000n,
+			}),
+			"checking USDe-sUSDe rate"
+		)
+		logAsync(
+			syncService.syncData({
+				type: "swap-rate",
+				fromToken: DAI_ADDRESS,
+				toToken: SDAI_ADDRESS,
+				amount: 100000000000000000000000n,
+			}),
+			"checking sUSDe-USDe rate"
 		)
 
 		logAsync(

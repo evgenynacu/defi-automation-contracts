@@ -1,7 +1,15 @@
 import { createCalculateExecutor } from "./calculate-result"
 import { address } from "./types"
 import { ethers } from "ethers"
-import { WEETH_ADDRESS, WETH_ADDRESS, WSTETH_ADDRESS } from "./addresses"
+import {
+	DAI_ADDRESS,
+	SDAI_ADDRESS,
+	sUSDe_ADDRESS,
+	USDe_ADDRESS,
+	WEETH_ADDRESS,
+	WETH_ADDRESS,
+	WSTETH_ADDRESS
+} from "./addresses"
 
 export async function testSwap(
 	fromToken: address,
@@ -34,14 +42,20 @@ export async function testSwap(
 }
 
 function getSlot(token: address): `0x${string}` {
-	if (token === WEETH_ADDRESS) {
-		return "0x59a5b920ef65d9f4fbe8bc12b1741664384f86b122ff193ed6f81dd7fdf24f99"
+	const slot = SLOTS[token]
+	if (slot) {
+		return slot
 	}
-	if (token === WSTETH_ADDRESS) {
-		return "0xcbce38d2a396df10bbdba0503c72fc20ab34efc98f9cda900b01217a4dfee62d"
-	}
-	if (token === WETH_ADDRESS) {
-		return "0xfd5f8c061cfecd096dabc8fd13b51ab68a4f601f87b140bce0bc3e7d5838b3a7"
-	}
+
 	throw new Error("Unknown token " + token)
+}
+
+const SLOTS: Record<address, `0x${string}`> = {
+	[WEETH_ADDRESS]: "0x59a5b920ef65d9f4fbe8bc12b1741664384f86b122ff193ed6f81dd7fdf24f99",
+	[WSTETH_ADDRESS]: "0xcbce38d2a396df10bbdba0503c72fc20ab34efc98f9cda900b01217a4dfee62d",
+	[WETH_ADDRESS]: "0xfd5f8c061cfecd096dabc8fd13b51ab68a4f601f87b140bce0bc3e7d5838b3a7",
+	[USDe_ADDRESS]: "0x6011ef8ab201e2fab1f8a08cc98ee8ac9f35e18f8e1e90fb93e1a70ff037480d",
+	[sUSDe_ADDRESS]: "0xaff56123b65031ca3d303f0163b592a442d812a900318bc3c9f5726b6fa0e68c",
+	[SDAI_ADDRESS]: "0x04f57dd85ec5e81f7372eb95c7ed0161bd7e95fa724be8f8aeee3a93b24598cf",
+	[DAI_ADDRESS]: "0x6011ef8ab201e2fab1f8a08cc98ee8ac9f35e18f8e1e90fb93e1a70ff037480d",
 }
