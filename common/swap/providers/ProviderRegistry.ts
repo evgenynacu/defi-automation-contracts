@@ -37,9 +37,9 @@ export class ProviderRegistry {
 
   public static createAllProviders(): ISwapProvider[] {
     return [
-      new OneInchProvider(),
+      // new OneInchProvider(),
       new OdosV2Provider(),
-      new SushiSwapProvider(),
+      // new SushiSwapProvider(),
       new KyberSwapProvider(),
       new EnsoProvider(),
       new KyberSwapIcarusProvider(),
@@ -47,8 +47,8 @@ export class ProviderRegistry {
       new UnizenProvider(),
       // new OkxProvider(),
       new OpenoceanProvider(),
-      new UsorProvider(),
-      new ZeroexProvider(),
+      // new UsorProvider(),
+      // new ZeroexProvider(),
       new PendleProvider(),
       new ReservoirProvider(),
     ]
