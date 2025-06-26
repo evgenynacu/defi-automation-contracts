@@ -141,6 +141,17 @@ async function runJobs() {
 			"syncing rUSD"
 		)
 
+		//syrupUSDC Aug 25
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0x96a4399f2c837f8aa34c39718e30625a84f9285991f0a08d1f2997e15bbeeaa8"
+			}),
+			"syncing PT-syrupUSDC-Aug"
+		)
+
 		//srUSD/USDC BTC
 		logAsync(
 			syncService.syncData({
