@@ -3,7 +3,7 @@ import { runMigrations } from "../context/db/run-migrations"
 import { logAsync } from "../common/log-async"
 import {
 	DAI_ADDRESS,
-	PT_eUSDe_AUG, SDAI_ADDRESS, sUSDe_ADDRESS,
+	PT_eUSDe_AUG, SDAI_ADDRESS, sUSDe_ADDRESS, usdc,
 	USDe_ADDRESS,
 	USDT_ADDRESS,
 	WEETH_ADDRESS,
@@ -34,6 +34,25 @@ async function runJobs() {
 
 	cron.schedule('* * * * *', () => {
 		console.log("Running cron job")
+
+		logAsync(
+			syncService.syncData({
+				type: "swap-rate",
+				fromToken: usdc,
+				toToken: "0x80ac24aa929eaf5013f6436cda2a7ba190f5cc0b",
+				amount: 200000000000n,
+			}),
+			"checking usdc-syrupUSDC rate"
+		)
+		logAsync(
+			syncService.syncData({
+				type: "swap-rate",
+				fromToken: "0x80ac24aa929eaf5013f6436cda2a7ba190f5cc0b",
+				toToken: usdc,
+				amount: 200000000000n,
+			}),
+			"checking syrupUSDC-usdc rate"
+		)
 
 		logAsync(
 			syncService.syncData({

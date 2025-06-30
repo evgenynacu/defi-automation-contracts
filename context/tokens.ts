@@ -19,5 +19,6 @@ export const tokens: Record<address, string> = {
 	[sUSDe_ADDRESS]: "sUSDe",
 	[DAI_ADDRESS]: "DAI",
 	[SDAI_ADDRESS]: "sDAI",
-	"0xCcE7D12f683c6dAe700154f0BAdf779C0bA1F89A": "PT-syrupUSDC-AUG25"
+	"0xCcE7D12f683c6dAe700154f0BAdf779C0bA1F89A": "PT-syrupUSDC-AUG25",
+	"0x80ac24aa929eaf5013f6436cda2a7ba190f5cc0b": "syrupUSDC",
 }

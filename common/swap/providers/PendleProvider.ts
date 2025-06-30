@@ -14,6 +14,7 @@ export class PendleProvider implements ISwapProvider {
 	async getQuote(params: SwapParams): Promise<SwapResult> {
 		const market = await findActiveMarket(params.fromToken, params.toToken)
 		if (market) {
+			console.log("Found active Pendle Market. using it: " + market)
 			const url = `https://api-v2.pendle.finance/core/v1/sdk/${params.chainId}/markets/${market}/swap?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&tokenIn=${params.fromToken}&tokenOut=${params.toToken}&amountIn=${params.swapAmount.toString()}`
 			const res = await fetch(url)
 			if (res.status !== 200) {
@@ -31,6 +32,7 @@ export class PendleProvider implements ISwapProvider {
 
 		const inactiveMarket = await findInactiveMarket(params.fromToken, params.toToken)
 		if (inactiveMarket) {
+			console.log("Found inactive Pendle Market. using it: " + inactiveMarket)
 			const exitUrl = `https://api-v2.pendle.finance/core/v1/sdk/1/markets/${inactiveMarket}/exit-positions?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&ptAmount=${params.swapAmount.toString()}&ytAmount=0&lpAmount=0&tokenOut=${params.toToken}`
 			const res = await fetch(exitUrl)
 
