@@ -3,7 +3,7 @@ import { runMigrations } from "../context/db/run-migrations"
 import { logAsync } from "../common/log-async"
 import {
 	DAI_ADDRESS,
-	PT_eUSDe_AUG, SDAI_ADDRESS, sUSDe_ADDRESS, usdc,
+	PT_eUSDe_AUG, SDAI_ADDRESS, sUSDe_ADDRESS, SYRUP_USDC, usdc,
 	USDe_ADDRESS,
 	USDT_ADDRESS,
 	WEETH_ADDRESS,
@@ -39,7 +39,7 @@ async function runJobs() {
 			syncService.syncData({
 				type: "swap-rate",
 				fromToken: usdc,
-				toToken: "0x80ac24aa929eaf5013f6436cda2a7ba190f5cc0b",
+				toToken: SYRUP_USDC,
 				amount: 200000000000n,
 			}),
 			"checking usdc-syrupUSDC rate"
@@ -47,7 +47,7 @@ async function runJobs() {
 		logAsync(
 			syncService.syncData({
 				type: "swap-rate",
-				fromToken: "0x80ac24aa929eaf5013f6436cda2a7ba190f5cc0b",
+				fromToken: SYRUP_USDC,
 				toToken: usdc,
 				amount: 200000000000n,
 			}),

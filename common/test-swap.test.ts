@@ -2,7 +2,7 @@ import { testSwap } from "./test-swap"
 import {
 	DAI_ADDRESS,
 	SDAI_ADDRESS,
-	sUSDe_ADDRESS,
+	sUSDe_ADDRESS, SYRUP_USDC, usdc,
 	USDe_ADDRESS,
 	WEETH_ADDRESS,
 	WETH_ADDRESS,
@@ -44,4 +44,15 @@ describe("Test Swap", () => {
 		const out = await testSwap(SDAI_ADDRESS, 100000000000000000000000n, DAI_ADDRESS)
 		console.log("value is", out)
 	})
+
+	it("should try and swap usdc->syrupUSDC", async () => {
+		const out = await testSwap(usdc, 100000000000n, SYRUP_USDC)
+		console.log("value is", out)
+	})
+
+	it("should try and swap syrupUSDC -> usdc", async () => {
+		const out = await testSwap(SYRUP_USDC, 100000000000n, usdc)
+		console.log("value is", out)
+	})
+
 })
