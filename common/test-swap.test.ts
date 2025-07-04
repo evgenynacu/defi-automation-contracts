@@ -2,12 +2,15 @@ import { testSwap } from "./test-swap"
 import {
 	DAI_ADDRESS,
 	SDAI_ADDRESS,
-	sUSDe_ADDRESS, SYRUP_USDC, usdc,
+	sUSDe_ADDRESS,
+	SYRUP_USDC,
+	usdc,
 	USDe_ADDRESS,
 	WEETH_ADDRESS,
 	WETH_ADDRESS,
 	WSTETH_ADDRESS
 } from "./addresses"
+import { describe, it } from "mocha"
 
 describe("Test Swap", () => {
 	it("should try and swap weETH", async () => {

@@ -12,23 +12,28 @@
     "test": "hardhat test",
     "test-deploy": "hardhat test deploy-test/*.test.ts --network mainnet_universal",
     "verify": "hardhat --network scroll etherscan-verify --api-url https://api.scrollscan.com --api-key $API_KEY",
-    "migrate": "node-pg-migrate"
+    "migrate": "node-pg-migrate",
+    "test:mocha": "mocha --require ts-node/register '**/*.test.ts' --timeout 10000",
+    "test:mocha:integration": "mocha --require ts-node/register '**/*.integration.test.ts' --timeout 180000",
+    "test:mocha:unit": "mocha --require ts-node/register '**/*.test.ts' --ignore '**/*.integration.test.ts' --timeout 10000"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-network-helpers": "^1.0.11",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
-    "@types/jest": "^30.0.0",
     "@types/node-cron": "^3.0.11",
     "@types/pg": "^8.11.11",
+    "chai": "^4.5.0",
     "dotenv": "^16.0.3",
     "hardhat": "^2.22.8",
     "hardhat-deploy": "^0.12.4",
     "hardhat-deploy-ethers": "^0.4.2",
     "hardhat-ethers": "^1.0.1",
     "hardhat-etherscan": "^1.0.1",
-    "ts-jest": "^29.4.0"
+    "mocha": "^11.7.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
   },
   "dependencies": {
     "@aave/core-v3": "^1.19.3",
