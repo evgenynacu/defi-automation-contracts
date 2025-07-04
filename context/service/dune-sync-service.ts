@@ -158,7 +158,6 @@ export class DuneSyncService {
 		)
 
 		const insertQuery = `INSERT INTO ${fullTableName} (${columns.join(', ')}) VALUES ${placeholders}`
-		console.log(insertQuery, values)
 		await client.query(insertQuery, values)
 	}
 
