@@ -4,7 +4,6 @@ export interface DuneQueryResult<T = any> {
 	data: T[];
 	pagination?: {
 		next_offset?: string;
-		has_more: boolean;
 	};
 	metadata?: any;
 }
@@ -23,10 +22,17 @@ export interface DuneExecutionOptions {
 	apiKey: string;
 }
 
-export interface DuneFetchOptions {
+export type DuneFetchOptions = DuneExecutionFetchOptions | DuneQueryFetchOptions
+
+type DuneExecutionFetchOptions = {
 	executionId: string;
 	limit?: number;
-	offset?: string;
+	apiKey: string;
+}
+
+type DuneQueryFetchOptions = {
+	queryId: string;
+	limit?: number;
 	apiKey: string;
 }
 
@@ -103,12 +109,14 @@ export class DuneService {
 	 * @param options Fetch parameters
 	 * @returns Query result for one page
 	 */
-	async fetchPage<T = any>(options: DuneFetchOptions): Promise<DuneQueryResult<T>> {
-		const { executionId, limit, offset, apiKey } = options
+	async fetchPage<T = any>(options: DuneFetchOptions & { offset?: string }): Promise<DuneQueryResult<T>> {
+		const { limit, offset, apiKey } = options
 
 		try {
 			const resultResponse = await axios.get(
-				`${this.baseUrl}/execution/${executionId}/results`,
+				"executionId" in options
+					? `${this.baseUrl}/execution/${options.executionId}/results`
+					: `${this.baseUrl}/query/${options.queryId}/results`,
 				{
 					params: { limit, offset },
 					headers: { 'x-dune-api-key': apiKey }
@@ -118,8 +126,7 @@ export class DuneService {
 			return {
 				data: resultResponse.data.result.rows,
 				pagination: {
-					next_offset: resultResponse.data.result.next_offset,
-					has_more: resultResponse.data.result.has_more
+					next_offset: resultResponse.data.next_offset,
 				},
 				metadata: resultResponse.data.result.metadata
 			}
@@ -129,29 +136,20 @@ export class DuneService {
 		}
 	}
 
-	/**
-	 * Loads all data from completed execution using AsyncGenerator
-	 * @param executionId Execution ID
-	 * @param apiKey API key
-	 * @param limit Page size (optional)
-	 * @returns AsyncGenerator that yields pages of data
-	 */
-	async* fetchAllPages<T = any>(executionId: string, apiKey: string, limit?: number): AsyncGenerator<T[], void, unknown> {
-		let currentOffset: string | undefined
+	async* fetchAllPages<T = any>(options: DuneFetchOptions): AsyncGenerator<T[], void, unknown> {
+		let currentOffset: string | undefined = undefined
 		let hasMore = true
 
 		while (hasMore) {
-			const result = await this.fetchPage<T>({
-				executionId,
-				apiKey,
-				limit,
-				offset: currentOffset
+			const result: DuneQueryResult<T> = await this.fetchPage<T>({
+				...options,
+				offset: currentOffset,
 			})
 
 			yield result.data
 
 			currentOffset = result.pagination?.next_offset
-			hasMore = result.pagination?.has_more || false
+			hasMore = result.pagination?.next_offset !== undefined
 		}
 	}
 
@@ -172,7 +170,11 @@ export class DuneService {
 		await this.waitForExecution(executionId, options.apiKey)
 
 		// Fetch all data using generator
-		yield* this.fetchAllPages<T>(executionId, options.apiKey, options.limit)
+		yield* this.fetchAllPages<T>({
+			executionId,
+			apiKey: options.apiKey,
+			limit: options.limit,
+		})
 	}
 
 	/**
@@ -185,7 +187,7 @@ export class DuneService {
 	async fetchAllData<T = any>(executionId: string, apiKey: string, limit?: number): Promise<T[]> {
 		const allData: T[] = []
 
-		for await (const page of this.fetchAllPages<T>(executionId, apiKey, limit)) {
+		for await (const page of this.fetchAllPages<T>({ executionId, apiKey, limit })) {
 			allData.push(...page)
 		}
 

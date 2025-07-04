@@ -92,12 +92,46 @@ describe('DuneSyncService Integration Tests with TestContainers', function () {
 			`)
 
 			console.log(`✓ Created test table: ${TEST_TABLE_NAME}`)
+
+			await client.query(`
+          CREATE TABLE susde_rates
+          (
+              hr   TIMESTAMP,
+              rate DECIMAL
+          );
+			`)
+
+			console.log(`✓ Created test table: susde_rates`)
 		} finally {
 			client.release()
 		}
 	})
 
 	describe('syncQueryToPostgres', () => {
+		it('should successfully sync sUSDe query data to PostgreSQL', async function () {
+			this.timeout(300000) // 5 minutes
+
+			const result = await syncService.syncQueryToPostgres({
+				queryId: "5378953",
+				tableName: "susde_rates",
+				apiKey: API_KEY!,
+				truncateBeforeInsert: true,
+				pageSize: 100,
+				doNotExecute: true,
+			})
+
+			// Verify result
+			expect(result.success).to.be.true
+
+			console.log(`✓ Sync result:`, {
+				success: result.success,
+				totalRecords: result.totalRecords,
+				totalPages: result.totalPages,
+				duration: result.duration,
+				executionId: result.executionId
+			})
+		})
+
 		it('should successfully sync Dune query data to PostgreSQL', async function () {
 			this.timeout(300000) // 5 minutes
 

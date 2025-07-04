@@ -9,6 +9,7 @@ export interface DuneSyncOptions {
 	pageSize?: number;
 	truncateBeforeInsert?: boolean;
 	schema?: string;
+	doNotExecute?: boolean;
 }
 
 export interface SyncResult {
@@ -42,18 +43,22 @@ export class DuneSyncService {
 			// Get a database client
 			client = await this.pool.connect()
 
-			// Execute query
-			executionId = await this.duneService.executeQuery({
-				queryId: options.queryId,
-				params: options.params,
-				apiKey: options.apiKey
-			})
+			if (options.doNotExecute) {
 
-			console.log(`✓ Query executed. Execution ID: ${executionId}`)
+			} else {
+				// Execute query
+				executionId = await this.duneService.executeQuery({
+					queryId: options.queryId,
+					params: options.params,
+					apiKey: options.apiKey
+				})
 
-			// Wait for completion
-			await this.duneService.waitForExecution(executionId, options.apiKey)
-			console.log(`✓ Query execution completed`)
+				console.log(`✓ Query executed. Execution ID: ${executionId}`)
+
+				// Wait for completion
+				await this.duneService.waitForExecution(executionId, options.apiKey)
+				console.log(`✓ Query execution completed`)
+			}
 
 			// Truncate table if requested
 			if (options.truncateBeforeInsert) {
@@ -62,11 +67,11 @@ export class DuneSyncService {
 			}
 
 			// Fetch and save data
-			for await (const page of this.duneService.fetchAllPages<any>(
-				executionId,
-				options.apiKey,
-				options.pageSize || 1000
-			)) {
+			const req = executionId ?
+				{ executionId, apiKey: options.apiKey, limit: options.pageSize || 1000 } :
+				{ queryId: options.queryId, apiKey: options.apiKey, limit: options.pageSize || 1000 }
+
+			for await (const page of this.duneService.fetchAllPages<any>(req)) {
 				totalPages++
 				totalRecords += page.length
 
@@ -172,12 +177,12 @@ export class DuneSyncService {
 		return name
 			.toLowerCase()
 			.replace(/[^a-z0-9_]/g, '_')
-			.replace(/^(\d)/, '_$1') // Ensure doesn't start with number
+			.replace(/^(\d)/, '_$1') // Ensure doesn't start with a number
 			.substring(0, 63) // PostgreSQL identifier limit
 	}
 
 	/**
-	 * Gets full table name with schema
+	 * Gets the full table name with schema
 	 */
 	private getFullTableName(tableName: string, schema?: string): string {
 		const schemaPrefix = schema ? `${schema}.` : ''
