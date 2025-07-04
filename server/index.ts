@@ -38,6 +38,9 @@ createContext().then(async ({ connectionPool, duneSyncService }) => {
 			tableName: "susde_rates",
 			doNotExecute: true,
 		})
+		if (error) {
+			console.error("Error syncing data", error)
+		}
 		res.status(200).json({ status: "OK", ...r })
 	})
 
