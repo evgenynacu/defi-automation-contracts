@@ -20,6 +20,7 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-network-helpers": "^1.0.11",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@testcontainers/postgresql": "^11.0.3",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/node-cron": "^3.0.11",
@@ -32,6 +33,7 @@
     "hardhat-ethers": "^1.0.1",
     "hardhat-etherscan": "^1.0.1",
     "mocha": "^11.7.1",
+    "testcontainers": "^11.0.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   },

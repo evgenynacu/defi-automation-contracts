@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from 'axios'
 
 export interface DuneQueryResult<T = any> {
 	data: T[];
@@ -31,7 +31,7 @@ export interface DuneFetchOptions {
 }
 
 export class DuneService {
-	private readonly baseUrl = 'https://api.dune.com/api/v1';
+	private readonly baseUrl = 'https://api.dune.com/api/v1'
 
 	/**
 	 * Executes a Dune query and returns execution ID
@@ -39,19 +39,19 @@ export class DuneService {
 	 * @returns Execution ID
 	 */
 	async executeQuery(options: DuneExecutionOptions): Promise<string> {
-		const { queryId, params = {}, apiKey } = options;
+		const { queryId, params = {}, apiKey } = options
 
 		try {
 			const executeResponse = await axios.post(
 				`${this.baseUrl}/query/${queryId}/execute`,
 				{ query_parameters: params },
 				{ headers: { 'x-dune-api-key': apiKey } }
-			);
+			)
 
-			return executeResponse.data.execution_id;
+			return executeResponse.data.execution_id
 		} catch (error) {
-			console.error('Error executing Dune query:', error);
-			throw error;
+			console.error('Error executing Dune query:', error)
+			throw error
 		}
 	}
 
@@ -66,12 +66,12 @@ export class DuneService {
 			const statusResponse = await axios.get(
 				`${this.baseUrl}/execution/${executionId}/status`,
 				{ headers: { 'x-dune-api-key': apiKey } }
-			);
+			)
 
-			return statusResponse.data.state;
+			return statusResponse.data.state
 		} catch (error) {
-			console.error('Error getting execution status:', error);
-			throw error;
+			console.error('Error getting execution status:', error)
+			throw error
 		}
 	}
 
@@ -83,17 +83,17 @@ export class DuneService {
 	 * @returns Promise that resolves when execution is complete
 	 */
 	async waitForExecution(executionId: string, apiKey: string, pollInterval: number = 1000): Promise<void> {
-		let status = 'QUERY_STATE_PENDING';
+		let status = 'QUERY_STATE_PENDING'
 
 		while (status !== 'QUERY_STATE_COMPLETED') {
-			status = await this.getExecutionStatus(executionId, apiKey);
+			status = await this.getExecutionStatus(executionId, apiKey)
 
 			if (status !== 'QUERY_STATE_COMPLETED' && status !== 'QUERY_STATE_PENDING' && status !== 'QUERY_STATE_EXECUTING') {
-				throw new Error(`Query execution failed for execution ID: ${executionId} status: ${status}`);
+				throw new Error(`Query execution failed for execution ID: ${executionId} status: ${status}`)
 			}
 
 			if (status !== 'QUERY_STATE_COMPLETED') {
-				await new Promise(resolve => setTimeout(resolve, pollInterval));
+				await new Promise(resolve => setTimeout(resolve, pollInterval))
 			}
 		}
 	}
@@ -104,7 +104,7 @@ export class DuneService {
 	 * @returns Query result for one page
 	 */
 	async fetchPage<T = any>(options: DuneFetchOptions): Promise<DuneQueryResult<T>> {
-		const { executionId, limit, offset, apiKey } = options;
+		const { executionId, limit, offset, apiKey } = options
 
 		try {
 			const resultResponse = await axios.get(
@@ -113,7 +113,7 @@ export class DuneService {
 					params: { limit, offset },
 					headers: { 'x-dune-api-key': apiKey }
 				}
-			);
+			)
 
 			return {
 				data: resultResponse.data.result.rows,
@@ -122,10 +122,10 @@ export class DuneService {
 					has_more: resultResponse.data.result.has_more
 				},
 				metadata: resultResponse.data.result.metadata
-			};
+			}
 		} catch (error) {
-			console.error('Error fetching page from Dune:', error);
-			throw error;
+			console.error('Error fetching page from Dune:', error)
+			throw error
 		}
 	}
 
@@ -137,8 +137,8 @@ export class DuneService {
 	 * @returns AsyncGenerator that yields pages of data
 	 */
 	async* fetchAllPages<T = any>(executionId: string, apiKey: string, limit?: number): AsyncGenerator<T[], void, unknown> {
-		let currentOffset: string | undefined;
-		let hasMore = true;
+		let currentOffset: string | undefined
+		let hasMore = true
 
 		while (hasMore) {
 			const result = await this.fetchPage<T>({
@@ -146,12 +146,12 @@ export class DuneService {
 				apiKey,
 				limit,
 				offset: currentOffset
-			});
+			})
 
-			yield result.data;
+			yield result.data
 
-			currentOffset = result.pagination?.next_offset;
-			hasMore = result.pagination?.has_more || false;
+			currentOffset = result.pagination?.next_offset
+			hasMore = result.pagination?.has_more || false
 		}
 	}
 
@@ -166,13 +166,13 @@ export class DuneService {
 			queryId: options.queryId,
 			params: options.params,
 			apiKey: options.apiKey
-		});
+		})
 
 		// Wait for completion
-		await this.waitForExecution(executionId, options.apiKey);
+		await this.waitForExecution(executionId, options.apiKey)
 
 		// Fetch all data using generator
-		yield* this.fetchAllPages<T>(executionId, options.apiKey, options.limit);
+		yield* this.fetchAllPages<T>(executionId, options.apiKey, options.limit)
 	}
 
 	/**
@@ -183,12 +183,12 @@ export class DuneService {
 	 * @returns Promise with all data
 	 */
 	async fetchAllData<T = any>(executionId: string, apiKey: string, limit?: number): Promise<T[]> {
-		const allData: T[] = [];
+		const allData: T[] = []
 
 		for await (const page of this.fetchAllPages<T>(executionId, apiKey, limit)) {
-			allData.push(...page);
+			allData.push(...page)
 		}
 
-		return allData;
+		return allData
 	}
 }
