@@ -138,7 +138,7 @@ describe('DuneService Integration Tests', function () {
 
 			expect(firstPage.data).to.be.an('array')
 
-			if (firstPage.pagination?.has_more && firstPage.pagination?.next_offset) {
+			if (firstPage.pagination?.next_offset) {
 				const secondPage = await duneService.fetchPage<TestQueryResult>({
 					executionId,
 					apiKey: API_KEY!,
@@ -176,7 +176,7 @@ describe('DuneService Integration Tests', function () {
 			let totalRecords = 0
 			const maxPages = 5 // Limit to avoid long test runs
 
-			for await (const page of duneService.fetchAllPages<TestQueryResult>(executionId, API_KEY!, 10)) {
+			for await (const page of duneService.fetchAllPages<TestQueryResult>({ executionId, apiKey: API_KEY!, limit: 10 })) {
 				pageCount++
 				totalRecords += page.length
 
@@ -243,7 +243,7 @@ describe('DuneService Integration Tests', function () {
 			let pageCount = 0
 			let totalRecords = 0
 
-			for await (const page of duneService.fetchAllPages<TestQueryResult>(executionId, API_KEY!, 10)) {
+			for await (const page of duneService.fetchAllPages<TestQueryResult>({ executionId, apiKey: API_KEY!, limit: 10 })) {
 				pageCount++
 				totalRecords += page.length
 
@@ -467,7 +467,7 @@ describe('DuneService Integration Tests', function () {
 			const transformedData: any[] = []
 			let pageCount = 0
 
-			for await (const page of duneService.fetchAllPages<TestQueryResult>(executionId, API_KEY!, 25)) {
+			for await (const page of duneService.fetchAllPages<TestQueryResult>({ executionId, apiKey: API_KEY!, limit: 25 })) {
 				pageCount++
 
 				// Transform each record
@@ -523,7 +523,7 @@ describe('DuneService Integration Tests', function () {
 
 			let pageCount = 0
 
-			for await (const page of duneService.fetchAllPages<TestQueryResult>(executionId, API_KEY!, 30)) {
+			for await (const page of duneService.fetchAllPages<TestQueryResult>({ executionId, apiKey: API_KEY!, limit: 30 })) {
 				pageCount++
 				aggregation.totalRecords += page.length
 
