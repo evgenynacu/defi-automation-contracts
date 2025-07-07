@@ -37,6 +37,7 @@ createContext().then(async ({ connectionPool, duneSyncService }) => {
 			pageSize: 1000,
 			tableName: "susde_rates",
 			doNotExecute: true,
+			truncateBeforeInsert: true,
 		})
 		if (error) {
 			console.error("Error syncing data", error)

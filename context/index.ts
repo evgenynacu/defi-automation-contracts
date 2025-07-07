@@ -16,7 +16,7 @@ export type Context = {
 export async function createContext(): Promise<Context> {
 	const connectionPool = new Pool({
 		connectionString: process.env.DATABASE_URL || "postgresql://postgres:mysecretpassword@localhost:5432/postgres",
-	});
+	})
 
 	const runner = new ethers.JsonRpcProvider(process.env.ETHEREUM_RPC_URL || "https://eth.llamarpc.com")
 	const dataService = new DataService(runner)
