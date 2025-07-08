@@ -8,9 +8,7 @@ import { address } from "../common/types"
 
 export async function exportLatestData(pool: Pool) {
 	const res = await pool.query<DataResultRow>(
-		`SELECT job_id, updated_at, data
-     FROM data
-     where updated_at > current_timestamp - interval '1 minute'`
+		`with raw_data as (SELECT job_id, updated_at, data, row_number() over (partition by job_id order by updated_at desc) as rn FROM data where updated_at > current_timestamp - interval '2 minute') select * from raw_data where rn = 1`
 	)
 	res.rows.forEach(row => {
 		const info = parseJobId(row.job_id)

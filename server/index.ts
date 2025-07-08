@@ -45,6 +45,21 @@ createContext().then(async ({ connectionPool, duneSyncService }) => {
 		res.status(200).json({ status: "OK", ...r })
 	})
 
+	app.get("/data/syrup-rates", async (req, res) => {
+		const { error, ...r } = await duneSyncService.syncQueryToPostgres({
+			queryId: "5436390",
+			apiKey: process.env.DUNE_API_KEY!,
+			pageSize: 1000,
+			tableName: "syrup_rates",
+			doNotExecute: true,
+			truncateBeforeInsert: true,
+		})
+		if (error) {
+			console.error("Error syncing data", error)
+		}
+		res.status(200).json({ status: "OK", ...r })
+	})
+
 	setInterval(() => {
 		exportLatestData(connectionPool).then()
 	}, 5000)
