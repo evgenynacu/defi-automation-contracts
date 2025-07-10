@@ -15,8 +15,10 @@ export function up(pgm: MigrationBuilder): void {
 		      utilization									DECIMAL,
 		      supply											DECIMAL,
 		      debt_token									VARCHAR,
+          lending_description					VARCHAR,
 		      last_updated								TIMESTAMP,
-		      lending_id									VARCHAR
+		      lending_id									VARCHAR,
+		      rn													INT
       );
 	`)
 }
