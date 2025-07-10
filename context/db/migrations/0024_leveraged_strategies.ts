@@ -4,7 +4,7 @@ export const shorthands = undefined
 
 export function up(pgm: MigrationBuilder): void {
 	pgm.sql(`
-      DROP TABLE IF EXISTS leverated_strategies;
+      DROP TABLE IF EXISTS leveraged_strategies;
       CREATE TABLE leveraged_strategies
       (
           yield_description						VARCHAR,
