@@ -60,6 +60,20 @@ createContext().then(async ({ connectionPool, duneSyncService }) => {
 		res.status(200).json({ status: "OK", ...r })
 	})
 
+	app.get("/data/leveraged-strategies", async (req, res) => {
+		const { error, ...r } = await 		duneSyncService.syncQueryToPostgres({
+			queryId: "5333311",
+			apiKey: process.env.DUNE_API_KEY!,
+			truncateBeforeInsert: true,
+			tableName: "leveraged_strategies",
+			doNotExecute: true,
+		})
+		if (error) {
+			console.error("Error syncing data", error)
+		}
+		res.status(200).json({ status: "OK", ...r })
+	})
+
 	setInterval(() => {
 		exportLatestData(connectionPool).then()
 	}, 5000)

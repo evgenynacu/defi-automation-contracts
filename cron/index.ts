@@ -14,10 +14,35 @@ import {
 async function runJobs() {
 	console.log("Starting cron jobs")
 
-	const { connectionPool, syncService } = await createContext()
+	const { connectionPool, syncService, duneSyncService, duneService } = await createContext()
 	await runMigrations(connectionPool)
 
 	const cron = await import("node-cron")
+
+	cron.schedule('0 3 * * *', () => {
+		console.log("Updating leverated strategies dune query")
+		logAsync(
+			duneService.executeQuery({
+				queryId: "5333311",
+				apiKey: process.env.DUNE_API_KEY!,
+			}),
+			"updating leverated strategies dune query"
+		)
+	})
+
+	cron.schedule('0 4 * * *', () => {
+		console.log("Updating leverated strategies dune query data")
+		logAsync(
+			duneSyncService.syncQueryToPostgres({
+				queryId: "5333311",
+				apiKey: process.env.DUNE_API_KEY!,
+				truncateBeforeInsert: true,
+				tableName: "leveraged_strategies",
+				doNotExecute: true,
+			}),
+			"updating leverated strategies dune query"
+		)
+	})
 
 	cron.schedule('*/30 * * * *', () => {
 		console.log("Updating views")
