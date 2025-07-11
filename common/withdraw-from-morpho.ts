@@ -91,7 +91,7 @@ async function getTotalBorrowAssets(ex: StrategyExecutor<any>, marketId: string,
 			from: usdc,
 			to: loanToken,
 			amount: 100000n,
-			preferred: "kyberswap"
+			preferred: ["kyberswap", "openocean", "velora"]
 		},
 		{
 			type: "morpho-read-total-borrow-assets",
