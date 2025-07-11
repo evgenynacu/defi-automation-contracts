@@ -6,7 +6,7 @@ import {
 	AaveFlashLoanStrategy__factory,
 	AaveStrategy__factory,
 	CompoundV3Strategy__factory, Erc20TransferStrategy__factory,
-	MorphoFlashLoanStrategy__factory,
+	MorphoFlashLoanStrategy__factory, MorphoReadStrategy__factory,
 	MorphoStrategy__factory, SwapStrategy__factory
 } from "../typechain-types"
 import { getDecimals } from "./decimals"
@@ -18,6 +18,7 @@ export const AAVE_FLASH_LOAN_STRATEGY_INDEX = 3
 export const COMPOUND_V3_STRATEGY_INDEX = 4
 export const MORPHO_STRATEGY_INDEX = 5
 export const AAVE_STRATEGY_INDEX = 6
+export const MORPHO_READ_STRATEGY_INDEX = 7
 
 export type TransferErc20FromCallerOperation = {
 	type: 'erc20-transfer-from-caller'
@@ -36,6 +37,7 @@ export type SwapOperation = {
 	from: string
 	to: string
 	amount: bigint
+	preferred?: string | string[]
 }
 
 type CompoundV3SupplyOperation = {
@@ -143,6 +145,11 @@ export type MorphoFlashLoanOperation = {
 	innerOperations: InnerStrategyOperation[]
 }
 
+export type MorphoReadTotalBorrowAssetsOperation = {
+	type: 'morpho-read-total-borrow-assets'
+	marketId: string
+}
+
 export type AaveFlashLoanOperation = {
 	type: 'aave-flash-loan'
 	token: string
@@ -157,6 +164,7 @@ type InnerStrategyOperation =
 	| CompoundV3Operation
 	| MorphoOperation
 	| AaveOperation
+	| MorphoReadTotalBorrowAssetsOperation
 
 export type StrategyOperation =
 	| InnerStrategyOperation
@@ -189,6 +197,13 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			return [{
 				position: AAVE_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("init", [op.category]),
+			}]
+		}
+		case "morpho-read-total-borrow-assets": {
+			const impl = MorphoReadStrategy__factory.createInterface()
+			return [{
+				position: MORPHO_READ_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("getMarketTotalBorrowAssets", [op.marketId])
 			}]
 		}
 		case "aave-supply": {
@@ -332,7 +347,7 @@ async function fetchAllQuotes(runner: ContractRunner, from: address, vaultAddres
 	const fromDecimals = getDecimals(op.from)
 	const toDecimals = getDecimals(op.to)
 	return await getSwaps(
-		runner, Number(chainId), vaultAddress, op.amount, op.from as address, op.to as address, from, fromDecimals, toDecimals
+		runner, Number(chainId), vaultAddress, op.amount, op.from as address, op.to as address, from, fromDecimals, toDecimals, op.preferred
 	)
 }
 

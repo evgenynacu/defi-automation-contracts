@@ -9,6 +9,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const compoundV3Strategy = await deployStrategy(hre, "CompoundV3Strategy")
 	const morphoStrategy = await deployStrategy(hre, "MorphoStrategy", [MORPHO_BLUE])
 	const aaveUSDeStrategy = await deployStrategy(hre, "AaveStrategy", [AAVE_POOL_ADDRESS_PROVIDER, PT_eUSDe_AUG])
+	const morphoReadStrategy = await deployStrategy(hre, "MorphoReadStrategy", [MORPHO_BLUE])
 	return [
 		erc20TransferStrategy.address,
 		swapStrategy.address,
@@ -16,7 +17,8 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 		aaveFlashLoanStrategy.address,
 		compoundV3Strategy.address,
 		morphoStrategy.address,
-		aaveUSDeStrategy.address
+		aaveUSDeStrategy.address,
+		morphoReadStrategy.address,
 	]
 }
 

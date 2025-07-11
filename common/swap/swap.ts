@@ -24,7 +24,8 @@ export async function getSwaps(
 	toToken: address,
 	txOrigin: address,
 	decimalsIn: number,
-	decimalsOut: number
+	decimalsOut: number,
+	preferred?: string | string[],
 ): Promise<SwapData[]> {
 	const facade = SwapProviderFacade.getInstance()
 	const quotes = await facade.getAllQuotes({
@@ -36,7 +37,8 @@ export async function getSwaps(
 		toToken,
 		txOrigin,
 		decimalsIn,
-		decimalsOut
+		decimalsOut,
+		preferred,
 	})
 
 	return quotes.map(quote => quoteToSwapData(swapAmount, decimalsIn, quote))

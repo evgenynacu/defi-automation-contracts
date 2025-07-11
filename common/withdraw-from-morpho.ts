@@ -1,5 +1,5 @@
-import { MORPHO_BLUE } from "./addresses"
-import { StrategyExecutor } from "./calculate-result"
+import { MORPHO_BLUE, usdc } from "./addresses"
+import { createCalculateExecutor, StrategyExecutor } from "./calculate-result"
 import { MorphoBlue__factory, MorphoOracle__factory } from "../typechain-types"
 import { MaxUint256 } from "ethers"
 import { getDecimals } from "./decimals"
@@ -19,9 +19,10 @@ export async function withdrawFromMorpho<T>(ex: StrategyExecutor<T>, marketId: s
 	const params = await morpho.idToMarketParams(marketId)
 	const market = await morpho.market(marketId)
 	const pos = await morpho.position(marketId, from)
+	const totalBorrowAssets = await getTotalBorrowAssets(ex, marketId, params.loanToken)
 
 	const totalCollateral = pos.collateral
-	const totalDebt = pos.borrowShares * market.totalBorrowAssets / market.totalBorrowShares
+	const totalDebt = pos.borrowShares * totalBorrowAssets / market.totalBorrowShares
 
 	console.log("total collateral: ", totalCollateral, "total debt: ", totalDebt)
 
@@ -75,4 +76,27 @@ export async function withdrawFromMorpho<T>(ex: StrategyExecutor<T>, marketId: s
 		debtShares: Number(pos.borrowShares) / (10 ** 18),
 		collateral: Number(totalCollateral) / (10 ** getDecimals(params.collateralToken)),
 	}
+}
+
+async function getTotalBorrowAssets(ex: StrategyExecutor<any>, marketId: string, loanToken: string) {
+	const calc = createCalculateExecutor(ex.runner, "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240", "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42")
+	const res = await calc.execute([
+		{
+			type: "erc20-transfer-from-caller",
+			token: usdc,
+			amount: 100000n,
+		},
+		{
+			type: "swap",
+			from: usdc,
+			to: loanToken,
+			amount: 100000n,
+			preferred: "kyberswap-api"
+		},
+		{
+			type: "morpho-read-total-borrow-assets",
+			marketId: marketId,
+		},
+	])
+	return res.result
 }

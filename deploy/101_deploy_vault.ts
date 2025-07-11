@@ -39,18 +39,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	}
 }
 
-async function deployStrategy(hre: HardhatRuntimeEnvironment, strategyName: string, args: any[] = []) {
-	const { deploy } = hre.deployments;
-	const { deployer } = await hre.getNamedAccounts();
-
-	return deploy(strategyName, {
-		from: deployer,
-		args,
-		log: true,
-	})
-}
-
-
 // noinspection JSUnusedGlobalSymbols
 export default func
 func.tags = ['deploy-vault']

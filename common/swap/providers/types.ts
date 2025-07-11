@@ -11,6 +11,7 @@ export type SwapParams = {
   txOrigin: address
   decimalsIn: number
   decimalsOut: number
+  preferred?: string | string[]
 }
 
 export type SwapResult = {
