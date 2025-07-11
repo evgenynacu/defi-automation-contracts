@@ -1,8 +1,10 @@
-import { MORPHO_BLUE, usdc } from "./addresses"
+import { MORPHO_BLUE } from "./addresses"
 import { createCalculateExecutor, StrategyExecutor } from "./calculate-result"
 import { MorphoBlue__factory, MorphoOracle__factory } from "../typechain-types"
 import { MaxUint256 } from "ethers"
 import { getDecimals } from "./decimals"
+import { getBalanceStorageSlot } from "./test-swap"
+import { address, toAddress } from "./types"
 
 const multiplier = 1000000
 
@@ -19,7 +21,7 @@ export async function withdrawFromMorpho<T>(ex: StrategyExecutor<T>, marketId: s
 	const params = await morpho.idToMarketParams(marketId)
 	const market = await morpho.market(marketId)
 	const pos = await morpho.position(marketId, from)
-	const totalBorrowAssets = await getTotalBorrowAssets(ex, marketId, params.loanToken)
+	const totalBorrowAssets = await getTotalBorrowAssets(ex, marketId, toAddress(params.loanToken))
 
 	const totalCollateral = pos.collateral
 	const totalDebt = pos.borrowShares * totalBorrowAssets / market.totalBorrowShares
@@ -78,40 +80,24 @@ export async function withdrawFromMorpho<T>(ex: StrategyExecutor<T>, marketId: s
 	}
 }
 
-async function getTotalBorrowAssets(ex: StrategyExecutor<any>, marketId: string, loanToken: string) {
-	const calc = createCalculateExecutor(ex.runner, "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240", "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42")
-	if (loanToken.toLowerCase() === usdc.toLowerCase()) {
-		const res = await calc.execute([
-			{
-				type: "erc20-transfer-from-caller",
-				token: usdc,
-				amount: 100000n,
-			},
-			{
-				type: "morpho-read-total-borrow-assets",
-				marketId: marketId,
-			},
-		])
-		return res.result
-	} else {
-		const res = await calc.execute([
-			{
-				type: "erc20-transfer-from-caller",
-				token: usdc,
-				amount: 100000n,
-			},
-			{
-				type: "swap",
-				from: usdc,
-				to: loanToken,
-				amount: 100000n,
-				preferred: ["kyberswap", "openocean", "velora"]
-			},
-			{
-				type: "morpho-read-total-borrow-assets",
-				marketId: marketId,
-			},
-		])
-		return res.result
-	}
+async function getTotalBorrowAssets(ex: StrategyExecutor<any>, marketId: string, loanToken: address) {
+	const calc = createCalculateExecutor(ex.runner, "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240", "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E", {
+		[loanToken]: {
+			stateDiff: {
+				[getBalanceStorageSlot(loanToken)]: "0x000000000000000000000000000ff00000000000000000006404586861f96590"
+			}
+		}
+	})
+	const res = await calc.execute([
+		{
+			type: "erc20-transfer-from-caller",
+			token: loanToken,
+			amount: 100000n,
+		},
+		{
+			type: "morpho-read-total-borrow-assets",
+			marketId: marketId,
+		},
+	])
+	return res.result
 }

@@ -10,6 +10,7 @@
     "cron:dev": "ts-node cron/index.ts",
     "clean": "TS_NODE_PROJECT=./tsconfig.server.json hardhat clean",
     "test": "TS_NODE_PROJECT=./tsconfig.server.json hardhat test",
+    "deploy:tag": "TS_NODE_PROJECT=./tsconfig.server.json npx hardhat deploy --network mainnet_universal --tags",
     "test-deploy": "TS_NODE_PROJECT=./tsconfig.server.json hardhat test deploy-test/*.test.ts --network mainnet_universal",
     "verify": "TS_NODE_PROJECT=./tsconfig.server.json hardhat --network scroll etherscan-verify --api-url https://api.scrollscan.com --api-key $API_KEY",
     "migrate": "node-pg-migrate",
