@@ -10,12 +10,16 @@ import {
 	WETH_ADDRESS,
 	WSTETH_ADDRESS
 } from "../common/addresses"
+import { updateJobs } from "../context/db/update-jobs"
 
 async function runJobs() {
 	console.log("Starting cron jobs")
 
 	const { connectionPool, syncService, duneSyncService, duneService } = await createContext()
 	await runMigrations(connectionPool)
+
+	console.log("Updating jobs")
+	await updateJobs(connectionPool)
 
 	const cron = await import("node-cron")
 

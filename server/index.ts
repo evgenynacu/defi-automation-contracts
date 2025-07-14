@@ -4,6 +4,7 @@ import cors from "cors"
 import { createContext } from "../context"
 import { register } from './metrics'
 import { exportLatestData } from "./exporter"
+import asyncHandler from "express-async-handler"
 
 dotenv.config()
 
@@ -16,7 +17,7 @@ app.use(cors({
 	origin: "*",
 }))
 
-createContext().then(async ({ connectionPool, duneSyncService }) => {
+createContext().then(async ({ connectionPool, duneSyncService, strategyService }) => {
 	app.get("/", (_, res) => {
 		res.status(200).json({ status: "OK" })
 	})
@@ -25,6 +26,12 @@ createContext().then(async ({ connectionPool, duneSyncService }) => {
 		res.set('Content-Type', register.contentType)
 		res.end(await register.metrics())
 	})
+
+	// API эндпоинт для получения всех стратегий
+	app.get("/api/strategies", asyncHandler(async (req, res) => {
+		const strategies = await strategyService.getAllStrategies()
+		res.json(strategies)
+	}))
 
 	const PORT = process.env.PORT || 8080
 

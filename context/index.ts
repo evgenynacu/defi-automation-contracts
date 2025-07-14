@@ -4,6 +4,7 @@ import { ethers } from "ethers"
 import { SyncService } from "./service/sync-service"
 import { DuneService } from "./service/dune-service"
 import { DuneSyncService } from "./service/dune-sync-service"
+import { StrategyService } from './service/strategy-service'
 
 export type Context = {
 	connectionPool: Pool
@@ -11,6 +12,7 @@ export type Context = {
 	syncService: SyncService
 	duneService: DuneService
 	duneSyncService: DuneSyncService
+	strategyService: StrategyService
 }
 
 export async function createContext(): Promise<Context> {
@@ -23,6 +25,7 @@ export async function createContext(): Promise<Context> {
 	const syncService = new SyncService(connectionPool, dataService)
 	const duneService = new DuneService()
 	const duneSyncService = new DuneSyncService(connectionPool, duneService)
+	const strategyService = new StrategyService(connectionPool)
 
 	return {
 		connectionPool,
@@ -30,5 +33,6 @@ export async function createContext(): Promise<Context> {
 		syncService,
 		duneService,
 		duneSyncService,
+		strategyService,
 	}
 }
