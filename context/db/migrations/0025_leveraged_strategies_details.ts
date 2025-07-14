@@ -22,7 +22,7 @@ export function up(pgm: MigrationBuilder): void {
           borrow											DECIMAL,
           liquidity										DECIMAL,
           utilization									DECIMAL,
-		      base_currency								TIMESTAMP
+		      base_currency								VARCHAR
       );
 	`)
 }
