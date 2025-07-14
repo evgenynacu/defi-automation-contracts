@@ -17,9 +17,9 @@
     "test:mocha": "TS_NODE_PROJECT=./tsconfig.server.json mocha '**/*.test.ts' --timeout 10000",
     "test:mocha:integration": "TS_NODE_PROJECT=./tsconfig.server.json mocha '**/*.integration.test.ts' --timeout 180000",
     "test:mocha:unit": "TS_NODE_PROJECT=./tsconfig.server.json mocha '**/*.test.ts' --ignore '**/*.integration.test.ts' --timeout 10000",
-    "dev:next": "next dev",
+    "dev:next": "next dev -p ${PORT:-3000}",
     "build:next": "next build",
-    "start:next": "next start"
+    "start:next": "next start -p ${PORT:-3000}"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-network-helpers": "^1.0.11",
