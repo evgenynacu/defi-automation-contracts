@@ -13,19 +13,13 @@ export async function runMigrations(pool: Pool) {
 
 		// Запускаем миграции
 		const result = await migrate({
-			// Директория с файлами миграций
 			dir: migrationsDirectory,
-			// Имя таблицы для отслеживания миграций
 			migrationsTable: 'pgmigrations',
-			// Показывать SQL-запросы в консоли перед выполнением
+			timestamp: false,
 			verbose: true,
-			// Количество миграций для применения (undefined = все)
 			count: undefined,
-			// Направление миграции (up = применение, down = откат)
 			direction: 'up',
-			// Подключение к базе данных
 			dbClient: client,
-			// Опция для логгирования
 			logger: console,
 		})
 
