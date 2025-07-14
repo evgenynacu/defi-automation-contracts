@@ -1,0 +1,26 @@
+# Dependency directories
+node_modules/
+
+# Next.js build output
+.next
+
+# Environment variables
+.env*
+!.env.example
+
+# Git files
+.git
+.gitignore
+
+# Development files
+*.log
+.DS_Store
+
+# Build artifacts
+dist/
+out/
+
+# Docker files (to avoid recursion)
+Dockerfile
+docker-compose.yml
+.dockerignore
