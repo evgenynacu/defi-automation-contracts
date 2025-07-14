@@ -1,7 +1,7 @@
 {
   "name": "hardhat-project",
   "scripts": {
-    "build": "npm run build:contracts && npm run build:ts && npm run build:next",
+    "build": "npm run build:contracts && npm run build:ts",
     "build:contracts": "TS_NODE_PROJECT=./tsconfig.server.json hardhat compile",
     "build:ts": "tsc --project tsconfig.server.json",
     "server": "exec node ./dist/server/index.js",
