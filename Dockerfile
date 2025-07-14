@@ -9,8 +9,7 @@ RUN npm install
 
 COPY . .
 
-ENV BUILD_COMMAND="build"
-RUN npm run $BUILD_COMMAND
+RUN npm run build
 
 #RUN mkdir -p /app/dist/context/db/migrations
 #COPY context/db/migrations/ /app/dist/context/db/migrations/
