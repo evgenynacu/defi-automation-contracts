@@ -1,39 +1,93 @@
-export default function Home() {
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
+
+export default function HomePage() {
 	return (
-		<main className="min-h-screen bg-gray-50">
-			<div className="max-w-4xl mx-auto py-12 px-4">
-				<h1 className="text-4xl font-bold text-gray-900 mb-8">
-					DeFi Automation Platform
-				</h1>
-
-				<div className="grid gap-6">
-					<div className="bg-white rounded-lg shadow-sm p-6">
-						<h2 className="text-2xl font-semibold text-gray-800 mb-4">
-							Welcome to your DeFi dashboard
-						</h2>
-						<p className="text-gray-600 mb-4">
-							This is your Next.js frontend. The Express API backend is separate.
-						</p>
-						<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-							<p className="text-blue-800">
-								🚀 Next.js is running successfully!
-							</p>
-						</div>
-					</div>
-
-					<div className="bg-white rounded-lg shadow-sm p-6">
-						<h3 className="text-lg font-semibold text-gray-800 mb-3">
-							Available Features
-						</h3>
-						<ul className="space-y-2 text-gray-600">
-							<li>• Morpho Blue integration</li>
-							<li>• Aave protocol support</li>
-							<li>• Automated withdrawals</li>
-							<li>• Real-time monitoring</li>
-						</ul>
-					</div>
-				</div>
+		<div className="container mx-auto p-8 space-y-8">
+			<div className="text-center space-y-4">
+				<h1 className="text-4xl font-bold">DeFi Automation Platform</h1>
+				<p className="text-muted-foreground">Testing shadcn/ui components</p>
 			</div>
-		</main>
+
+			{/* Buttons */}
+			<Card>
+				<CardHeader>
+					<CardTitle>Buttons</CardTitle>
+					<CardDescription>Different button variants</CardDescription>
+				</CardHeader>
+				<CardContent className="space-x-4">
+					<Button>Primary</Button>
+					<Button variant="secondary">Secondary</Button>
+					<Button variant="outline">Outline</Button>
+					<Button variant="ghost">Ghost</Button>
+					<Button variant="destructive">Destructive</Button>
+				</CardContent>
+			</Card>
+
+			{/* Form Elements */}
+			<Card>
+				<CardHeader>
+					<CardTitle>Form Elements</CardTitle>
+					<CardDescription>Input fields and badges</CardDescription>
+				</CardHeader>
+				<CardContent className="space-y-4">
+					<div className="space-y-2">
+						<Input placeholder="Enter wallet address..." />
+						<Input type="number" placeholder="Amount in ETH" />
+					</div>
+					<div className="space-x-2">
+						<Badge>Active</Badge>
+						<Badge variant="secondary">Pending</Badge>
+						<Badge variant="outline">Inactive</Badge>
+						<Badge variant="destructive">Error</Badge>
+					</div>
+				</CardContent>
+			</Card>
+
+			{/* Alert */}
+			<Alert>
+				<AlertCircle className="h-4 w-4" />
+				<AlertDescription>
+					This is a test alert component. All shadcn/ui components are working!
+				</AlertDescription>
+			</Alert>
+
+			{/* Grid of Cards */}
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+				<Card>
+					<CardHeader>
+						<CardTitle>Total Positions</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<p className="text-3xl font-bold">12</p>
+						<p className="text-sm text-muted-foreground">Active positions</p>
+					</CardContent>
+				</Card>
+
+				<Card>
+					<CardHeader>
+						<CardTitle>Total Value</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<p className="text-3xl font-bold">$45,230</p>
+						<p className="text-sm text-muted-foreground">USD value</p>
+					</CardContent>
+				</Card>
+
+				<Card>
+					<CardHeader>
+						<CardTitle>Health Factor</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<p className="text-3xl font-bold text-green-600">2.4</p>
+						<p className="text-sm text-muted-foreground">Safe</p>
+					</CardContent>
+				</Card>
+			</div>
+		</div>
 	)
 }
