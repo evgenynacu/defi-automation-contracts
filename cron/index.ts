@@ -32,9 +32,16 @@ async function runJobs() {
 			}),
 			"updating leverated strategies dune query"
 		)
+		logAsync(
+			duneService.executeQuery({
+				queryId: "5346846",
+				apiKey: process.env.DUNE_API_KEY!,
+			}),
+			"updating leverated strategies details dune query"
+		)
 	})
 
-	cron.schedule('0 4 * * *', () => {
+	cron.schedule('0 5 * * *', () => {
 		console.log("Updating leverated strategies dune query data")
 		logAsync(
 			duneSyncService.syncQueryToPostgres({
@@ -45,6 +52,18 @@ async function runJobs() {
 				doNotExecute: true,
 			}),
 			"updating leverated strategies dune query"
+		)
+
+		logAsync(
+			duneSyncService.syncQueryToPostgres({
+				queryId: "5346846",
+				apiKey: process.env.DUNE_API_KEY!,
+				truncateBeforeInsert: true,
+				tableName: "leveraged_strategies_details",
+				doNotExecute: true,
+				pageSize: 2000,
+			}),
+			"updating leverated strategies details dune query"
 		)
 	})
 
