@@ -1,3 +1,4 @@
+import dotenv from "dotenv"
 import { createContext } from "../context"
 import { runMigrations } from "../context/db/run-migrations"
 import { logAsync } from "../common/log-async"
@@ -11,6 +12,8 @@ import {
 	WSTETH_ADDRESS
 } from "../common/addresses"
 import { updateJobs } from "../context/db/update-jobs"
+
+dotenv.config()
 
 async function runJobs() {
 	console.log("Starting cron jobs")

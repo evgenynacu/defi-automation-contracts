@@ -7,7 +7,7 @@
     "server": "exec node ./dist/server/index.js",
     "server:dev": "ts-node --project tsconfig.server.json server/index.ts",
     "cron": "exec node ./dist/cron/index.js",
-    "cron:dev": "ts-node cron/index.ts",
+    "cron:dev": "ts-node --project tsconfig.server.json cron/index.ts",
     "clean": "TS_NODE_PROJECT=./tsconfig.server.json hardhat clean",
     "test": "TS_NODE_PROJECT=./tsconfig.server.json hardhat test",
     "deploy:tag": "TS_NODE_PROJECT=./tsconfig.server.json npx hardhat deploy --network mainnet_universal --tags",
