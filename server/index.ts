@@ -27,11 +27,20 @@ createContext().then(async ({ connectionPool, duneSyncService, strategyService }
 		res.end(await register.metrics())
 	})
 
-	// API эндпоинт для получения всех стратегий
 	app.get("/api/strategies", asyncHandler(async (req, res) => {
 		const strategies = await strategyService.getAllStrategies()
 		res.json(strategies)
 	}))
+
+	app.get("/api/strategies/:id", asyncHandler(async (req, res) => {
+		const strategy = await strategyService.getStrategyById(req.params.id)
+		if (!strategy) {
+			res.status(404).json({ status: "NOT_FOUND" })
+			return
+		}
+		res.json(strategy)
+	}))
+
 
 	const PORT = process.env.PORT || 8080
 

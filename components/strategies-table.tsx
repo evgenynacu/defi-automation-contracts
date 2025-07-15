@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { formatDate, formatPercent, formatUSD, getAPRColorClass } from "@/lib/utils"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { useStrategies } from "@/hooks/useStrategies"
+import Link from "next/link"
 
 export function StrategiesTable() {
 	const { strategies, loading, error, refetch } = useStrategies();
@@ -63,7 +64,11 @@ export function StrategiesTable() {
 			<TableBody>
 				{strategies.map((strategy) => (
 					<TableRow key={strategy.id} className="cursor-pointer hover:bg-muted/60">
-						<TableCell className="font-medium">{strategy.name}</TableCell>
+						<TableCell className="font-medium">
+							<Link href={`/strategies/${encodeURIComponent(strategy.id)}`} className="hover:underline">
+								{strategy.name}
+							</Link>
+						</TableCell>
 						<TableCell className={getAPRColorClass(strategy.apr30d)}>{formatPercent(strategy.apr30d)}</TableCell>
 						<TableCell className={getAPRColorClass(strategy.apr7d)}>{formatPercent(strategy.apr7d)}</TableCell>
 						<TableCell className={getAPRColorClass(strategy.apr1d)}>{formatPercent(strategy.apr1d)}</TableCell>

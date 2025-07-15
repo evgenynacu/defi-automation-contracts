@@ -1,4 +1,3 @@
-// Типы данных для стратегий
 export interface Strategy {
   id: string;
   name: string;

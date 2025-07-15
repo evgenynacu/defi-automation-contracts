@@ -1,9 +1,6 @@
 import { Pool } from 'pg';
 import { Strategy } from '../../types';
 
-/**
- * Интерфейс стратегии из базы данных (snake_case)
- */
 interface DBStrategy {
   yield_description: string;
   strategy_apr: number;
@@ -19,9 +16,6 @@ interface DBStrategy {
   rn: number;
 }
 
-/**
- * Сервис для работы со стратегиями
- */
 export class StrategyService {
   private pool: Pool;
 
@@ -29,9 +23,6 @@ export class StrategyService {
     this.pool = pool;
   }
 
-  /**
-   * Преобразует запись из БД в объект Strategy с camelCase
-   */
   private mapDBtoStrategy(dbStrategy: DBStrategy): Strategy {
     return {
       id: dbStrategy.lending_id,
@@ -48,19 +39,34 @@ export class StrategyService {
     };
   }
 
-  /**
-   * Получить все стратегии, преобразуя их в правильный формат
-   */
   async getAllStrategies(): Promise<Strategy[]> {
     try {
       const result = await this.pool.query<DBStrategy>(
         'SELECT * FROM leveraged_strategies WHERE rn IS NOT NULL ORDER BY ma30_strategy_apr DESC'
       );
 
-      // Преобразуем каждую запись из БД в объект Strategy
       return result.rows.map(row => this.mapDBtoStrategy(row));
     } catch (error) {
       console.error('Error fetching strategies:', error);
+      throw error;
+    }
+  }
+
+  async getStrategyById(id: string): Promise<Strategy | null> {
+    try {
+      const query = `
+        SELECT * FROM leveraged_strategies 
+        WHERE lending_id = $1
+      `;
+      const result = await this.pool.query<DBStrategy>(query, [id]);
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+
+      return this.mapDBtoStrategy(result.rows[0]);
+    } catch (error) {
+      console.error(`Error fetching strategy by ID ${id}:`, error);
       throw error;
     }
   }
