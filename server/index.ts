@@ -5,6 +5,7 @@ import { createContext } from "../context"
 import { register } from './metrics'
 import { exportLatestData } from "./exporter"
 import asyncHandler from "express-async-handler"
+import { registerStrategiesEndpoints } from "./strategies"
 
 dotenv.config()
 
@@ -17,7 +18,9 @@ app.use(cors({
 	origin: "*",
 }))
 
-createContext().then(async ({ connectionPool, duneSyncService, strategyService }) => {
+createContext().then(async (context) => {
+	const { connectionPool, duneSyncService } = context
+
 	app.get("/", (_, res) => {
 		res.status(200).json({ status: "OK" })
 	})
@@ -27,20 +30,7 @@ createContext().then(async ({ connectionPool, duneSyncService, strategyService }
 		res.end(await register.metrics())
 	})
 
-	app.get("/api/strategies", asyncHandler(async (req, res) => {
-		const strategies = await strategyService.getAllStrategies()
-		res.json(strategies)
-	}))
-
-	app.get("/api/strategies/:id", asyncHandler(async (req, res) => {
-		const strategy = await strategyService.getStrategyById(req.params.id)
-		if (!strategy) {
-			res.status(404).json({ status: "NOT_FOUND" })
-			return
-		}
-		res.json(strategy)
-	}))
-
+	registerStrategiesEndpoints(app, context)
 
 	const PORT = process.env.PORT || 8080
 
