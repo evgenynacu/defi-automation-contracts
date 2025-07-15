@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Strategy } from "@/types";
+import { API_BASE_URL } from "@/lib/env"
 
 type StrategiesState = {
   strategies: Strategy[];
@@ -16,10 +17,12 @@ export function useStrategies(): StrategiesState {
   const fetchStrategies = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/strategies');
+      const response = await fetch(`${API_BASE_URL}/api/strategies`);
 
       if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        console.error('Error fetching strategies:', response.status);
+        setError('Failed to load strategies');
+        return
       }
 
       const data = await response.json();
