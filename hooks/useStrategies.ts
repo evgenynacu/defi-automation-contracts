@@ -17,7 +17,7 @@ export function useStrategies(): StrategiesState {
   const fetchStrategies = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/strategies`);
+      const response = await fetch(`/api/strategies`);
 
       if (!response.ok) {
         console.error('Error fetching strategies:', response.status);

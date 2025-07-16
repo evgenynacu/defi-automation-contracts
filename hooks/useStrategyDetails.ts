@@ -11,7 +11,7 @@ export function useStrategyDetails(strategyId: string, leverage: number) {
     const fetchData = async () => {
       setLoading(true)
       try {
-        const response = await fetch(`${API_BASE_URL}/api/strategies/${encodeURIComponent(strategyId)}/details/${leverage}`)
+        const response = await fetch(`/api/strategies/${encodeURIComponent(strategyId)}/details/${leverage}`)
 
         if (!response.ok) {
           console.error('Error fetching strategy details:', response.status)
