@@ -4,6 +4,7 @@
 - **No Next.js BFF**: We use direct API calls to external services, not Next.js API routes
 - **Styling**: Tailwind CSS + shadcn/ui components
 - **Charts**: Recharts for financial data visualization
+- **Hooks**: Logic inside React components should be hidden in hooks. Components should be mostly view
 
 ## Contracts
 

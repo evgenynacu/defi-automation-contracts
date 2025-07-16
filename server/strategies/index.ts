@@ -17,8 +17,10 @@ export function registerStrategiesEndpoints(app: Application, { strategyService 
 		res.json(strategy)
 	}))
 
-	app.get("/api/strategies/:id/details/:ltv", asyncHandler(async (req, res) => {
-		const details = await strategyService.getStrategyDetails(req.params.id, parseFloat(req.params.ltv))
+	app.get("/api/strategies/:id/details/:leverage", asyncHandler(async (req, res) => {
+		const leverage = parseFloat(req.params.leverage)
+		const ltv = 1 - 1/leverage
+		const details = await strategyService.getStrategyDetails(req.params.id, ltv)
 		res.json(details)
 	}))
 }

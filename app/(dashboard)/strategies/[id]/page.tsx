@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 import { API_BASE_URL, REVALIDATE_INTERVAL } from "@/lib/env"
 import { Breadcrumb } from "@/components/breadcrumb"
+import { StrategyChartClient } from "./strategy-chart-client"
 
 async function getStrategy(id: string) {
 	try {
@@ -74,6 +75,11 @@ export default async function StrategyDetailsPage({ params }: { params: Promise<
 						</div>
 					</div>
 				</div>
+			</div>
+
+			<div className="bg-card p-6 rounded-lg shadow-sm mb-8">
+				<h2 className="text-xl font-semibold mb-4">Performance Chart</h2>
+				<StrategyChartClient strategyId={decodedId} />
 			</div>
 
 			<div className="bg-card p-6 rounded-lg shadow-sm mb-8">
