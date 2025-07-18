@@ -4,7 +4,7 @@ import { runMigrations } from "../context/db/run-migrations"
 import { logAsync } from "../common/log-async"
 import {
 	DAI_ADDRESS,
-	PT_eUSDe_AUG, SDAI_ADDRESS, sUSDe_ADDRESS, SYRUP_USDC, usdc,
+	PT_eUSDe_AUG, PT_sUSDe_SEP, SDAI_ADDRESS, sUSDe_ADDRESS, SYRUP_USDC, usdc,
 	USDe_ADDRESS,
 	USDT_ADDRESS,
 	WEETH_ADDRESS,
@@ -231,6 +231,18 @@ async function runJobs() {
 				marketId: "0xb5b0ff0fccf16dff5bef6d2d001d60f5c4ab49df1020a01073d3ad635c80e8d5"
 			}),
 			"syncing sUSDS/USDT [BTC]"
+		)
+
+		//aave PT-sUSDE-Sep
+		logAsync(
+			syncService.syncData({
+				type: "aave-withdraw",
+				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
+				vault: "0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502",
+				collateralToken: PT_sUSDe_SEP,
+				debtToken: usdc,
+			}),
+			"syncing Aave PT-sUSDE-Sep"
 		)
 
 		//aave PT-eUSDE-Aug

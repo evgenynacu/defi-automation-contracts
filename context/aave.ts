@@ -1,5 +1,5 @@
 import { address, toAddress } from "../common/types"
-import { PT_eUSDe_AUG, USDT_ADDRESS } from "../common/addresses"
+import { PT_eUSDe_AUG, PT_sUSDe_SEP, usdc, USDT_ADDRESS } from "../common/addresses"
 
 type AaveVault = {
 	vault: address,
@@ -14,9 +14,16 @@ export const aaveVaults: AaveVault[] = [
 		collateral: PT_eUSDe_AUG,
 		debt: USDT_ADDRESS,
 		owner: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42"
+	},
+	{
+		vault: toAddress("0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502"),
+		collateral: PT_sUSDe_SEP,
+		debt: usdc,
+		owner: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E"
 	}
 ]
 
 export const tokenMaturityDates: Record<address, Date> = {
 	[PT_eUSDe_AUG]: new Date("2025-08-14"),
+	[PT_sUSDe_SEP]: new Date("2025-09-25"),
 }

@@ -1,5 +1,5 @@
 import { HasOperation } from "../typechain-types/contracts/vault/AutomatedVault"
-import { type ContractRunner } from "ethers";
+import { type ContractRunner } from "ethers"
 import { address } from "./types"
 import { getSwaps } from "./swap/swap"
 import {
@@ -195,7 +195,7 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 		case 'aave-init': {
 			const impl = AaveStrategy__factory.createInterface()
 			return [{
-				position: AAVE_STRATEGY_INDEX,
+				position: getAaveStrategyIndex(vault),
 				callData: impl.encodeFunctionData("init", [op.category]),
 			}]
 		}
@@ -209,28 +209,28 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 		case "aave-supply": {
 			const impl = AaveStrategy__factory.createInterface()
 			return [{
-				position: AAVE_STRATEGY_INDEX,
+				position: getAaveStrategyIndex(vault),
 				callData: impl.encodeFunctionData("supplyCollateral", [op.amount]),
 			}]
 		}
 		case "aave-withdraw": {
 			const impl = AaveStrategy__factory.createInterface()
 			return [{
-				position: AAVE_STRATEGY_INDEX,
+				position: getAaveStrategyIndex(vault),
 				callData: impl.encodeFunctionData("withdrawCollateral", [op.amount]),
 			}]
 		}
 		case "aave-borrow": {
 			const impl = AaveStrategy__factory.createInterface()
 			return [{
-				position: AAVE_STRATEGY_INDEX,
+				position: getAaveStrategyIndex(vault),
 				callData: impl.encodeFunctionData("borrowDebt", [op.token, op.amount]),
 			}]
 		}
 		case "aave-repay": {
 			const impl = AaveStrategy__factory.createInterface()
 			return [{
-				position: AAVE_STRATEGY_INDEX,
+				position: getAaveStrategyIndex(vault),
 				callData: impl.encodeFunctionData("repayDebt", [op.token, op.amount]),
 			}]
 		}
@@ -349,6 +349,14 @@ async function fetchAllQuotes(runner: ContractRunner, from: address, vaultAddres
 	return await getSwaps(
 		runner, Number(chainId), vaultAddress, op.amount, op.from as address, op.to as address, from, fromDecimals, toDecimals, op.preferred
 	)
+}
+
+function getAaveStrategyIndex(vault: address) {
+	if (vault.toLowerCase() === "0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502".toLowerCase()) {
+		return 8
+	} else {
+		return AAVE_STRATEGY_INDEX
+	}
 }
 
 export function crossJoin<T>(arrays: T[][]): T[][] {
