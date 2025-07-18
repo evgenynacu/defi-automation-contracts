@@ -13,7 +13,8 @@ export const marketIds: Record<string, string> = {
 	"0xeec6c7e2ddb7578f2a7d86fc11cf9da005df34452ad9b9189c51266216f5d71b": "PT-wstUSR-25SEP2025/USDC",
 	"0x544b0a093b130a3fb01b72a1279ab848575f049c73da3b5c9c718f9350a1519c": "PT-csUSDL-31JUL2025/USDC",
 	"0xa458018cf1a6e77ebbcc40ba5776ac7990e523b7cc5d0c1e740a4bbc13190d8f": "PT-USDS-14AUG2025/DAI",
-	"0x96a4399f2c837f8aa34c39718e30625a84f9285991f0a08d1f2997e15bbeeaa8": "PT-syrupUSDC-28AUG2025/USDT"
+	"0x96a4399f2c837f8aa34c39718e30625a84f9285991f0a08d1f2997e15bbeeaa8": "PT-syrupUSDC-28AUG2025/USDT",
+	"0xc6ae8e71e11ef511acee3f6cc6ad2af67b862877d459e3789905f537c85db5e3": "PT-sUSDe-25SEP2025/DAI",
 }
 
 export const marketMaturityDates: Record<string, Date> = {
@@ -26,5 +27,6 @@ export const marketMaturityDates: Record<string, Date> = {
 	"0xeec6c7e2ddb7578f2a7d86fc11cf9da005df34452ad9b9189c51266216f5d71b": new Date(2025, 8, 25),
 	"0x544b0a093b130a3fb01b72a1279ab848575f049c73da3b5c9c718f9350a1519c": new Date(2025, 6, 31),
 	"0xa458018cf1a6e77ebbcc40ba5776ac7990e523b7cc5d0c1e740a4bbc13190d8f": new Date("2025-08-14"),
-	"0x96a4399f2c837f8aa34c39718e30625a84f9285991f0a08d1f2997e15bbeeaa8": new Date("2025-08-28")
+	"0x96a4399f2c837f8aa34c39718e30625a84f9285991f0a08d1f2997e15bbeeaa8": new Date("2025-08-28"),
+	"0xc6ae8e71e11ef511acee3f6cc6ad2af67b862877d459e3789905f537c85db5e3": new Date("2025-09-25"),
 }
