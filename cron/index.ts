@@ -81,6 +81,10 @@ async function runJobs() {
 			connectionPool.query("REFRESH MATERIALIZED VIEW main_data_day"),
 			"refreshing main_data_day"
 		)
+		logAsync(
+			connectionPool.query("REFRESH MATERIALIZED VIEW position_values_ext_mat"),
+			"refreshing position_values_ext_mat"
+		)
 	})
 
 	cron.schedule('* * * * *', () => {
