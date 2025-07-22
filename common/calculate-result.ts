@@ -54,7 +54,7 @@ async function callAndGetOut(
 	const outAmount = ops.map(it => it.out).find(it => it !== undefined)
 	const calldata = vault.interface.encodeFunctionData("rebalance", [ops])
 	const vaultAddress = await vault.getAddress()
-	if (process.env.DEBUG_CALLDATA && info === process.env.DEBUG_CALLDATA) {
+	if ((process.env.DEBUG_CALLDATA && info === process.env.DEBUG_CALLDATA) || process.env.DEBUG_CALLDATA === "all") {
 		const url = `https://dashboard.tenderly.co/eugenenacu/project/simulator/new?stateOverrides=&from=${from}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`
 		console.log(info, "testing url: \"" + url + "\" ")
 	}

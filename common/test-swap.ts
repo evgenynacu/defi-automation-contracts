@@ -61,6 +61,6 @@ const SLOTS: Record<address, `0x${string}`> = {
 	[DAI_ADDRESS]: "0x6011ef8ab201e2fab1f8a08cc98ee8ac9f35e18f8e1e90fb93e1a70ff037480d",
 	[SYRUP_USDC]: "0xfd5f8c061cfecd096dabc8fd13b51ab68a4f601f87b140bce0bc3e7d5838b3a7",
 	[usdc]: "0x6e2324c72188c90dab855a9ae77483acaec3da153b2cdf4069dcba2ea4716549",
-	[USDT_ADDRESS]: "0xc0b87546156c6bc4afdafbd99339c8c32ca633af55f0eb785a159c54f99b0840",
+	[USDT_ADDRESS]: "0x6011ef8ab201e2fab1f8a08cc98ee8ac9f35e18f8e1e90fb93e1a70ff037480d",
 	[rUSD]: "0x04f57dd85ec5e81f7372eb95c7ed0161bd7e95fa724be8f8aeee3a93b24598cf",
 }

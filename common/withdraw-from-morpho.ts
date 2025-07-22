@@ -22,6 +22,7 @@ export async function withdrawFromMorpho<T>(ex: StrategyExecutor<T>, marketId: s
 	const market = await morpho.market(marketId)
 	const pos = await morpho.position(marketId, from)
 	const totalBorrowAssets = await getTotalBorrowAssets(ex, marketId, toAddress(params.loanToken))
+	// const totalBorrowAssets = market.totalBorrowAssets
 
 	const totalCollateral = pos.collateral
 	const totalDebt = pos.borrowShares * totalBorrowAssets / market.totalBorrowShares
