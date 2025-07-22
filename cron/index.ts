@@ -254,7 +254,18 @@ async function runJobs() {
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0xc6ae8e71e11ef511acee3f6cc6ad2af67b862877d459e3789905f537c85db5e3"
 			}),
-			"syncing PT-sUSDe/July [ETH]"
+			"syncing PT-sUSDe/Sep [ETH]"
+		)
+
+		// morpho PT-sUSDe/Sep USD
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0xc6ae8e71e11ef511acee3f6cc6ad2af67b862877d459e3789905f537c85db5e3"
+			}),
+			"syncing PT-sUSDe/Sep [USD]"
 		)
 
 		// morpho PT-sUSDe/July BTC
