@@ -272,6 +272,17 @@ async function runJobs() {
 			"syncing PT-sUSDe/Sep [USD]"
 		)
 
+		// morpho PT-sUSDe/Sep BTC
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0xc6ae8e71e11ef511acee3f6cc6ad2af67b862877d459e3789905f537c85db5e3"
+			}),
+			"syncing PT-sUSDe/Sep [BTC]"
+		)
+
 		// morpho PT-sUSDe/July BTC
 		logAsync(
 			syncService.syncData({
@@ -281,37 +292,6 @@ async function runJobs() {
 				marketId: "0xb81eaed0df42ff6646c8daf4fe38afab93b13b6a89c9750d08e705223a45e2ef"
 			}),
 			"syncing PT-sUSDe/July [BTC]"
-		)
-		//debt = usdc
-		//eth
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0xbc552f0b14dd6f8e60b760a534ac1d8613d3539153b4d9675d697e048f2edc7e"
-			}),
-			"syncing PT-sUSDe/July-USDC [ETH]"
-		)
-		//BTC wallet
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0xbc552f0b14dd6f8e60b760a534ac1d8613d3539153b4d9675d697e048f2edc7e"
-			}),
-			"syncing PT-sUSDe/July-USDC [BTC]"
-		)
-		//USD wallet
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0xbc552f0b14dd6f8e60b760a534ac1d8613d3539153b4d9675d697e048f2edc7e"
-			}),
-			"syncing PT-sUSDe/July-USDC [USD]"
 		)
 
 		//wstUSR-SEP
