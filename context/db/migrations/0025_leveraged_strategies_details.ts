@@ -9,7 +9,9 @@ export function up(pgm: MigrationBuilder): void {
       (
           ts_day											TIMESTAMP,
           collateral_token						VARCHAR,
+          collateral_token_symbol			VARCHAR,
           debt_token									VARCHAR,
+          debt_token_symbol						VARCHAR,
           daily_yield_rate						DECIMAL,
           daily_borrow_rate						DECIMAL,
           yield_protocol							VARCHAR,
@@ -24,7 +26,7 @@ export function up(pgm: MigrationBuilder): void {
 		      base_currency								VARCHAR,
 		      open_rate										DECIMAL,
           close_rate									DECIMAL,
-		      expiry_rate									TIMESTAMP,
+		      expiry											TIMESTAMP,
 		      implied_daily_rate					DECIMAL
       );
 	`)

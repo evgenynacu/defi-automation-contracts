@@ -19,7 +19,7 @@ export function StrategiesTable() {
 	const { strategies, loading, error, refetch } = useStrategies();
 
 	if (loading) {
-		return <TableSkeleton columns={10} rows={5} />
+		return <TableSkeleton columns={14} rows={5} />
 	}
 
 	if (error) {
@@ -53,6 +53,10 @@ export function StrategiesTable() {
 					<TableHead>APR 30d</TableHead>
 					<TableHead>APR 7d</TableHead>
 					<TableHead>APR 1d</TableHead>
+					<TableHead>Implied APR 30d</TableHead>
+					<TableHead>Implied APR 7d</TableHead>
+					<TableHead>Days Left</TableHead>
+					<TableHead>Implied Rate</TableHead>
 					<TableHead>LLTV</TableHead>
 					<TableHead>Utilization</TableHead>
 					<TableHead>Total Supply</TableHead>
@@ -72,6 +76,10 @@ export function StrategiesTable() {
 						<TableCell className={getAPRColorClass(strategy.apr30d)}>{formatPercent(strategy.apr30d)}</TableCell>
 						<TableCell className={getAPRColorClass(strategy.apr7d)}>{formatPercent(strategy.apr7d)}</TableCell>
 						<TableCell className={getAPRColorClass(strategy.apr1d)}>{formatPercent(strategy.apr1d)}</TableCell>
+						<TableCell className={getAPRColorClass(strategy.impliedApr30d)}>{formatPercent(strategy.impliedApr30d)}</TableCell>
+						<TableCell className={getAPRColorClass(strategy.impliedApr7d)}>{formatPercent(strategy.impliedApr7d)}</TableCell>
+						<TableCell>{strategy.daysLeft.toFixed(1)}</TableCell>
+						<TableCell>{formatPercent(strategy.impliedRate)}</TableCell>
 						<TableCell>{strategy.lltv.toFixed(2)}</TableCell>
 						<TableCell>
 							<div className="w-full bg-muted rounded-full h-2 overflow-hidden">

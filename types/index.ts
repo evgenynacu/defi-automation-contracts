@@ -4,6 +4,10 @@ export interface Strategy {
 	apr30d: number;
 	apr7d: number;
 	apr1d: number;
+	impliedApr7d: number;
+	impliedApr30d: number;
+	daysLeft: number;
+	impliedRate: number;
 	lltv: number;
 	utilization: number;
 	totalSupply: number;

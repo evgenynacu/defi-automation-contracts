@@ -6,6 +6,10 @@ interface DBStrategy {
 	strategy_apr: number;
 	ma7_strategy_apr: number;
 	ma30_strategy_apr: number;
+	implied_apr_7: number;
+	implied_apr_30: number;
+	days_left: number;
+	implied_rate: number;
 	max_ltv: number;
 	utilization: number;
 	supply: number;
@@ -13,7 +17,6 @@ interface DBStrategy {
 	lending_description: string;
 	last_updated: Date;
 	lending_id: string;
-	rn: number;
 }
 
 interface DBStrategyDetails {
@@ -41,21 +44,21 @@ export class StrategyService {
 			const result = await this.pool.query({
 					text: `
               select ts_day,
-                     borrow_rate,
-                     yield_rate,
-                     AVG((yield_rate - $1 * borrow_rate) / (1 - $1))
-                     OVER (PARTITION BY yield_protocol, yield_description, lending_protocol, lending_description, collateral_token, debt_token ORDER BY ts_day ROWS BETWEEN 29 PRECEDING AND CURRENT ROW) as ma30_strategy_apr,
-                     AVG((yield_rate - $1 * borrow_rate) / (1 - $1))
-                     OVER (PARTITION BY yield_protocol, yield_description, lending_protocol, lending_description, collateral_token, debt_token ORDER BY ts_day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)  as ma7_strategy_apr,
-                     (yield_rate - $1 * borrow_rate) / (1 - $1)                                                                                                                                   as ma1_strategy_apr,
-                     AVG(yield_rate)
-                     OVER (PARTITION BY yield_protocol, yield_description, lending_protocol, lending_description, collateral_token, debt_token ORDER BY ts_day ROWS BETWEEN 29 PRECEDING AND CURRENT ROW) as ma30_yield_rate,
-                     AVG(yield_rate)
-                     OVER (PARTITION BY yield_protocol, yield_description, lending_protocol, lending_description, collateral_token, debt_token ORDER BY ts_day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)  as ma7_yield_rate,
-                     AVG(borrow_rate)
-                     OVER (PARTITION BY yield_protocol, yield_description, lending_protocol, lending_description, collateral_token, debt_token ORDER BY ts_day ROWS BETWEEN 29 PRECEDING AND CURRENT ROW) as ma30_borrow_rate,
-                     AVG(borrow_rate)
-                     OVER (PARTITION BY yield_protocol, yield_description, lending_protocol, lending_description, collateral_token, debt_token ORDER BY ts_day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)  as ma7_borrow_rate
+                     daily_borrow_rate * 365                                                                                                                                                 as borrow_rate,
+                     daily_yield_rate * 365                                                                                                                                                  as yield_rate,
+                     365 * AVG((daily_yield_rate - $1 * daily_borrow_rate) / (1 - $1))
+                           OVER (PARTITION BY yield_protocol, lending_protocol, lending_description, collateral_token, debt_token ORDER BY ts_day ROWS BETWEEN 29 PRECEDING AND CURRENT ROW) as ma30_strategy_apr,
+                     365 * AVG((daily_yield_rate - $1 * daily_borrow_rate) / (1 - $1))
+                           OVER (PARTITION BY yield_protocol, lending_protocol, lending_description, collateral_token, debt_token ORDER BY ts_day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)  as ma7_strategy_apr,
+                     365 * (daily_yield_rate - $1 * daily_borrow_rate) / (1 - $1)                                                                                                            as ma1_strategy_apr,
+                     365 * AVG(daily_yield_rate)
+                     OVER (PARTITION BY yield_protocol, lending_protocol, lending_description, collateral_token, debt_token ORDER BY ts_day ROWS BETWEEN 29 PRECEDING AND CURRENT ROW)       as ma30_yield_rate,
+                     365 * AVG(daily_yield_rate)
+                     OVER (PARTITION BY yield_protocol, lending_protocol, lending_description, collateral_token, debt_token ORDER BY ts_day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)        as ma7_yield_rate,
+                     365 * AVG(daily_borrow_rate)
+                     OVER (PARTITION BY yield_protocol, lending_protocol, lending_description, collateral_token, debt_token ORDER BY ts_day ROWS BETWEEN 29 PRECEDING AND CURRENT ROW)       as ma30_borrow_rate,
+                     365 * AVG(daily_borrow_rate)
+                     OVER (PARTITION BY yield_protocol, lending_protocol, lending_description, collateral_token, debt_token ORDER BY ts_day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)        as ma7_borrow_rate
               from leveraged_strategies_details
               where lending_id = $2;
 					`,
@@ -72,7 +75,7 @@ export class StrategyService {
 	async getAllStrategies(): Promise<Strategy[]> {
 		try {
 			const result = await this.pool.query<DBStrategy>(
-				'SELECT * FROM leveraged_strategies WHERE rn IS NOT NULL ORDER BY ma30_strategy_apr DESC'
+				'SELECT * FROM leveraged_strategies_view ORDER BY implied_apr_30 DESC'
 			)
 
 			return result.rows.map(row => mapDBtoStrategy(row))
@@ -86,7 +89,7 @@ export class StrategyService {
 		try {
 			const query = `
           SELECT *
-          FROM leveraged_strategies
+          FROM leveraged_strategies_view
           WHERE lending_id = $1
 			`
 			const result = await this.pool.query<DBStrategy>(query, [id])
@@ -125,6 +128,10 @@ function mapDBtoStrategy(db: DBStrategy): Strategy {
 		apr30d: Number(db.ma30_strategy_apr),
 		apr7d: Number(db.ma7_strategy_apr),
 		apr1d: Number(db.strategy_apr),
+		impliedApr7d: Number(db.implied_apr_7),
+		impliedApr30d: Number(db.implied_apr_30),
+		daysLeft: Number(db.days_left),
+		impliedRate: Number(db.implied_rate),
 		lltv: Number(db.max_ltv),
 		utilization: Number(db.utilization),
 		totalSupply: Number(db.supply),
