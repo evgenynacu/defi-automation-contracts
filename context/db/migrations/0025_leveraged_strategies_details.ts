@@ -10,10 +10,9 @@ export function up(pgm: MigrationBuilder): void {
           ts_day											TIMESTAMP,
           collateral_token						VARCHAR,
           debt_token									VARCHAR,
-          yield_rate									DECIMAL,
-          borrow_rate									DECIMAL,
+          daily_yield_rate						DECIMAL,
+          daily_borrow_rate						DECIMAL,
           yield_protocol							VARCHAR,
-	        yield_description						VARCHAR,
           lending_protocol						VARCHAR,
           lending_description					VARCHAR,
 		      lending_id									VARCHAR,
@@ -22,7 +21,11 @@ export function up(pgm: MigrationBuilder): void {
           borrow											DECIMAL,
           liquidity										DECIMAL,
           utilization									DECIMAL,
-		      base_currency								VARCHAR
+		      base_currency								VARCHAR,
+		      open_rate										DECIMAL,
+          close_rate									DECIMAL,
+		      expiry_rate									TIMESTAMP,
+		      implied_daily_rate					DECIMAL
       );
 	`)
 }

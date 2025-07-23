@@ -30,14 +30,7 @@ async function runJobs() {
 		console.log("Updating leverated strategies dune query")
 		logAsync(
 			duneService.executeQuery({
-				queryId: "5333311",
-				apiKey: process.env.DUNE_API_KEY!,
-			}),
-			"updating leverated strategies dune query"
-		)
-		logAsync(
-			duneService.executeQuery({
-				queryId: "5346846",
+				queryId: "5514773",
 				apiKey: process.env.DUNE_API_KEY!,
 			}),
 			"updating leverated strategies details dune query"
@@ -48,18 +41,7 @@ async function runJobs() {
 		console.log("Updating leverated strategies dune query data")
 		logAsync(
 			duneSyncService.syncQueryToPostgres({
-				queryId: "5333311",
-				apiKey: process.env.DUNE_API_KEY!,
-				truncateBeforeInsert: true,
-				tableName: "leveraged_strategies",
-				doNotExecute: true,
-			}),
-			"updating leverated strategies dune query"
-		)
-
-		logAsync(
-			duneSyncService.syncQueryToPostgres({
-				queryId: "5346846",
+				queryId: "5514773",
 				apiKey: process.env.DUNE_API_KEY!,
 				truncateBeforeInsert: true,
 				tableName: "leveraged_strategies_details",

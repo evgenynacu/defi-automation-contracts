@@ -4,7 +4,6 @@ import cors from "cors"
 import { createContext } from "../context"
 import { register } from './metrics'
 import { exportLatestData } from "./exporter"
-import asyncHandler from "express-async-handler"
 import { registerStrategiesEndpoints } from "./strategies"
 
 dotenv.config()
@@ -66,23 +65,9 @@ createContext().then(async (context) => {
 		res.status(200).json({ status: "OK", ...r })
 	})
 
-	app.get("/data/leveraged-strategies", async (req, res) => {
-		const { error, ...r } = await duneSyncService.syncQueryToPostgres({
-			queryId: "5333311",
-			apiKey: process.env.DUNE_API_KEY!,
-			truncateBeforeInsert: true,
-			tableName: "leveraged_strategies",
-			doNotExecute: true,
-		})
-		if (error) {
-			console.error("Error syncing data", error)
-		}
-		res.status(200).json({ status: "OK", ...r })
-	})
-
 	app.get("/data/leveraged-strategies-details", async (req, res) => {
 		const { error, ...r } = await duneSyncService.syncQueryToPostgres({
-			queryId: "5346846",
+			queryId: "5514773",
 			apiKey: process.env.DUNE_API_KEY!,
 			truncateBeforeInsert: true,
 			tableName: "leveraged_strategies_details",
