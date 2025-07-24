@@ -20,7 +20,7 @@ export class DataService {
 			return getSwapRate(request)
 		} else if (request.type === "aave-free-supply") {
 			return {
-				id: `aave-free-supply-${tokens[request.token]}`,
+				id: `aave-free-supply-${request.token}`,
 				result: await getFreeSupply(this.runner, request.token, request.aToken)
 			}
 		} else {
