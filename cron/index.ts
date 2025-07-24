@@ -166,6 +166,14 @@ async function runJobs() {
 
 		logAsync(
 			syncService.syncData({
+				type: "aave-free-supply",
+				token: PT_sUSDe_SEP,
+				aToken: "0x5f4a0873a3A02f7C0CB0e13a1d4362a1AD90e751",
+			}),
+			"syncing PT-sUSDe-Sep supply"
+		)
+		logAsync(
+			syncService.syncData({
 				type: "aave-health-factor",
 				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
 			}),

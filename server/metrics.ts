@@ -26,8 +26,15 @@ export const hfGauge = new Gauge({
 	labelNames: ['position_id', 'wallet'],
 })
 
+export const aaveFreeSupplyGauge = new Gauge({
+	name: 'aave_free_supply',
+	help: 'Aave free supply',
+	labelNames: ['token'],
+})
+
 
 register.registerMetric(walletHFGauge)
 register.registerMetric(openPositionSizeGauge)
 register.registerMetric(ltvGauge)
 register.registerMetric(hfGauge)
+register.registerMetric(aaveFreeSupplyGauge)
