@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
-import { withdrawFromCompound } from "./withdraw-from-compound"
+import { withdrawFromCompound } from "../common/withdraw-from-compound"
 import { COMET_WETH_ADDRESS, EZETH_ADDRESS } from "../common/addresses"
 import { sendOrEstimate } from "./send-or-estimate"
 

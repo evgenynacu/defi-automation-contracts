@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
-import { withdrawFromAave } from "./withdraw-from-aave"
+import { withdrawFromAave } from "../common/withdraw-from-aave"
 import { sUSDe_ADDRESS, USDT_ADDRESS } from "../common/addresses"
 import { sendOrEstimate } from "./send-or-estimate"
 

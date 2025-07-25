@@ -1,6 +1,6 @@
-import { ethers } from "hardhat"
-import { verifyAllowance } from "./verify-allowance"
-import { StrategyExecutor } from "../common/calculate-result"
+import { MaxUint256 } from "ethers"
+import { verifyAllowance } from "../deploy/verify-allowance"
+import { StrategyExecutor } from "./calculate-result"
 
 export async function depositToAave<T>(
 	ex: StrategyExecutor<T>,
@@ -34,7 +34,7 @@ export async function depositToAave<T>(
 				},
 				{
 					type: "aave-supply",
-					amount: ethers.MaxUint256,
+					amount: MaxUint256,
 				},
 				{
 					type: "aave-borrow",

@@ -1,9 +1,9 @@
-import { ethers } from "hardhat"
-import { MORPHO_BLUE } from "../common/addresses"
-import { MorphoBlue } from "../typechain-types"
-import { verifyAllowance } from "./verify-allowance"
-import { StrategyExecutor } from "../common/calculate-result"
-import { address } from "../common/types"
+import { MaxUint256 } from "ethers"
+import { MORPHO_BLUE } from "./addresses"
+import { MorphoBlue, MorphoBlue__factory } from "../typechain-types"
+import { verifyAllowance } from "../deploy/verify-allowance"
+import { StrategyExecutor } from "./calculate-result"
+import { address } from "./types"
 
 export async function depositToMorpho<T>(
 	ex: StrategyExecutor<T>,
@@ -14,7 +14,7 @@ export async function depositToMorpho<T>(
 	const vaultAddress = await ex.getVaultAddress()
 
 	const flashLoanAmount = amount * BigInt((leverage - 1) * 10000) / BigInt(10000)
-	const morpho = await ethers.getContractAt("MorphoBlue", MORPHO_BLUE)
+	const morpho = MorphoBlue__factory.connect(MORPHO_BLUE, ex.runner)
 	const [loanToken, collateralToken] = await morpho.idToMarketParams(marketId)
 
 	await verifyVaultAuthorized(await ex.getFrom(), morpho, vaultAddress)
@@ -41,7 +41,7 @@ export async function depositToMorpho<T>(
 				{
 					type: "morpho-supply",
 					marketId,
-					amount: ethers.MaxUint256,
+					amount: MaxUint256,
 				},
 				{
 					type: "morpho-borrow",

@@ -1,8 +1,8 @@
-import { address } from "../common/types"
-import { StrategyExecutor } from "../common/calculate-result"
+import { address } from "./types"
+import { StrategyExecutor } from "./calculate-result"
 import { IComet__factory } from "../typechain-types"
 import { MaxUint256 } from "ethers"
-import { getDecimals } from "../common/decimals"
+import { getDecimals } from "./decimals"
 
 const multiplier = 10000000
 

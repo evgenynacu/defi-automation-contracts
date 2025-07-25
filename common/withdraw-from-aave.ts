@@ -1,9 +1,9 @@
-import { AAVE_DATA_PROVIDER } from "../common/addresses"
-import { StrategyExecutor } from "../common/calculate-result"
+import { AAVE_DATA_PROVIDER } from "./addresses"
+import { StrategyExecutor } from "./calculate-result"
 import { IPoolDataProvider__factory } from "../typechain-types"
 import { MaxUint256 } from "ethers"
-import { getDecimals } from "../common/decimals"
-import { getAaveHealthFactor } from "../common/get-aave-health-factor"
+import { getDecimals } from "./decimals"
+import { getAaveHealthFactor } from "./get-aave-health-factor"
 
 const multiplier = 10000000
 

@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
-import { depositToAave } from "./deposit-to-aave"
+import { depositToAave } from "../common/deposit-to-aave"
 import { sUSDe_ADDRESS, USDT_ADDRESS } from "../common/addresses"
 import { sendOrEstimate } from "./send-or-estimate"
 

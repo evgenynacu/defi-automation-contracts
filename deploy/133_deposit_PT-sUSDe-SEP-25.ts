@@ -1,12 +1,12 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
-import { depositToMorpho } from "./deposit-to-morpho"
+import { depositToMorpho } from "../common/deposit-to-morpho"
 import { sendOrEstimate } from "./send-or-estimate"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)
 
-	await sendOrEstimate(hre, ex => depositToMorpho(ex, "0xc6ae8e71e11ef511acee3f6cc6ad2af67b862877d459e3789905f537c85db5e3", 42949000000000000000000n, 8))
+	await sendOrEstimate(hre, ex => depositToMorpho(ex, "0xc6ae8e71e11ef511acee3f6cc6ad2af67b862877d459e3789905f537c85db5e3", 200000000000000000n, 8))
 }
 
 // noinspection JSUnusedGlobalSymbols
