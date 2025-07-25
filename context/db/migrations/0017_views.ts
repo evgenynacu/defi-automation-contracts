@@ -15,6 +15,7 @@ export function up(pgm: MigrationBuilder): void {
 			           cast(data -> 'rate' as numeric) as rate,
 			           cast(data -> 'result' as numeric) as pos_value
 			    FROM data
+			    where job_id like '%-withdraw-%'
 			), tmp_data as (
 			    select job_id,
 			           updated_at,
@@ -46,6 +47,7 @@ export function up(pgm: MigrationBuilder): void {
 			           cast(data -> 'rate' as numeric) as rate,
 			           cast(data -> 'result' as numeric) as pos_value
 			    FROM data
+			    where job_id like '%-withdraw-%'
 			), tmp_data as (
 			    select job_id,
 			           updated_at,

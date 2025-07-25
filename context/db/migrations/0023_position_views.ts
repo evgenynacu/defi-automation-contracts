@@ -9,7 +9,8 @@ export function up(pgm: MigrationBuilder): void {
 			       updated_at,
 			       cast(data -> 'result' as numeric) as value,
 			       row_number() over (partition by job_id order by updated_at) as rn
-			  FROM data;
+			  FROM data
+       where job_id like '%-withdraw-%';
 			
 			create or replace view initial_position_values as
 			SELECT job_id, value as initial_value, updated_at as initial_date
