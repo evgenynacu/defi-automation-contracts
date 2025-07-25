@@ -4,7 +4,7 @@ import { runMigrations } from "../context/db/run-migrations"
 import { logAsync } from "../common/log-async"
 import {
 	DAI_ADDRESS,
-	PT_eUSDe_AUG, PT_sUSDe_SEP, SDAI_ADDRESS, sUSDe_ADDRESS, SYRUP_USDC, usdc,
+	PT_eUSDe_AUG, PT_sUSDe_JUL, PT_sUSDe_SEP, SDAI_ADDRESS, sUSDe_ADDRESS, SYRUP_USDC, usdc,
 	USDe_ADDRESS,
 	USDT_ADDRESS,
 	WEETH_ADDRESS,
@@ -217,6 +217,17 @@ async function runJobs() {
 			"syncing Aave PT-sUSDE-Sep"
 		)
 
+		logAsync(
+			syncService.syncData({
+				type: "aave-withdraw",
+				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
+				vault: "0x45BeD3404b87b30fEF2A6EE679aa50178072bAbb",
+				collateralToken: PT_sUSDe_JUL,
+				debtToken: USDT_ADDRESS,
+			}),
+			"syncing Aave PT-sUSDE-Jul/USDT"
+		)
+
 		//aave PT-eUSDE-Aug
 		logAsync(
 			syncService.syncData({
@@ -227,17 +238,6 @@ async function runJobs() {
 				debtToken: USDT_ADDRESS,
 			}),
 			"syncing Aave PT-eUSDE-Aug"
-		)
-
-		// morpho PT-sUSDe/July ETH
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0xb81eaed0df42ff6646c8daf4fe38afab93b13b6a89c9750d08e705223a45e2ef"
-			}),
-			"syncing PT-sUSDe/July [ETH]"
 		)
 
 		// morpho PT-sUSDe/Sep ETH
@@ -271,17 +271,6 @@ async function runJobs() {
 				marketId: "0xc6ae8e71e11ef511acee3f6cc6ad2af67b862877d459e3789905f537c85db5e3"
 			}),
 			"syncing PT-sUSDe/Sep [BTC]"
-		)
-
-		// morpho PT-sUSDe/July BTC
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0xb81eaed0df42ff6646c8daf4fe38afab93b13b6a89c9750d08e705223a45e2ef"
-			}),
-			"syncing PT-sUSDe/July [BTC]"
 		)
 
 		//wstUSR-SEP
