@@ -1,5 +1,5 @@
 import { MaxUint256 } from "ethers"
-import { verifyAllowance } from "../deploy/verify-allowance"
+import { verifyAllowance } from "./verify-allowance"
 import { StrategyExecutor } from "./calculate-result"
 
 export async function depositToAave<T>(
@@ -13,7 +13,7 @@ export async function depositToAave<T>(
 
 	const flashLoanAmount = amount * BigInt((leverage - 1) * 10000) / BigInt(10000)
 
-	await verifyAllowance(debtToken, amount, vaultAddress)
+	await verifyAllowance(ex.runner, debtToken, amount, vaultAddress)
 
 	return ex.execute([
 		{

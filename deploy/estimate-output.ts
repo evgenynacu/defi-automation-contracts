@@ -1,4 +1,4 @@
-import { sleep } from "./sleep"
+import { sleep } from "../common/sleep"
 import { CalculateResult } from "../common/calculate-result"
 
 export async function estimateOutput(waitTimeMs: number, fn: () => Promise<CalculateResult>, intervalMs: number = 10000) {

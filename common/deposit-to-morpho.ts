@@ -1,7 +1,7 @@
 import { MaxUint256 } from "ethers"
 import { MORPHO_BLUE } from "./addresses"
 import { MorphoBlue, MorphoBlue__factory } from "../typechain-types"
-import { verifyAllowance } from "../deploy/verify-allowance"
+import { verifyAllowance } from "./verify-allowance"
 import { StrategyExecutor } from "./calculate-result"
 import { address } from "./types"
 
@@ -18,7 +18,7 @@ export async function depositToMorpho<T>(
 	const [loanToken, collateralToken] = await morpho.idToMarketParams(marketId)
 
 	await verifyVaultAuthorized(await ex.getFrom(), morpho, vaultAddress)
-	await verifyAllowance(loanToken, amount, vaultAddress)
+	await verifyAllowance(ex.runner, loanToken, amount, vaultAddress)
 	console.log("total new debt:", flashLoanAmount, "own assets:", amount)
 
 	return ex.execute([

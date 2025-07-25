@@ -162,7 +162,7 @@ export type AaveFlashLoanOperation = {
 	innerOperations: InnerStrategyOperation[]
 }
 
-type InnerStrategyOperation =
+export type InnerStrategyOperation =
 	| TransferErc20FromCallerOperation
 	| TransferErc20ToCallerOperation
 	| SwapOperation

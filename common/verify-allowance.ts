@@ -1,11 +1,12 @@
-import { ethers } from "hardhat"
-import { USDT_ADDRESS } from "../common/addresses"
-import { getSignerAddress } from "./execute-strategy"
+import { ContractRunner, ethers } from "ethers"
+import { USDT_ADDRESS } from "./addresses"
+import { getSignerAddress } from "../deploy/execute-strategy"
+import { IERC20__factory } from "../typechain-types"
 
-export async function verifyAllowance(token: string, amount: bigint, vault: string) {
+export async function verifyAllowance(runner: ContractRunner, token: string, amount: bigint, vault: string) {
 	const from = await getSignerAddress()
 
-	const baseToken = await ethers.getContractAt("IERC20", token)
+	const baseToken = IERC20__factory.connect(token, runner)
 	const allowance = await baseToken.allowance(from, vault)
 	if (allowance < amount) {
 		if (process.env.DEBUG_FROM) {
