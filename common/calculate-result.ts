@@ -27,6 +27,10 @@ export async function calculateResult(
 
 	if (sorted.length > 0) {
 		const best = sorted[0]
+		if (process.env.DEBUG_CALLDATA === "best" && best.info) {
+			const url = `https://dashboard.tenderly.co/eugenenacu/project/simulator/new?stateOverrides=&from=${from}&rawFunctionInput=${best.calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`
+			console.log(best.info, "best testing url: \"" + url + "\" ")
+		}
 		return {
 			result: best.result,
 			info: best.info,
@@ -57,9 +61,9 @@ async function callAndGetOut(
 	if ((process.env.DEBUG_CALLDATA && info === process.env.DEBUG_CALLDATA) || process.env.DEBUG_CALLDATA === "all") {
 		const url = `https://dashboard.tenderly.co/eugenenacu/project/simulator/new?stateOverrides=&from=${from}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`
 		console.log(info, "testing url: \"" + url + "\" ")
-		console.log("calldata", calldata)
-		console.log("from", from)
-		console.log("vault", vaultAddress)
+		// console.log("calldata", calldata)
+		// console.log("from", from)
+		// console.log("vault", vaultAddress)
 	}
 	try {
 		const provider = runner.provider as JsonRpcProvider

@@ -53,7 +53,7 @@ export async function depositToMorpho<T>(
 	])
 }
 
-async function verifyVaultAuthorized(from: address, morpho: MorphoBlue, vault: string) {
+export async function verifyVaultAuthorized(from: address, morpho: MorphoBlue, vault: string) {
 	if (!(await morpho.isAuthorized(from, vault))) {
 		if (process.env.DEBUG_FROM) {
 			throw new Error("DEBUG_FROM is set, but vault " + vault + " is not authorized")
