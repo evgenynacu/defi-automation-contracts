@@ -38,6 +38,7 @@ export async function withdrawFromAave<T>(
 				},
 				{
 					type: "aave-withdraw",
+					token: collateralToken,
 					amount: collateralToWithdraw,
 				},
 				{

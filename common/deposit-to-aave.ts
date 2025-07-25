@@ -34,6 +34,7 @@ export async function depositToAave<T>(
 				},
 				{
 					type: "aave-supply",
+					token: collateralToken,
 					amount: MaxUint256,
 				},
 				{

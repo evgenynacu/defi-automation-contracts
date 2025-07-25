@@ -4,10 +4,13 @@ import { address } from "./types"
 import { getSwaps } from "./swap/swap"
 import {
 	AaveFlashLoanStrategy__factory,
-	AaveStrategy__factory,
-	CompoundV3Strategy__factory, Erc20TransferStrategy__factory,
-	MorphoFlashLoanStrategy__factory, MorphoReadStrategy__factory,
-	MorphoStrategy__factory, SwapStrategy__factory
+	CompoundV3Strategy__factory,
+	Erc20TransferStrategy__factory,
+	GenericAaveStrategy__factory,
+	MorphoFlashLoanStrategy__factory,
+	MorphoReadStrategy__factory,
+	MorphoStrategy__factory,
+	SwapStrategy__factory
 } from "../typechain-types"
 import { getDecimals } from "./decimals"
 
@@ -105,6 +108,7 @@ type MorphoOperation =
 
 export type AaveSupplyOperation = {
 	type: 'aave-supply'
+	token: string
 	amount: bigint
 }
 
@@ -115,6 +119,7 @@ export type AaveInitOperation = {
 
 export type AaveWithdrawOperation = {
 	type: 'aave-withdraw'
+	token: string
 	amount: bigint
 }
 
@@ -192,13 +197,6 @@ export type OperationWithInfo = HasOperation.OperationStruct & {
  */
 async function serializeOperation(runner: ContractRunner, from: address, vault: address, op: StrategyOperation): Promise<OperationWithInfo[]> {
 	switch (op["type"]) {
-		case 'aave-init': {
-			const impl = AaveStrategy__factory.createInterface()
-			return [{
-				position: getAaveStrategyIndex(vault),
-				callData: impl.encodeFunctionData("init", [op.category]),
-			}]
-		}
 		case "morpho-read-total-borrow-assets": {
 			const impl = MorphoReadStrategy__factory.createInterface()
 			return [{
@@ -206,31 +204,38 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 				callData: impl.encodeFunctionData("getMarketTotalBorrowAssets", [op.marketId])
 			}]
 		}
-		case "aave-supply": {
-			const impl = AaveStrategy__factory.createInterface()
+		case 'aave-init': {
+			const impl = GenericAaveStrategy__factory.createInterface()
 			return [{
-				position: getAaveStrategyIndex(vault),
-				callData: impl.encodeFunctionData("supplyCollateral", [op.amount]),
+				position: AAVE_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("init", [op.category]),
+			}]
+		}
+		case "aave-supply": {
+			const impl = GenericAaveStrategy__factory.createInterface()
+			return [{
+				position: AAVE_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("supplyCollateral", [op.token, op.amount]),
 			}]
 		}
 		case "aave-withdraw": {
-			const impl = AaveStrategy__factory.createInterface()
+			const impl = GenericAaveStrategy__factory.createInterface()
 			return [{
-				position: getAaveStrategyIndex(vault),
-				callData: impl.encodeFunctionData("withdrawCollateral", [op.amount]),
+				position: AAVE_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("withdrawCollateral", [op.token, op.amount]),
 			}]
 		}
 		case "aave-borrow": {
-			const impl = AaveStrategy__factory.createInterface()
+			const impl = GenericAaveStrategy__factory.createInterface()
 			return [{
-				position: getAaveStrategyIndex(vault),
+				position: AAVE_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("borrowDebt", [op.token, op.amount]),
 			}]
 		}
 		case "aave-repay": {
-			const impl = AaveStrategy__factory.createInterface()
+			const impl = GenericAaveStrategy__factory.createInterface()
 			return [{
-				position: getAaveStrategyIndex(vault),
+				position: AAVE_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("repayDebt", [op.token, op.amount]),
 			}]
 		}
@@ -349,14 +354,6 @@ async function fetchAllQuotes(runner: ContractRunner, from: address, vaultAddres
 	return await getSwaps(
 		runner, Number(chainId), vaultAddress, op.amount, op.from as address, op.to as address, from, fromDecimals, toDecimals, op.preferred
 	)
-}
-
-function getAaveStrategyIndex(vault: address) {
-	if (vault.toLowerCase() === "0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502".toLowerCase()) {
-		return 8
-	} else {
-		return AAVE_STRATEGY_INDEX
-	}
 }
 
 export function crossJoin<T>(arrays: T[][]): T[][] {
