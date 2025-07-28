@@ -10,6 +10,5 @@ export async function calculateAmountToSwap(from: address, to: address, toAmount
 	// fromAmount => testAmount
 	// x => toAmount
 	// x = fromAmount * toAmount / testAmount
-	const m = 10000000n
-	return  (m + 1n) * fromAmount * toAmount / (testAmount * m)
+	return  fromAmount * toAmount / testAmount
 }
