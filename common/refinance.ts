@@ -1,9 +1,7 @@
 import { StrategyExecutor } from "./calculate-result"
 import { Lending } from "./lending"
-import { address } from "./types"
-import { getDecimals } from "./decimals"
-import { testSwap } from "./test-swap"
 import { MaxUint256 } from "ethers"
+import { calculateAmountToSwap } from "./calculate-amount-to-swap"
 
 export async function refinance<T>(
 	ex: StrategyExecutor<T>,
@@ -18,7 +16,7 @@ export async function refinance<T>(
 		debtToRepay,
 		collateralToWithdraw,
 		repayOperation,
-		withdrawOperation
+		getWithdrawOperation
 	} = await from.initWithdraw(ex, share)
 
 	const { debt: newDebt, collateral: newCollateral, getSupplyOperation, getBorrowOperation } = await to.initDeposit(ex)
@@ -27,7 +25,7 @@ export async function refinance<T>(
 	}
 
 	if (debt.toLowerCase() !== newDebt.toLowerCase()) {
-		const newDebtAmount = await getNeedAmountToSwap(newDebt, debt, debtToRepay)
+		const newDebtAmount = await calculateAmountToSwap(newDebt, debt, debtToRepay)
 		console.log("newDebtAmount", newDebtAmount, "debtToRepay", debtToRepay)
 
 		return ex.execute([
@@ -37,7 +35,7 @@ export async function refinance<T>(
 				amount: debtToRepay,
 				innerOperations: [
 					repayOperation,
-					withdrawOperation,
+					getWithdrawOperation(collateralToWithdraw),
 					getSupplyOperation(collateralToWithdraw),
 					getBorrowOperation(newDebtAmount),
 					{
@@ -62,23 +60,11 @@ export async function refinance<T>(
 				amount: debtToRepay,
 				innerOperations: [
 					repayOperation,
-					withdrawOperation,
+					getWithdrawOperation(collateralToWithdraw),
 					getSupplyOperation(collateralToWithdraw),
 					getBorrowOperation(debtToRepay),
 				]
 			}
 		])
 	}
-}
-
-async function getNeedAmountToSwap(from: address, to: address, toAmount: bigint): Promise<bigint> {
-	const toAmountNumber = Number(toAmount) / (10 ** getDecimals(to))
-	const fromAmount = BigInt(Math.floor(toAmountNumber * 10 ** getDecimals(from)))
-	const testAmount = await testSwap(from, fromAmount, to)
-	// proportion
-	// fromAmount => testAmount
-	// x => toAmount
-	// x = fromAmount * toAmount / testAmount
-	const m = 10000000n
-	return  (m + 1n) * fromAmount * toAmount / (testAmount * m)
 }

@@ -15,7 +15,9 @@ export function toHex(possibly: string): `0x${string}` {
 }
 
 export type StateDiff = Record<address, {
-	stateDiff: {
-		[key: `0x${string}`]: `0x${string}`
-	}
+	stateDiff: AddressStateDiff,
 }>
+
+export type AddressStateDiff = Record<`0x${string}`, `0x${string}`>
+
+

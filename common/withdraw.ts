@@ -17,7 +17,7 @@ export async function withdraw<T>(
 		totalCollateral,
 		debtToRepay,
 		repayOperation,
-		withdrawOperation,
+		getWithdrawOperation,
 		collateralToWithdraw,
 		getHealthFactor,
 	} = await lending.initWithdraw(ex, share)
@@ -29,7 +29,7 @@ export async function withdraw<T>(
 			amount: debtToRepay,
 			innerOperations: [
 				repayOperation,
-				withdrawOperation,
+				getWithdrawOperation(collateralToWithdraw),
 				{
 					type: "swap",
 					from: collateral,

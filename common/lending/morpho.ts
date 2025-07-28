@@ -60,11 +60,11 @@ export class Morpho implements Lending {
 				assets: 0n,
 				shares: debtSharesToRepay,
 			},
-			withdrawOperation: {
+			getWithdrawOperation: (amount: bigint) => ({
 				type: "morpho-withdraw",
 				marketId: this.marketId,
-				amount: collateralToWithdraw,
-			},
+				amount,
+			}),
 			getHealthFactor: async () => {
 				const oracle = MorphoOracle__factory.connect(params.oracle, ex.runner)
 				const price = await oracle.price()

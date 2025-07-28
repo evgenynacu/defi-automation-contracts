@@ -25,7 +25,8 @@ export interface Withdraw {
 	debtToRepay: bigint
 	collateralToWithdraw: bigint
 	repayOperation: InnerStrategyOperation
-	withdrawOperation: InnerStrategyOperation
+
+	getWithdrawOperation(amount: bigint): InnerStrategyOperation
 
 	getHealthFactor(): Promise<number>
 }

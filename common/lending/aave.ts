@@ -50,11 +50,11 @@ export class Aave implements Lending {
 				token: this.debt,
 				amount: debtToRepay,
 			},
-			withdrawOperation: {
+			getWithdrawOperation: (amount: bigint) => ({
 				type: "aave-withdraw",
 				token: this.collateral,
-				amount: collateralToWithdraw,
-			},
+				amount,
+			}),
 			getHealthFactor: async () => {
 				const { result } = await getAaveHealthFactor(ex.runner, await ex.getVaultAddress())
 				return result
