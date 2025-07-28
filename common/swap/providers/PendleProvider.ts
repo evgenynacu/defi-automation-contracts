@@ -59,7 +59,6 @@ export class PendleProvider implements ISwapProvider {
 		}
 		const inactiveMarket = await findInactiveMarket(params.fromToken, params.toToken)
 		return inactiveMarket !== undefined;
-
 	}
 
 }
@@ -73,11 +72,7 @@ async function findInactiveMarket(tokenIn: string, tokenOut: string): Promise<st
 }
 
 async function findMarketByUrl(url: string, tokenIn: string, tokenOut: string, onlyExit = false): Promise<string | undefined> {
-	const res = await fetch(url)
-	if (res.status !== 200) {
-		throw new Error("Failed to fetch markets " + await res.text())
-	}
-	const markets: Markets = await res.json()
+	const markets: Markets = await getMarketsByUrl(url)
 	for (const market of markets.markets) {
 		if (market.pt && market.pt.toLowerCase().indexOf(tokenIn.toLowerCase()) !== -1) {
 			return market.address
@@ -87,6 +82,29 @@ async function findMarketByUrl(url: string, tokenIn: string, tokenOut: string, o
 		}
 	}
 	return undefined
+}
+
+const cache: Record<string, { ts: number, markets: Markets }> = {
+
+}
+
+async function getMarketsByUrl(url: string) {
+	if (cache[url]) {
+		const byUrl = cache[url]
+		if (Date.now() - byUrl.ts < 1000 * 60 * 10) {
+			return byUrl.markets
+		}
+	}
+	const res = await fetch(url)
+	if (res.status !== 200) {
+		throw new Error("Failed to fetch markets " + await res.text())
+	}
+	const markets: Markets = await res.json()
+	cache[url] = {
+		ts: Date.now(),
+		markets,
+	}
+	return markets
 }
 
 type Markets = {
