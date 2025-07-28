@@ -79,6 +79,10 @@ export class OdosV2Provider implements ISwapProvider {
 
     return quote.pathId
   }
+
+  async isUniqueFor() {
+    return false
+  }
 }
 
 type TokenAndAmount = {

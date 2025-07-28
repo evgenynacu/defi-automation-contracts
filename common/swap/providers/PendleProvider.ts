@@ -50,7 +50,15 @@ export class PendleProvider implements ISwapProvider {
 		}
 
 		throw new Error("No pendle market found")
+	}
 
+	async isUniqueFor(params: SwapParams): Promise<boolean> {
+		const active = await findActiveMarket(params.fromToken, params.toToken)
+		if (active !== undefined) {
+			return true
+		}
+		const inactiveMarket = await findInactiveMarket(params.fromToken, params.toToken)
+		return inactiveMarket !== undefined;
 
 	}
 

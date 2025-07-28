@@ -45,6 +45,10 @@ export class OneInchProvider implements ISwapProvider {
     }
     return token
   }
+
+  async isUniqueFor() {
+    return false
+  }
 }
 
 type OneInchSwapResponse = {

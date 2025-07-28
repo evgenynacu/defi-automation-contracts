@@ -48,6 +48,10 @@ export class SushiSwapProvider implements ISwapProvider {
     }
     return token
   }
+
+  async isUniqueFor() {
+    return false
+  }
 }
 
 type SushiSwapResponse = {

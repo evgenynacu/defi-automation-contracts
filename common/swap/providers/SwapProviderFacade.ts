@@ -35,6 +35,17 @@ export class SwapProviderFacade {
 				allowed = params.preferred
 			}
 		}
+		if (allowed.length == 0) {
+			// checking if one of the providers is unique
+			for (let i = 0; i < providers.length; i++) {
+				const provider = providers[i]
+				if (await provider.isUniqueFor(params)) {
+					console.log("quote is unique for provider " + provider.getConfig().name + ". skipping everything else")
+					allowed.push(provider.getConfig().name)
+					break
+				}
+			}
+		}
 		const quotes = await Promise.all(
 			providers.map(provider => {
 					const name = provider.getConfig().name

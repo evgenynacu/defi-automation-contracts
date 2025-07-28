@@ -49,6 +49,10 @@ export class KyberSwapProvider implements ISwapProvider {
 			to: buildData.data.routerAddress,
 		}
 	}
+
+	async isUniqueFor() {
+		return false
+	}
 }
 
 const chainIdMapping: Record<number, string> = {

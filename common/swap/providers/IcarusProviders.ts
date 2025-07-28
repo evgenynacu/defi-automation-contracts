@@ -46,6 +46,10 @@ abstract class IcarusProvider implements ISwapProvider {
       data: resp.candidateTrade.data,
     }
   }
+
+  async isUniqueFor() {
+    return false
+  }
 }
 
 type IcarusResponse = {

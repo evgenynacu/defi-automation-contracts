@@ -2,7 +2,7 @@ import { ISwapProvider } from "./ISwapProvider"
 import { ProviderConfig, SwapParams, SwapResult } from "./types"
 import { toAddress, toHex } from "../../types"
 import { ReservoirSavingModule__factory, ReservoirSwap__factory } from "../../../typechain-types"
-import { reservoirCreditEnforcer, reservoirSavingModule, rUSD, srUSD, usdc } from "../../addresses"
+import { reservoirSavingModule, rUSD, srUSD, usdc } from "../../addresses"
 import { type ContractRunner } from "ethers"
 
 const reservoirInterface = ReservoirSavingModule__factory.createInterface()
@@ -58,6 +58,16 @@ export class ReservoirProvider implements ISwapProvider {
 		}
 
 		throw new Error("toToken is not supported: " + params.toToken)
+	}
+
+	async isUniqueFor(params: SwapParams) {
+		if (params.toToken.toLowerCase() === srUSD && params.fromToken.toLowerCase() === usdc) {
+			return true
+		}
+		if (params.toToken.toLowerCase() === rUSD && params.fromToken.toLowerCase() === srUSD) {
+			return true
+		}
+		return params.toToken.toLowerCase() === usdc && params.fromToken.toLowerCase() === srUSD;
 	}
 }
 
