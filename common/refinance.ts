@@ -25,7 +25,7 @@ export async function refinance<T>(
 	}
 
 	if (debt.toLowerCase() !== newDebt.toLowerCase()) {
-		const m = 10000000n
+		const m = 100000n
 		const newDebtAmount = (await calculateAmountToSwap(newDebt, debt, debtToRepay)) * (m + 1n) / m
 		console.log("newDebtAmount", newDebtAmount, "debtToRepay", debtToRepay)
 
