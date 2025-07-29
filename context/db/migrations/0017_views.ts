@@ -44,6 +44,7 @@ export function up(pgm: MigrationBuilder): void {
 			           job_id,
 			           row_number() over (partition by job_id, date_trunc('day', updated_at) order by updated_at) as rn,
 			           cast(data -> 'debt' as numeric) as debt,
+			           cast(data -> 'collateral' as numeric) as collateral,
 			           cast(data -> 'rate' as numeric) as rate,
 			           cast(data -> 'result' as numeric) as pos_value
 			    FROM data
@@ -55,6 +56,8 @@ export function up(pgm: MigrationBuilder): void {
 			           (EXTRACT(EPOCH FROM (updated_at - lag(updated_at, 1) over (partition by job_id order by updated_at))) / 60) diff_min,
 			           debt,
 			           lag(debt, 1) over (partition by job_id order by updated_at) prev_debt,
+			           collateral,
+			           lag(collateral, 1) over (partition by job_id order by updated_at) prev_collateral,
 			           rate,
 			           lag(rate, 1) over (partition by job_id order by updated_at) prev_rate,
 			           pos_value,
