@@ -6,6 +6,7 @@ prometheus.scrape "app" {
   targets = [
     local.metrics_url,
   ]
+  scrape_interval = "10s"
 }
 
 prometheus.remote_write "grafana_cloud" {
