@@ -4,7 +4,12 @@ import { runMigrations } from "../context/db/run-migrations"
 import { logAsync } from "../common/log-async"
 import {
 	DAI_ADDRESS,
-	PT_eUSDe_AUG, PT_sUSDe_JUL, PT_sUSDe_SEP, SDAI_ADDRESS, sUSDe_ADDRESS, SYRUP_USDC, usdc,
+	PT_eUSDe_AUG,
+	PT_sUSDe_SEP,
+	SDAI_ADDRESS,
+	sUSDe_ADDRESS,
+	SYRUP_USDC,
+	usdc,
 	USDe_ADDRESS,
 	USDT_ADDRESS,
 	WEETH_ADDRESS,
@@ -68,6 +73,17 @@ async function runJobs() {
 			"refreshing position_values_ext_mat"
 		)
 	})
+
+	setInterval(() => {
+		logAsync(
+			syncService.syncData({
+				type: "aave-free-supply",
+				token: PT_sUSDe_SEP,
+				aToken: "0x5f4a0873a3A02f7C0CB0e13a1d4362a1AD90e751",
+			}),
+			"syncing PT-sUSDe-Sep supply cap"
+		)
+	}, 5000)
 
 	cron.schedule('* * * * *', () => {
 		console.log("Running cron job")
@@ -166,14 +182,6 @@ async function runJobs() {
 
 		logAsync(
 			syncService.syncData({
-				type: "aave-free-supply",
-				token: PT_sUSDe_SEP,
-				aToken: "0x5f4a0873a3A02f7C0CB0e13a1d4362a1AD90e751",
-			}),
-			"syncing PT-sUSDe-Sep supply"
-		)
-		logAsync(
-			syncService.syncData({
 				type: "aave-health-factor",
 				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
 			}),
@@ -215,17 +223,6 @@ async function runJobs() {
 				debtToken: usdc,
 			}),
 			"syncing Aave PT-sUSDE-Sep"
-		)
-
-		logAsync(
-			syncService.syncData({
-				type: "aave-withdraw",
-				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
-				vault: "0x45BeD3404b87b30fEF2A6EE679aa50178072bAbb",
-				collateralToken: PT_sUSDe_JUL,
-				debtToken: USDT_ADDRESS,
-			}),
-			"syncing Aave PT-sUSDE-Jul/USDT"
 		)
 
 		//aave PT-eUSDE-Aug
