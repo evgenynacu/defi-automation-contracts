@@ -99,4 +99,4 @@ async function getTotalBorrowAssets(ex: StrategyExecutor<any>, marketId: string,
 	return res.result
 }
 
-const multiplier = 10000000
+const multiplier = 1000000

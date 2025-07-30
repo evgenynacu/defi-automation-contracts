@@ -20,7 +20,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 	const morpho = new Morpho("0xc6ae8e71e11ef511acee3f6cc6ad2af67b862877d459e3789905f537c85db5e3")
 	const aave = new Aave(PT_sUSDe_SEP, USDT_ADDRESS)
-	await sendOrEstimate(hre, ex => refinance(ex, morpho, aave, 0.05), "AaveUsdcVaultProxy")
+	await sendOrEstimate(hre, ex => refinance(ex, morpho, aave, 0.1), "AaveUsdcVaultProxy")
 }
 
 // noinspection JSUnusedGlobalSymbols

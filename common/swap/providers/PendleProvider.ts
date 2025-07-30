@@ -22,6 +22,7 @@ export class PendleProvider implements ISwapProvider {
 			}
 
 			const quote: QuoteResponse = await res.json()
+			// console.log("Quote: " + quote.tx.to + " " + quote.tx.data + " " + quote.data.amountOut)
 
 			return {
 				to: quote.tx.to,
