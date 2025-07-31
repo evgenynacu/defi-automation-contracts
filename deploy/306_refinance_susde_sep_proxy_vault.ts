@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
-import { MORPHO_BLUE, PT_sUSDe_JUL, PT_sUSDe_SEP, USDT_ADDRESS } from "../common/addresses"
+import { MORPHO_BLUE, PT_sUSDe_JUL, PT_sUSDe_SEP, usdc, USDT_ADDRESS } from "../common/addresses"
 import { verifyVaultAuthorized } from "../common/deposit-to-morpho"
 import { ethers } from "hardhat"
 import { MorphoBlue } from "../typechain-types"
@@ -9,6 +9,8 @@ import { sendOrEstimate } from "./send-or-estimate"
 import { refinance } from "../common/refinance"
 import { Morpho } from "../common/lending/morpho"
 import { Aave } from "../common/lending/aave"
+import { MaxUint256 } from "ethers"
+import { calculateAmountToSwap } from "../common/calculate-amount-to-swap"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)
@@ -18,14 +20,44 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	const from = await getSignerAddress()
 	await verifyVaultAuthorized(from, morphoBlue, vault)
 
-	const morpho = new Morpho("0xc6ae8e71e11ef511acee3f6cc6ad2af67b862877d459e3789905f537c85db5e3")
-	const aave = new Aave(PT_sUSDe_SEP, USDT_ADDRESS)
-	await sendOrEstimate(hre, ex => refinance(ex, morpho, aave, 1), "AaveUsdcVaultProxy")
+	const aaveUsdt = new Aave(PT_sUSDe_SEP, USDT_ADDRESS)
+	const aaveUsdc = new Aave(PT_sUSDe_SEP, usdc)
+	await sendOrEstimate(hre, async ex => {
+		const m = 100000n
+		const debtToRepay = 386450000000n
+		const newDebtAmount = (await calculateAmountToSwap(USDT_ADDRESS, usdc, debtToRepay)) * (m + 1n) / m
+		console.log("newDebtAmount", newDebtAmount, "debtToRepay", debtToRepay)
+
+		const usdcWithdraw = await aaveUsdc.initWithdraw(ex, 1)
+		const usdtDeposit = await aaveUsdt.initDeposit(ex)
+		return ex.execute([
+			{
+				type: "morpho-flash-loan",
+				token: usdc,
+				amount: debtToRepay,
+				innerOperations: [
+					usdcWithdraw.repayOperation,
+					usdtDeposit.getBorrowOperation(newDebtAmount),
+					{
+						type: "swap",
+						from: USDT_ADDRESS,
+						to: usdc,
+						amount: newDebtAmount
+					},
+				]
+			},
+			{
+				type: "erc20-transfer-to-caller",
+				token: usdc,
+				amount: MaxUint256
+			}
+		])
+	}, "AaveUsdcVaultProxy")
 }
 
 // noinspection JSUnusedGlobalSymbols
 export default func
-func.tags = ['refinance-PT-sUSDe-SEP-25']
+func.tags = ['refinance-PT-sUSDe-SEP-25-AAVE']
 
 
 //498201.850976938564093206 - 420000 * (1 + 0.05 * 78 / 365)

@@ -6,16 +6,20 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { ContractTransactionResponse } from "ethers"
 
 /**
- * Executes operations using selected Vault. Main signer is used to sign the transaction
+ * Executes operations using the selected Vault. The main signer is used to sign the transaction
  */
 export async function executeStrategy(vaultAddress: address, operations: StrategyOperation[]) {
+	if (process.env.DEBUG_OPS) {
+		console.log("operations:", stringifyWithBigInt(operations, 2))
+	}
+
 	const [signer] = await ethers.getSigners()
 	const { result, info, ops, faults, calldata, working } = await calculateResult(ethers.provider, vaultAddress, signer.address as address, operations)
 
 	const vault = await ethers.getContractAt("AutomatedVault", vaultAddress)
 
 	if (process.env.DEBUG_TENDERLY === 'true') {
-		const url = `https://dashboard.tenderly.co/eugenenacu/project/simulator/new?stateOverrides=&from=${signer.address}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`
+		const url = `https://dashboard.tenderly.co/${process.env.TENDERLY_USER}/project/simulator/new?stateOverrides=&from=${signer.address}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`
 		console.log("simulate: \"" + url + "\"")
 	}
 	console.log("swap faults: " + faults, "best: " + info + " with out " + result, "working: " + working)
@@ -53,3 +57,10 @@ export async function getSignerAddress(): Promise<address> {
 		return signer.address as address
 	}
 }
+
+function stringifyWithBigInt(obj: any, space?: number): string {
+	return JSON.stringify(obj, (_key, value) => {
+		return typeof value === 'bigint' ? value.toString() : value;
+	}, space);
+}
+
