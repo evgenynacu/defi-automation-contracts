@@ -18,7 +18,7 @@ export async function updateJobs(pool: Pool) {
 
 	for(const vault of aaveVaults) {
 		const id = `aave-withdraw-${vault.vault}-${vault.collateral}-${vault.debt}`
-		const name = `Aave ${tokens[vault.collateral]} [${wallets[vault.owner]}]`
+		const name = `Aave ${tokens[vault.collateral]}/${tokens[vault.debt]} [${wallets[vault.owner]}]`
 		const maturityDate = tokenMaturityDates[vault.collateral]
 		jobs.push({ id, name, maturityDate })
 		console.log("Registered job " + id + " = " + name + " " + maturityDate)
