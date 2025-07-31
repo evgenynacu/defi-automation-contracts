@@ -220,9 +220,9 @@ async function runJobs() {
 				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
 				vault: "0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502",
 				collateralToken: PT_sUSDe_SEP,
-				debtToken: usdc,
+				debtToken: USDT_ADDRESS,
 			}),
-			"syncing Aave PT-sUSDE-Sep"
+			"syncing Aave PT-sUSDE-Sep USDT"
 		)
 
 		//aave PT-eUSDE-Aug
@@ -235,39 +235,6 @@ async function runJobs() {
 				debtToken: USDT_ADDRESS,
 			}),
 			"syncing Aave PT-eUSDE-Aug"
-		)
-
-		// morpho PT-sUSDe/Sep ETH
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0xc6ae8e71e11ef511acee3f6cc6ad2af67b862877d459e3789905f537c85db5e3"
-			}),
-			"syncing PT-sUSDe/Sep [ETH]"
-		)
-
-		// morpho PT-sUSDe/Sep USD
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0xc6ae8e71e11ef511acee3f6cc6ad2af67b862877d459e3789905f537c85db5e3"
-			}),
-			"syncing PT-sUSDe/Sep [USD]"
-		)
-
-		// morpho PT-sUSDe/Sep BTC
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0xc6ae8e71e11ef511acee3f6cc6ad2af67b862877d459e3789905f537c85db5e3"
-			}),
-			"syncing PT-sUSDe/Sep [BTC]"
 		)
 
 		//wstUSR-SEP
