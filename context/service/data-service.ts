@@ -33,7 +33,7 @@ export class DataService {
 	}
 
 	async getCompoundHF(request: CompoundHealthFactorRequest) {
-		const { hf } = await getCompoundHealthFactor(this.arbRunner.provider!, request.from, request.comet, request.collateral)
+		const { hf } = await getCompoundHealthFactor(this.arbRunner.provider!, request.comet, request.from, request.collateral)
 		return {
 			id: `compound-hf-${request.from}-${request.comet}`,
 			result: hf
