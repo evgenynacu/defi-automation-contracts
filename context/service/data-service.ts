@@ -8,24 +8,35 @@ import { getAaveHealthFactor } from "../../common/get-aave-health-factor"
 import { testSwap } from "../../common/test-swap"
 import { tokens } from "../tokens"
 import { getFreeSupply } from "../aave"
+import { getCompoundHealthFactor } from "../../common/get-compound-health-factor"
 
 export class DataService {
-	constructor(private readonly runner: ContractRunner) {
+	constructor(private readonly ethRunner: ContractRunner, private readonly arbRunner: ContractRunner) {
 	}
 
 	async getData(request: DataRequest): Promise<DataResult> {
 		if (request.type === "aave-health-factor") {
-			return getAaveHealthFactor(this.runner, request.from)
+			return getAaveHealthFactor(this.ethRunner, request.from)
 		} else if (request.type === "swap-rate") {
 			return getSwapRate(request)
 		} else if (request.type === "aave-free-supply") {
 			return {
 				id: `aave-free-supply-${request.token}`,
-				result: await getFreeSupply(this.runner, request.token, request.aToken)
+				result: await getFreeSupply(this.ethRunner, request.token, request.aToken)
 			}
+		} else if (request.type === "compound-health-factor") {
+			return this.getCompoundHF(request)
 		} else {
-			const executor = createCalculateExecutor(this.runner, request.vault, request.from)
+			const executor = createCalculateExecutor(this.ethRunner, request.vault, request.from)
 			return getData(executor, request)
+		}
+	}
+
+	async getCompoundHF(request: CompoundHealthFactorRequest) {
+		const { hf } = await getCompoundHealthFactor(this.arbRunner.provider!, request.from, request.comet, request.collateral)
+		return {
+			id: `compound-hf-${request.from}-${request.comet}`,
+			result: hf
 		}
 	}
 }
@@ -89,13 +100,25 @@ type DataResult = {
 	[key: string]: any;
 }
 
-export type DataRequest = AaveHealthFactorRequest | AaveFreeSupplyRequest | SwapRateRequest |
+export type DataRequest =
+	AaveHealthFactorRequest
+	| AaveFreeSupplyRequest
+	| SwapRateRequest
+	| CompoundHealthFactorRequest
+	|
 	(CommonPart &
 		(MorphoWithdrawDataRequest | AaveWithdrawDataRequest | CompoundWithdrawDataRequest))
 
 export type AaveHealthFactorRequest = {
 	type: "aave-health-factor"
 	from: address
+}
+
+export type CompoundHealthFactorRequest = {
+	type: "compound-health-factor"
+	from: address
+	comet: address
+	collateral: address
 }
 
 export type AaveFreeSupplyRequest = {

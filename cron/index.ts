@@ -182,15 +182,19 @@ async function runJobs() {
 
 		logAsync(
 			syncService.syncData({
-				type: "aave-health-factor",
+				type: "compound-health-factor",
 				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
+				comet: "0xd98Be00b5D27fc98112BdE293e487f8D4cA57d07",
+				collateral: "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f"
 			}),
 			"syncing BTC HF"
 		)
 		logAsync(
 			syncService.syncData({
-				type: "aave-health-factor",
+				type: "compound-health-factor",
 				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
+				comet: "0xd98Be00b5D27fc98112BdE293e487f8D4cA57d07",
+				collateral: "0x5979D7b546E38E414F7E9822514be443A4800529"
 			}),
 			"syncing ETH HF"
 		)

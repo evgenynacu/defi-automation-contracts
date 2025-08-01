@@ -2,10 +2,16 @@ import { Gauge, Registry } from 'prom-client'
 
 export const register = new Registry()
 
-export const walletHFGauge = new Gauge({
-	name: 'wallet_health_factor',
-	help: 'Wallet health factor',
+export const aaveHFGauge = new Gauge({
+	name: 'aave_health_factor',
+	help: 'Aave health factor',
 	labelNames: ['wallet'],
+})
+
+export const compoundHFGauge = new Gauge({
+	name: 'compound_health_factor',
+	help: 'Compound health factor',
+	labelNames: ['wallet', 'comet'],
 })
 
 export const openPositionSizeGauge = new Gauge({
@@ -33,7 +39,8 @@ export const aaveFreeSupplyGauge = new Gauge({
 })
 
 
-register.registerMetric(walletHFGauge)
+register.registerMetric(aaveHFGauge)
+register.registerMetric(compoundHFGauge)
 register.registerMetric(openPositionSizeGauge)
 register.registerMetric(ltvGauge)
 register.registerMetric(hfGauge)

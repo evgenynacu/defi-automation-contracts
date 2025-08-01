@@ -1,5 +1,5 @@
 import { Pool } from "pg"
-import { aaveFreeSupplyGauge, hfGauge, ltvGauge, openPositionSizeGauge, walletHFGauge } from "./metrics"
+import { aaveFreeSupplyGauge, aaveHFGauge, compoundHFGauge, hfGauge, ltvGauge, openPositionSizeGauge, } from "./metrics"
 import { marketIds } from "../context/morpho"
 import { wallets } from "../context/wallets"
 import { aaveVaults } from "../context/aave"
@@ -46,9 +46,18 @@ export async function exportLatestData(pool: Pool) {
 			}
 		}
 		if (parsedId !== undefined && parsedId.type === "aave-hf") {
-			walletHFGauge.set(
+			aaveHFGauge.set(
 				{
 					wallet: parsedId.wallet
+				},
+				row.data.result
+			)
+		}
+		if (parsedId !== undefined && parsedId.type === "compound-hf") {
+			compoundHFGauge.set(
+				{
+					wallet: parsedId.wallet,
+					comet: parsedId.comet
 				},
 				row.data.result
 			)
@@ -74,6 +83,10 @@ type ParsedJobId = {
 } | {
 	type: "aave-free-supply"
 	token: string
+} | {
+	type: "compound-hf"
+	wallet: string
+	comet: string
 }
 
 function parseJobId(jobId: string): ParsedJobId | undefined {
@@ -106,6 +119,15 @@ function parseJobId(jobId: string): ParsedJobId | undefined {
 		return {
 			type: "aave-hf",
 			wallet: wallets[wallet] || wallet
+		}
+	}
+	if (jobId.startsWith("compound-hf")) {
+		const parts = jobId.split("-")
+		const wallet = parts[2]
+		return {
+			type: "compound-hf",
+			wallet: wallets[wallet] || wallet,
+			comet: parts[3]
 		}
 	}
 	if (jobId.startsWith("aave-free-supply")) {
