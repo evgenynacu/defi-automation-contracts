@@ -36,6 +36,7 @@ export async function getCompoundHealthFactor(
 	borrow: bigint;          // долг в base-единицах (например, USDC, scale = baseScale)
 	liquidationCapacity: bigint; // сумма залога*liqCF в base-единицах
 }> {
+	console.log("Getting compound health factor for user", user, "with collateral", collateral, "comet", cometAddress);
 	const comet = new Contract(cometAddress, cometAbi, provider);
 
 	const [priceScaleBN, baseScaleBN, info] = await Promise.all([
