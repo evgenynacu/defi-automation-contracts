@@ -1,4 +1,4 @@
-import { PT_eUSDe_AUG, PT_sUSDe_JUL, PT_sUSDe_SEP, usdc, USDT_ADDRESS } from "../../common/addresses"
+import { PT_eUSDe_AUG, PT_sUSDe_JUL, PT_sUSDe_SEP, PT_USDe_SEP, usdc, USDT_ADDRESS } from "../../common/addresses"
 import { address, toAddress } from "../../common/types"
 
 type AaveVault = {
@@ -38,5 +38,6 @@ export const aaveVaults: AaveVault[] = [
 export const tokenMaturityDates: Record<address, Date> = {
 	[PT_eUSDe_AUG]: new Date("2025-08-14"),
 	[PT_sUSDe_SEP]: new Date("2025-09-25"),
+	[PT_USDe_SEP]: new Date("2025-09-25"),
 	[PT_sUSDe_JUL]: new Date("2025-07-31"),
 }

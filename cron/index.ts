@@ -5,7 +5,7 @@ import { logAsync } from "../common/log-async"
 import {
 	DAI_ADDRESS,
 	PT_eUSDe_AUG,
-	PT_sUSDe_SEP,
+	PT_sUSDe_SEP, PT_USDe_SEP,
 	SDAI_ADDRESS,
 	sUSDe_ADDRESS,
 	SYRUP_USDC,
@@ -82,6 +82,17 @@ async function runJobs() {
 				aToken: "0x5f4a0873a3A02f7C0CB0e13a1d4362a1AD90e751",
 			}),
 			"syncing PT-sUSDe-Sep supply cap"
+		)
+	}, 5000)
+
+	setInterval(() => {
+		logAsync(
+			syncService.syncData({
+				type: "aave-free-supply",
+				token: PT_USDe_SEP,
+				aToken: "0x38A5357Ce55c81add62aBc84Fb32981e2626ADEf",
+			}),
+			"syncing PT-USDe-Sep supply cap"
 		)
 	}, 5000)
 
@@ -206,15 +217,15 @@ async function runJobs() {
 			"syncing Misc HF"
 		)
 
-		//syrupUSDC Aug 25
+		//morpho PT-USDe-Sep
 		logAsync(
 			syncService.syncData({
 				type: "morpho-withdraw",
 				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0x96a4399f2c837f8aa34c39718e30625a84f9285991f0a08d1f2997e15bbeeaa8"
+				marketId: "0xb0a9ac81a8c6a5274aa1a8337aed35a2cb2cd4feb5c6d3b39d41f234fbf2955b"
 			}),
-			"syncing PT-syrupUSDC-Aug"
+			"syncing PT-USDe-Sep"
 		)
 
 		//aave PT-sUSDE-Sep
@@ -260,17 +271,6 @@ async function runJobs() {
 				marketId: "0xeec6c7e2ddb7578f2a7d86fc11cf9da005df34452ad9b9189c51266216f5d71b"
 			}),
 			"syncing wstUSR-SEP [BTC]"
-		)
-
-		//PT-USDS Aug
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0xa458018cf1a6e77ebbcc40ba5776ac7990e523b7cc5d0c1e740a4bbc13190d8f"
-			}),
-			"syncing PT-USDS Aug [ETH]"
 		)
 
 		//ezETH
