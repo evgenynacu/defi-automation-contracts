@@ -1,2 +1,2 @@
 export * from "./vaults"
-export * from "./get-free-supply"
+export * from "./get-supply-caps"

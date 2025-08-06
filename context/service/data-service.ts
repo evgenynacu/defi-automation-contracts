@@ -7,7 +7,7 @@ import { withdrawFromAave } from "../../common/withdraw-from-aave"
 import { getAaveHealthFactor } from "../../common/get-aave-health-factor"
 import { testSwap } from "../../common/test-swap"
 import { tokens } from "../tokens"
-import { getFreeSupply } from "../aave"
+import { getSupplyCaps } from "../aave"
 import { getCompoundHealthFactor } from "../../common/get-compound-health-factor"
 
 export class DataService {
@@ -20,9 +20,11 @@ export class DataService {
 		} else if (request.type === "swap-rate") {
 			return getSwapRate(request)
 		} else if (request.type === "aave-free-supply") {
+			const caps = await getSupplyCaps(this.ethRunner, request.token, request.aToken)
 			return {
 				id: `aave-free-supply-${request.token}`,
-				result: await getFreeSupply(this.ethRunner, request.token, request.aToken)
+				...caps,
+				result: caps.available,
 			}
 		} else if (request.type === "compound-health-factor") {
 			return this.getCompoundHF(request)
