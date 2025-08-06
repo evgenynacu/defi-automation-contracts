@@ -15,13 +15,15 @@ import {
 import { getDecimals } from "./decimals"
 
 export const ERC20_STRATEGY_INDEX = 0
-export const SWAP_STRATEGY_INDEX = 1
 export const MORPHO_FLASH_LOAN_STRATEGY_INDEX = 2
 export const AAVE_FLASH_LOAN_STRATEGY_INDEX = 3
 export const COMPOUND_V3_STRATEGY_INDEX = 4
 export const MORPHO_STRATEGY_INDEX = 5
 export const AAVE_STRATEGY_INDEX = 6
 export const MORPHO_READ_STRATEGY_INDEX = 7
+export const PENDLE_STRATEGY_INDEX = 8
+export const ODOS_STRATEGY_INDEX = 9
+export const KYBER_STRATEGY_INDEX = 10
 
 export type TransferErc20FromCallerOperation = {
 	type: 'erc20-transfer-from-caller'
@@ -337,13 +339,22 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			const impl = SwapStrategy__factory.createInterface()
 			const quotes = await fetchAllQuotes(runner, from, vault, op)
 			return quotes.map(quote => ({
-				position: SWAP_STRATEGY_INDEX,
+				position: getSwapStrategyPosition(quote.ex),
 				callData: impl.encodeFunctionData("swap", [op.from, op.to, quote.to, quote.data]),
 				info: quote.ex,
 				in: quote.in,
 				out: quote.out,
 			}))
 		}
+	}
+}
+
+function getSwapStrategyPosition(provider: string) {
+	switch (provider) {
+		case "pendle": return PENDLE_STRATEGY_INDEX
+		case "odos-v2": return ODOS_STRATEGY_INDEX
+		case "kyberswap-api": return KYBER_STRATEGY_INDEX
+		default: throw new Error("Unknown swap strategy provider " + provider)
 	}
 }
 

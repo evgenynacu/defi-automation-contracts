@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
+import "./swaps/PendleRouter.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
+import {PendleSwapValidator} from "./swaps/PendleSwapValidator.sol";
 
 /**
  * @title SafeSwapStrategy
  * @notice Strategy for swapping assets to other assets
  * @notice this strategy allows only some calls (validates router and recipient)
  */
-contract SafeSwapStrategy {
+contract PendleSwapStrategy {
     using SafeERC20 for IERC20;
 
     error SwapFailed(address router, string reason);
@@ -27,6 +29,9 @@ contract SafeSwapStrategy {
      */
     function swap(IERC20 token0, IERC20 token1, address swapRouter, bytes calldata swapData) external returns (uint output) {
         require(swapRouter == router, "incorrect router");
+
+        // Validate function signature and receiver
+        _validateSwapData(swapData);
 
         // 1. Get initial value
         uint amountBefore = token1.balanceOf(address(this));
@@ -46,6 +51,15 @@ contract SafeSwapStrategy {
         uint amountAfter = token1.balanceOf(address(this));
 
         output = amountAfter - amountBefore;
+    }
+
+    /**
+     * @notice Validates swap data to ensure only allowed functions are called with correct receiver
+     * @param swapData The calldata to validate
+     */
+    function _validateSwapData(bytes calldata swapData) internal view {
+        address receiver = PendleSwapValidator._validateSwapData(swapData);
+        require(receiver == address(this), "!RECEIVER");
     }
 
     function _approveSwap(IERC20 token0, address exchange) internal {

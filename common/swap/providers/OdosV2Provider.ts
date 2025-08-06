@@ -42,6 +42,7 @@ export class OdosV2Provider implements ISwapProvider {
   private async getPathId(params: SwapParams): Promise<string> {
     const quoteBody = {
       "chainId": params.chainId,
+	    "compact": false,
       "inputTokens": [
         {
           "amount": params.swapAmount.toString(),

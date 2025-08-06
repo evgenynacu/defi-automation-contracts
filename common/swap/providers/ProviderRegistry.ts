@@ -1,15 +1,5 @@
 import { ISwapProvider } from "./ISwapProvider"
-import { OneInchProvider } from "./OneInchProvider"
 import { OdosV2Provider } from "./OdosV2Provider"
-import {
-  EnsoProvider,
-  KyberSwapIcarusProvider,
-  OpenoceanProvider, UnizenProvider,
-  UsorProvider,
-  VeloraProvider,
-  ZeroexProvider
-} from "./IcarusProviders"
-import { SushiSwapProvider } from "./SushiSwapProvider"
 import { KyberSwapProvider } from "./KyberSwapProvider"
 import { PendleProvider } from "./PendleProvider"
 import { ReservoirProvider } from "./ReservoirProvider"
@@ -41,12 +31,13 @@ export class ProviderRegistry {
       new OdosV2Provider(),
       // new SushiSwapProvider(),
       new KyberSwapProvider(),
-      new EnsoProvider(),
-      new KyberSwapIcarusProvider(),
-      new VeloraProvider(),
-      new UnizenProvider(),
+      // new EnsoProvider(),
+	    // new CowswapProvider(),
+      // new KyberSwapIcarusProvider(),
+      // new VeloraProvider(),
+      // new UnizenProvider(),
       // new OkxProvider(),
-      new OpenoceanProvider(),
+      // new OpenoceanProvider(),
       // new UsorProvider(),
       // new ZeroexProvider(),
       new PendleProvider(),
