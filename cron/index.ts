@@ -78,17 +78,6 @@ async function runJobs() {
 		logAsync(
 			syncService.syncData({
 				type: "aave-free-supply",
-				token: PT_sUSDe_SEP,
-				aToken: "0x5f4a0873a3A02f7C0CB0e13a1d4362a1AD90e751",
-			}),
-			"syncing PT-sUSDe-Sep supply cap"
-		)
-	}, 5000)
-
-	setInterval(() => {
-		logAsync(
-			syncService.syncData({
-				type: "aave-free-supply",
 				token: PT_USDe_SEP,
 				aToken: "0x38A5357Ce55c81add62aBc84Fb32981e2626ADEf",
 			}),
