@@ -10,12 +10,13 @@ export class Morpho implements Lending {
 
 	constructor(
 		readonly marketId: string,
+		readonly onBehalfOf?: address,
 	) {
 	}
 
 	async initDeposit(ex: StrategyExecutor<any>): Promise<Deposit> {
 		this.morpho = MorphoBlue__factory.connect(MORPHO_BLUE, ex.runner)
-		const from = await ex.getFrom()
+		const onBehalfOf = this.onBehalfOf || await ex.getFrom()
 		const [debt, collateral] = await this.morpho.idToMarketParams(this.marketId)
 		return {
 			debt: toAddress(debt),
@@ -24,23 +25,23 @@ export class Morpho implements Lending {
 				type: "morpho-supply",
 				marketId: this.marketId,
 				amount,
-				onBehalfOf: from,
+				onBehalfOf,
 			}),
 			getBorrowOperation: (amount: bigint) => ({
 				type: "morpho-borrow",
 				marketId: this.marketId,
 				amount,
-				onBehalfOf: from,
+				onBehalfOf,
 			}),
 		}
 	}
 
 	async initWithdraw(ex: StrategyExecutor<any>, share: number): Promise<Withdraw> {
-		const from = await ex.getFrom()
+		const onBehalfOf = this.onBehalfOf || await ex.getFrom()
 		const morpho = MorphoBlue__factory.connect(MORPHO_BLUE, ex.runner)
 		const params = await morpho.idToMarketParams(this.marketId)
 		const market = await morpho.market(this.marketId)
-		const pos = await morpho.position(this.marketId, from)
+		const pos = await morpho.position(this.marketId, onBehalfOf)
 		const totalBorrowAssets = await getTotalBorrowAssets(ex, this.marketId, toAddress(params.loanToken))
 
 		const totalCollateral = pos.collateral
@@ -62,13 +63,13 @@ export class Morpho implements Lending {
 				marketId: this.marketId,
 				assets: 0n,
 				shares: debtSharesToRepay,
-				onBehalfOf: from,
+				onBehalfOf,
 			},
 			getWithdrawOperation: (amount: bigint) => ({
 				type: "morpho-withdraw",
 				marketId: this.marketId,
 				amount,
-				onBehalfOf: from,
+				onBehalfOf,
 			}),
 			getHealthFactor: async () => {
 				const oracle = MorphoOracle__factory.connect(params.oracle, ex.runner)
