@@ -10,6 +10,7 @@ export async function deposit<T>(
 	leverage: number,
 ) {
 	const vaultAddress = await ex.getVaultAddress()
+	const from = await ex.getFrom()
 
 	const { debt, collateral, getSupplyOperation, getBorrowOperation } = await lending.initDeposit(ex)
 
@@ -18,9 +19,10 @@ export async function deposit<T>(
 
 	return ex.execute([
 		{
-			type: "erc20-transfer-from-caller",
+			type: "erc20-transfer-from",
 			token: debt,
 			amount: amount,
+			from,
 		},
 		{
 			type: "morpho-flash-loan",
@@ -32,6 +34,7 @@ export async function deposit<T>(
 					from: debt,
 					to: collateral,
 					amount: flashLoanAmount + amount,
+					txOrigin: from,
 				},
 				getSupplyOperation(MaxUint256),
 				getBorrowOperation(flashLoanAmount),

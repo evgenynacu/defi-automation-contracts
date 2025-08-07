@@ -4,6 +4,7 @@ import { calculateAmountToSwap } from "./calculate-amount-to-swap"
 import { MaxUint256 } from "ethers"
 
 export async function deleverage<T>(ex: StrategyExecutor<T>, lending: Lending, share: number) {
+	const from = await ex.getFrom()
 	const inst = await lending.initWithdraw(ex, share)
 	const { debt, collateral, debtToRepay, repayOperation, getWithdrawOperation } = inst
 
@@ -23,13 +24,15 @@ export async function deleverage<T>(ex: StrategyExecutor<T>, lending: Lending, s
 					from: collateral,
 					to: debt,
 					amount: collateralToWithdraw,
+					txOrigin: from,
 				},
 			]
 		},
 		{
-			type: "erc20-transfer-to-caller",
+			type: "erc20-transfer-to",
 			token: debt,
 			amount: MaxUint256,
+			to: from,
 		}
 	])
 }

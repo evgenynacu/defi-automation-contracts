@@ -10,6 +10,8 @@ export async function withdraw<T>(
 	share: number
 ): Promise<T> {
 
+	const from = await ex.getFrom()
+
 	const {
 		debt,
 		collateral,
@@ -35,13 +37,15 @@ export async function withdraw<T>(
 					from: collateral,
 					to: debt,
 					amount: collateralToWithdraw,
+					txOrigin: from,
 				},
 			]
 		},
 		{
-			type: "erc20-transfer-to-caller",
+			type: "erc20-transfer-to",
 			token: debt,
-			amount: MaxUint256
+			amount: MaxUint256,
+			to: from,
 		}
 	])
 	const hf = await getHealthFactor()

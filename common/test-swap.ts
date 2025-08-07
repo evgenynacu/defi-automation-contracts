@@ -34,18 +34,21 @@ export async function testSwap(
 			stateDiff: tokenStateDiff
 		}
 	})
+	const from = await ex.getFrom()
 
 	const r = await ex.execute([
 		{
-			type: "erc20-transfer-from-caller",
+			type: "erc20-transfer-from",
 			token: fromToken,
 			amount: amount,
+			from,
 		},
 		{
 			type: "swap",
 			from: fromToken,
 			to: toToken,
 			amount: amount,
+			txOrigin: from,
 		}
 	])
 	return r.result

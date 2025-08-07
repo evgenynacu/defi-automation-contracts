@@ -10,6 +10,8 @@ export async function refinance<T>(
 	share: number,
 ) {
 
+	const txOrigin = await ex.getFrom()
+
 	const {
 		debt,
 		collateral,
@@ -44,13 +46,15 @@ export async function refinance<T>(
 						from: newDebt,
 						to: debt,
 						amount: newDebtAmount,
+						txOrigin: txOrigin,
 					}
 				]
 			},
 			{
-				type: "erc20-transfer-to-caller",
+				type: "erc20-transfer-to",
 				token: debt,
 				amount: MaxUint256,
+				to: txOrigin,
 			}
 		])
 	} else {

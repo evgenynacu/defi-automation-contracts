@@ -15,6 +15,7 @@ export class Morpho implements Lending {
 
 	async initDeposit(ex: StrategyExecutor<any>): Promise<Deposit> {
 		this.morpho = MorphoBlue__factory.connect(MORPHO_BLUE, ex.runner)
+		const from = await ex.getFrom()
 		const [debt, collateral] = await this.morpho.idToMarketParams(this.marketId)
 		return {
 			debt: toAddress(debt),
@@ -23,11 +24,13 @@ export class Morpho implements Lending {
 				type: "morpho-supply",
 				marketId: this.marketId,
 				amount,
+				onBehalfOf: from,
 			}),
 			getBorrowOperation: (amount: bigint) => ({
 				type: "morpho-borrow",
 				marketId: this.marketId,
 				amount,
+				onBehalfOf: from,
 			}),
 		}
 	}
@@ -59,11 +62,13 @@ export class Morpho implements Lending {
 				marketId: this.marketId,
 				assets: 0n,
 				shares: debtSharesToRepay,
+				onBehalfOf: from,
 			},
 			getWithdrawOperation: (amount: bigint) => ({
 				type: "morpho-withdraw",
 				marketId: this.marketId,
 				amount,
+				onBehalfOf: from,
 			}),
 			getHealthFactor: async () => {
 				const oracle = MorphoOracle__factory.connect(params.oracle, ex.runner)
@@ -78,6 +83,7 @@ export class Morpho implements Lending {
 }
 
 async function getTotalBorrowAssets(ex: StrategyExecutor<any>, marketId: string, loanToken: address) {
+	const from = await ex.getFrom()
 	const calc = createCalculateExecutor(ex.runner, "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240", "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E", {
 		[loanToken]: {
 			stateDiff: {
@@ -87,9 +93,10 @@ async function getTotalBorrowAssets(ex: StrategyExecutor<any>, marketId: string,
 	})
 	const res = await calc.execute([
 		{
-			type: "erc20-transfer-from-caller",
+			type: "erc20-transfer-from",
 			token: loanToken,
 			amount: 100000n,
+			from,
 		},
 		{
 			type: "morpho-read-total-borrow-assets",

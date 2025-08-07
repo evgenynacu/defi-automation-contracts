@@ -1,6 +1,8 @@
-import { MaxUint256 } from "ethers"
 import { verifyAllowance } from "./verify-allowance"
 import { StrategyExecutor } from "./calculate-result"
+import { deposit } from "./deposit"
+import { Aave } from "./lending/aave"
+import { toAddress } from "./types"
 
 export async function depositToAave<T>(
 	ex: StrategyExecutor<T>,
@@ -10,39 +12,7 @@ export async function depositToAave<T>(
 	leverage: number,
 ) {
 	const vaultAddress = await ex.getVaultAddress()
-
-	const flashLoanAmount = amount * BigInt((leverage - 1) * 10000) / BigInt(10000)
-
 	await verifyAllowance(ex.runner, debtToken, amount, vaultAddress)
 
-	return ex.execute([
-		{
-			type: "erc20-transfer-from-caller",
-			token: debtToken,
-			amount: amount,
-		},
-		{
-			type: "morpho-flash-loan",
-			token: debtToken,
-			amount: flashLoanAmount,
-			innerOperations: [
-				{
-					type: "swap",
-					from: debtToken,
-					to: collateralToken,
-					amount: flashLoanAmount + amount,
-				},
-				{
-					type: "aave-supply",
-					token: collateralToken,
-					amount: MaxUint256,
-				},
-				{
-					type: "aave-borrow",
-					token: debtToken,
-					amount: flashLoanAmount,
-				}
-			]
-		}
-	])
+	return deposit(ex, new Aave(toAddress(collateralToken), toAddress(debtToken)), amount, leverage)
 }

@@ -36,25 +36,29 @@ export async function withdrawFromCompound<T>(ex: StrategyExecutor<T>, cometAddr
 					type: "compound-v3-repay",
 					comet: cometAddress,
 					amount: debtToWithdraw,
+					onBehalfOf: from,
 				},
 				{
 					type: "compound-v3-withdraw",
 					comet: cometAddress,
 					token: collateralToken,
 					amount: collateralToWithdraw,
+					onBehalfOf: from,
 				},
 				{
 					type: "swap",
 					from: collateralToken,
 					to: baseToken,
 					amount: collateralToWithdraw,
+					txOrigin: from,
 				},
 			]
 		},
 		{
-			type: "erc20-transfer-to-caller",
+			type: "erc20-transfer-to",
 			token: baseToken,
-			amount: MaxUint256
+			amount: MaxUint256,
+			to: from,
 		}
 	])
 

@@ -26,14 +26,16 @@ export const ODOS_STRATEGY_INDEX = 9
 export const KYBER_STRATEGY_INDEX = 10
 
 export type TransferErc20FromCallerOperation = {
-	type: 'erc20-transfer-from-caller'
+	type: 'erc20-transfer-from'
 	token: string
+	from: string
 	amount: bigint
 }
 
 export type TransferErc20ToCallerOperation = {
-	type: 'erc20-transfer-to-caller'
+	type: 'erc20-transfer-to'
 	token: string
+	to: string
 	amount: bigint
 }
 
@@ -43,6 +45,7 @@ export type SwapOperation = {
 	to: string
 	amount: bigint
 	preferred?: string | string[]
+	txOrigin: address
 }
 
 type CompoundV3SupplyOperation = {
@@ -50,6 +53,7 @@ type CompoundV3SupplyOperation = {
 	comet: string
 	token: string
 	amount: bigint
+	onBehalfOf: string
 }
 
 type CompoundV3WithdrawOperation = {
@@ -57,18 +61,21 @@ type CompoundV3WithdrawOperation = {
 	comet: string
 	token: string
 	amount: bigint
+	onBehalfOf: string
 }
 
 type CompoundV3BorrowOperation = {
 	type: 'compound-v3-borrow'
 	comet: string
 	amount: bigint
+	onBehalfOf: string
 }
 
 type CompoundV3RepayOperation = {
 	type: 'compound-v3-repay'
 	comet: string
 	amount: bigint
+	onBehalfOf: string
 }
 
 type CompoundV3Operation =
@@ -81,18 +88,21 @@ export type MorphoSupplyOperation = {
 	type: 'morpho-supply'
 	marketId: string
 	amount: bigint
+	onBehalfOf: string
 }
 
 export type MorphoWithdrawOperation = {
 	type: 'morpho-withdraw'
 	marketId: string
 	amount: bigint
+	onBehalfOf: string
 }
 
 export type MorphoBorrowOperation = {
 	type: 'morpho-borrow'
 	marketId: string
 	amount: bigint
+	onBehalfOf: string
 }
 
 export type MorphoRepayOperation = {
@@ -100,6 +110,7 @@ export type MorphoRepayOperation = {
 	marketId: string
 	assets: bigint
 	shares: bigint
+	onBehalfOf: string
 }
 
 type MorphoOperation =
@@ -178,8 +189,8 @@ export type StrategyOperation =
 	| MorphoFlashLoanOperation
 	| AaveFlashLoanOperation
 
-export async function serializeOperations(runner: ContractRunner, from: address, vault: address, ops: StrategyOperation[]): Promise<OperationWithInfo[][]> {
-	const serializedOps = await Promise.all(ops.map(op => serializeOperation(runner, from, vault, op)))
+export async function serializeOperations(runner: ContractRunner, vault: address, ops: StrategyOperation[]): Promise<OperationWithInfo[][]> {
+	const serializedOps = await Promise.all(ops.map(op => serializeOperation(runner, vault, op)))
 	return crossJoin(serializedOps)
 }
 
@@ -192,12 +203,11 @@ export type OperationWithInfo = HasOperation.OperationStruct & {
 /**
  * Serialized op
  * @param runner ethers runner
- * @param from who is sending the tx
  * @param vault vault which will execute any swap operation (needed to generate correct calldata for swapping)
  * @param op operation to serialize
  * @return Array of possible operations
  */
-async function serializeOperation(runner: ContractRunner, from: address, vault: address, op: StrategyOperation): Promise<OperationWithInfo[]> {
+async function serializeOperation(runner: ContractRunner, vault: address, op: StrategyOperation): Promise<OperationWithInfo[]> {
 	switch (op["type"]) {
 		case "morpho-read-total-borrow-assets": {
 			const impl = MorphoReadStrategy__factory.createInterface()
@@ -245,61 +255,61 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 			const impl = MorphoStrategy__factory.createInterface()
 			return [{
 				position: MORPHO_STRATEGY_INDEX,
-				callData: impl.encodeFunctionData("supplyCollateral", [op.marketId, from, op.amount]),
+				callData: impl.encodeFunctionData("supplyCollateral", [op.marketId, op.onBehalfOf, op.amount]),
 			}]
 		}
 		case "morpho-withdraw": {
 			const impl = MorphoStrategy__factory.createInterface()
 			return [{
 				position: MORPHO_STRATEGY_INDEX,
-				callData: impl.encodeFunctionData("withdrawCollateral", [op.marketId, from, op.amount]),
+				callData: impl.encodeFunctionData("withdrawCollateral", [op.marketId, op.onBehalfOf, op.amount]),
 			}]
 		}
 		case "morpho-borrow": {
 			const impl = MorphoStrategy__factory.createInterface()
 			return [{
 				position: MORPHO_STRATEGY_INDEX,
-				callData: impl.encodeFunctionData("borrowFromMarket", [op.marketId, from, op.amount]),
+				callData: impl.encodeFunctionData("borrowFromMarket", [op.marketId, op.onBehalfOf, op.amount]),
 			}]
 		}
 		case "morpho-repay": {
 			const impl = MorphoStrategy__factory.createInterface()
 			return [{
 				position: MORPHO_STRATEGY_INDEX,
-				callData: impl.encodeFunctionData("repayDebt", [op.marketId, from, op.assets, op.shares]),
+				callData: impl.encodeFunctionData("repayDebt", [op.marketId, op.onBehalfOf, op.assets, op.shares]),
 			}]
 		}
 		case "compound-v3-supply": {
 			const impl = CompoundV3Strategy__factory.createInterface()
 			return [{
 				position: COMPOUND_V3_STRATEGY_INDEX,
-				callData: impl.encodeFunctionData("supplyCollateral", [op.comet, from, op.token, op.amount]),
+				callData: impl.encodeFunctionData("supplyCollateral", [op.comet, op.onBehalfOf, op.token, op.amount]),
 			}]
 		}
 		case "compound-v3-withdraw": {
 			const impl = CompoundV3Strategy__factory.createInterface()
 			return [{
 				position: COMPOUND_V3_STRATEGY_INDEX,
-				callData: impl.encodeFunctionData("withdrawCollateral", [op.comet, from, op.token, op.amount]),
+				callData: impl.encodeFunctionData("withdrawCollateral", [op.comet, op.onBehalfOf, op.token, op.amount]),
 			}]
 		}
 		case "compound-v3-borrow": {
 			const impl = CompoundV3Strategy__factory.createInterface()
 			return [{
 				position: COMPOUND_V3_STRATEGY_INDEX,
-				callData: impl.encodeFunctionData("borrowBaseToken", [op.comet, from, op.amount]),
+				callData: impl.encodeFunctionData("borrowBaseToken", [op.comet, op.onBehalfOf, op.amount]),
 			}]
 		}
 		case "compound-v3-repay": {
 			const impl = CompoundV3Strategy__factory.createInterface()
 			return [{
 				position: COMPOUND_V3_STRATEGY_INDEX,
-				callData: impl.encodeFunctionData("repayBaseToken", [op.comet, from, op.amount]),
+				callData: impl.encodeFunctionData("repayBaseToken", [op.comet, op.onBehalfOf, op.amount]),
 			}]
 		}
 		case "morpho-flash-loan": {
 			const impl = MorphoFlashLoanStrategy__factory.createInterface()
-			const innerOperations = await Promise.all(op.innerOperations.map(it => serializeOperation(runner, from, vault, it)))
+			const innerOperations = await Promise.all(op.innerOperations.map(it => serializeOperation(runner, vault, it)))
 			const crossJoined = crossJoin(innerOperations)
 			return crossJoined.map(ops => ({
 				position: MORPHO_FLASH_LOAN_STRATEGY_INDEX,
@@ -311,7 +321,7 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 		}
 		case "aave-flash-loan": {
 			const impl = AaveFlashLoanStrategy__factory.createInterface()
-			const innerOperations = await Promise.all(op.innerOperations.map(it => serializeOperation(runner, from, vault, it)))
+			const innerOperations = await Promise.all(op.innerOperations.map(it => serializeOperation(runner, vault, it)))
 			const crossJoined = crossJoin(innerOperations)
 			return crossJoined.map(ops => ({
 				position: AAVE_FLASH_LOAN_STRATEGY_INDEX,
@@ -321,23 +331,23 @@ async function serializeOperation(runner: ContractRunner, from: address, vault: 
 				out: ops.map(it => it.out).find(it => it !== undefined),
 			}))
 		}
-		case "erc20-transfer-from-caller": {
+		case "erc20-transfer-from": {
 			const impl = Erc20TransferStrategy__factory.createInterface()
 			return [{
 				position: ERC20_STRATEGY_INDEX,
-				callData: impl.encodeFunctionData("transferFrom", [op.token, from, op.amount]),
+				callData: impl.encodeFunctionData("transferFrom", [op.token, op.from, op.amount]),
 			}]
 		}
-		case "erc20-transfer-to-caller": {
+		case "erc20-transfer-to": {
 			const impl = Erc20TransferStrategy__factory.createInterface()
 			return [{
 				position: ERC20_STRATEGY_INDEX,
-				callData: impl.encodeFunctionData("transferTo", [op.token, from, op.amount]),
+				callData: impl.encodeFunctionData("transferTo", [op.token, op.to, op.amount]),
 			}]
 		}
 		case "swap": {
 			const impl = SwapStrategy__factory.createInterface()
-			const quotes = await fetchAllQuotes(runner, from, vault, op)
+			const quotes = await fetchAllQuotes(runner, vault, op)
 			return quotes.map(quote => ({
 				position: getSwapStrategyPosition(quote.ex),
 				callData: impl.encodeFunctionData("swap", [op.from, op.to, quote.to, quote.data]),
@@ -358,12 +368,12 @@ function getSwapStrategyPosition(provider: string) {
 	}
 }
 
-async function fetchAllQuotes(runner: ContractRunner, from: address, vaultAddress: address, op: SwapOperation) {
+async function fetchAllQuotes(runner: ContractRunner, vaultAddress: address, op: SwapOperation) {
 	const { chainId } = await runner.provider!.getNetwork()
 	const fromDecimals = getDecimals(op.from)
 	const toDecimals = getDecimals(op.to)
 	return await getSwaps(
-		runner, Number(chainId), vaultAddress, op.amount, op.from as address, op.to as address, from, fromDecimals, toDecimals, op.preferred
+		runner, Number(chainId), vaultAddress, op.amount, op.from as address, op.to as address, op.txOrigin, fromDecimals, toDecimals, op.preferred
 	)
 }
 

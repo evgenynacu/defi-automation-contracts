@@ -15,7 +15,7 @@ export async function calculateResult(
 	operations: StrategyOperation[],
 	stateDiff: StateDiff = {}
 ): Promise<CalculateResult> {
-	const possibleOperations = await serializeOperations(runner, from, vaultAddress, operations)
+	const possibleOperations = await serializeOperations(runner, vaultAddress, operations)
 	const vault = AutomatedVault__factory.connect(vaultAddress, runner)
 
 	const results = await Promise.all(possibleOperations.map(ops => callAndGetOut(runner, from, vault, ops, stateDiff)))
