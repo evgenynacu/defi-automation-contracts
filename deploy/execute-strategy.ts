@@ -4,6 +4,7 @@ import { address } from "../common/types"
 import { calculateResult, StrategyExecutor } from "../common/calculate-result"
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { ContractTransactionResponse } from "ethers"
+import { stringifyWithBigInt } from "../common/stringify"
 
 /**
  * Executes operations using the selected Vault. The main signer is used to sign the transaction
@@ -56,11 +57,5 @@ export async function getSignerAddress(): Promise<address> {
 		const [signer] = await ethers.getSigners()
 		return signer.address as address
 	}
-}
-
-function stringifyWithBigInt(obj: any, space?: number): string {
-	return JSON.stringify(obj, (_key, value) => {
-		return typeof value === 'bigint' ? value.toString() : value;
-	}, space);
 }
 

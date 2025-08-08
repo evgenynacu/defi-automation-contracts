@@ -84,8 +84,9 @@ export class Morpho implements Lending {
 }
 
 async function getTotalBorrowAssets(ex: StrategyExecutor<any>, marketId: string, loanToken: address) {
-	const from = await ex.getFrom()
-	const calc = createCalculateExecutor(ex.runner, "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240", "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E", {
+	const from = "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E"
+	const vault = "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240"
+	const calc = createCalculateExecutor(ex.runner, vault, from, {
 		[loanToken]: {
 			stateDiff: {
 				[getBalanceStorageSlot(loanToken)]: "0x000000000000000000000000000ff00000000000000000006404586861f96590"
