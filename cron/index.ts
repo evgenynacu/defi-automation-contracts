@@ -206,6 +206,16 @@ async function runJobs() {
 			"syncing Misc HF"
 		)
 
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0xb0a9ac81a8c6a5274aa1a8337aed35a2cb2cd4feb5c6d3b39d41f234fbf2955b"
+			}),
+			"syncing PT-USDe-Sep"
+		)
+
 		//morpho PT-USDe-Sep
 		logAsync(
 			syncService.syncData({
@@ -228,18 +238,6 @@ async function runJobs() {
 				debtToken: USDT_ADDRESS,
 			}),
 			"syncing Aave PT-sUSDE-Sep USDT"
-		)
-
-		//aave PT-eUSDE-Aug
-		logAsync(
-			syncService.syncData({
-				type: "aave-withdraw",
-				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
-				vault: "0xE92096ecf53E4Ed58c8Dbc15af62249FaA76a7C8",
-				collateralToken: PT_eUSDe_AUG,
-				debtToken: USDT_ADDRESS,
-			}),
-			"syncing Aave PT-eUSDE-Aug"
 		)
 
 		//wstUSR-SEP
