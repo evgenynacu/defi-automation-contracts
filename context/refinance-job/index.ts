@@ -1,6 +1,6 @@
 import dotenv from "dotenv"
 import { getSupplyCaps } from "../aave"
-import { ContractTransactionResponse, ethers, Wallet } from "ethers"
+import { ContractTransactionResponse, ethers, Wallet, Provider, FeeData } from "ethers"
 import { PT_USDe_SEP, USDT_ADDRESS } from "../../common/addresses"
 import { calculateResult, StrategyExecutor } from "../../common/calculate-result"
 import { address, StateDiff, toAddress, toHex } from "../../common/types"
@@ -19,12 +19,13 @@ async function refinanceJob() {
 	console.log("executing txs from", wallet.address)
 	const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_RPC_URL || "https://eth.llamarpc.com")
 	const signer = wallet.connect(provider)
+	const gasTool = createGasTool(provider)
 
 	const vault = toAddress(process.env.VAULT_ADDRESS || "0x45BeD3404b87b30fEF2A6EE679aa50178072bAbb")
-	const executor = createSendExecutor(signer, {
+	const executor = createSendExecutor(signer, gasTool, {
 			[vault]: {
 				stateDiff: {
-						[toHex("0xc0a9f5df74bfbfe117443d538f7d3a01e944270ac4e50786d0f393ade43fe98f")]: toHex("0x0000000000000000000000000000000000000000000000000000000000000001"),
+					[toHex("0xc0a9f5df74bfbfe117443d538f7d3a01e944270ac4e50786d0f393ade43fe98f")]: toHex("0x0000000000000000000000000000000000000000000000000000000000000001"),
 				},
 			},
 			[toAddress("0x38A5357Ce55c81add62aBc84Fb32981e2626ADEf")]: {
@@ -61,22 +62,26 @@ async function checkAndRefinance(id: NodeJS.Timeout, signer: Wallet, morpho: Mor
 
 		const tx = await refinance(executor, morpho, aave, share)
 		console.log("sent", tx)
+		const receipt = await tx.wait()
+		console.log("receipt", receipt)
+		console.log("---------------------------------------------------------")
 	} else {
 		console.log("Cap is too low, waiting for it to increase")
+		console.log("---------------------------------------------------------")
 	}
 }
 
-function createSendExecutor(signer: Wallet, stateDiff: StateDiff = {}): StrategyExecutor<ContractTransactionResponse> {
+function createSendExecutor(signer: Wallet, gasTool: GasTool, stateDiff: StateDiff = {}): StrategyExecutor<ContractTransactionResponse> {
 	const vault = toAddress(process.env.VAULT_ADDRESS || "0x45BeD3404b87b30fEF2A6EE679aa50178072bAbb")
 	return {
 		runner: signer,
 		getVaultAddress: () => Promise.resolve(vault),
 		getFrom: () => Promise.resolve(toAddress(signer.address)),
-		execute: (operations: StrategyOperation[]) => executeStrategy(signer, vault, operations, stateDiff),
+		execute: (operations: StrategyOperation[]) => executeStrategy(signer, vault, operations, gasTool, stateDiff),
 	}
 }
 
-async function executeStrategy(signer: Wallet, vaultAddress: address, operations: StrategyOperation[], stateDiff: StateDiff = {}) {
+async function executeStrategy(signer: Wallet, vaultAddress: address, operations: StrategyOperation[], gasTool: GasTool, stateDiff: StateDiff = {}) {
 	if (process.env.DEBUG_OPS) {
 		console.log("operations:", stringifyWithBigInt(operations, 2))
 	}
@@ -94,7 +99,49 @@ async function executeStrategy(signer: Wallet, vaultAddress: address, operations
 	const vault = AutomatedVault__factory.connect(vaultAddress, signer)
 
 	console.log("swap faults: " + faults, "best: " + info + " with out " + result, "working: " + working)
-	return await vault.rebalance(ops)
+	const gasSettings = await gasTool()
+	console.log("executing with gas", gasSettings)
+	return await vault.rebalance(ops, gasSettings)
+}
+
+type GasSettings = {
+	maxFeePerGas: bigint
+	maxPriorityFeePerGas: bigint
+} | {
+	gasPrice: bigint
+} | {
+
+}
+
+type GasTool = (multiplier?: number) => Promise<GasSettings>
+
+function createGasTool(provider: Provider): GasTool {
+	let cache: Promise<FeeData> = provider.getFeeData()
+
+	setInterval(async () => {
+		const fees = await provider.getFeeData()
+		cache = Promise.resolve(fees)
+		console.log("new fees", fees)
+		console.log("---------------------------------------------------------")
+	}, 5000)
+
+	return async (multiplier: number = 1.3) => {
+		const feeData = await cache
+		if (feeData.maxFeePerGas && feeData.maxPriorityFeePerGas) {
+			// EIP-1559 поддерживается
+			return {
+				maxFeePerGas: (feeData.maxFeePerGas * BigInt(Math.floor(multiplier * 100))) / 100n,
+				maxPriorityFeePerGas: (feeData.maxPriorityFeePerGas * BigInt(Math.floor(multiplier * 100))) / 100n
+			};
+		} else if (feeData.gasPrice) {
+			// Fallback к legacy
+			return {
+				gasPrice: (feeData.gasPrice * BigInt(Math.floor(multiplier * 100))) / 100n
+			};
+		} else {
+			return {}
+		}
+	}
 }
 
 refinanceJob().then()
