@@ -15,7 +15,7 @@ export async function deposit<T>(
 	const { debt, collateral, getSupplyOperation, getBorrowOperation } = await lending.initDeposit(ex)
 
 	await verifyAllowance(ex.runner, debt, amount, vaultAddress)
-	const flashLoanAmount = amount * BigInt((leverage - 1) * 10000) / BigInt(10000)
+	const flashLoanAmount = amount * BigInt(Math.floor((leverage - 1) * 10000)) / BigInt(10000)
 
 	return ex.execute([
 		{

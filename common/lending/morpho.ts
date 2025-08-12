@@ -47,9 +47,9 @@ export class Morpho implements Lending {
 		const totalCollateral = pos.collateral
 		const totalDebt = pos.borrowShares * totalBorrowAssets / market.totalBorrowShares
 
-		const debtToRepay = totalDebt * BigInt(share * multiplier + 1) / BigInt(multiplier)
-		const debtSharesToRepay = pos.borrowShares * BigInt(share * multiplier) / BigInt(multiplier)
-		const collateralToWithdraw = totalCollateral * BigInt(share * multiplier) / BigInt(multiplier)
+		const debtToRepay = totalDebt * BigInt(Math.floor(share * multiplier + 1)) / BigInt(multiplier)
+		const debtSharesToRepay = pos.borrowShares * BigInt(Math.floor(share * multiplier)) / BigInt(multiplier)
+		const collateralToWithdraw = totalCollateral * BigInt(Math.floor(share * multiplier)) / BigInt(multiplier)
 
 		return {
 			debt: toAddress(params.loanToken),

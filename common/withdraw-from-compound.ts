@@ -23,8 +23,8 @@ export async function withdrawFromCompound<T>(ex: StrategyExecutor<T>, cometAddr
 
 	console.log("total collateral: ", collateralBalance, "total debt: ", totalDebt)
 
-	const debtToWithdraw = totalDebt * BigInt(share * multiplier + 1) / BigInt(multiplier)
-	const collateralToWithdraw = collateralBalance * BigInt(share * multiplier) / BigInt(multiplier)
+	const debtToWithdraw = totalDebt * BigInt(Math.floor(share * multiplier + 1)) / BigInt(multiplier)
+	const collateralToWithdraw = collateralBalance * BigInt(Math.floor(share * multiplier)) / BigInt(multiplier)
 
 	const result = await ex.execute([
 		{

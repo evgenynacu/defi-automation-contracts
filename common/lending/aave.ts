@@ -35,8 +35,8 @@ export class Aave implements Lending {
 
 		const [, , totalDebt] = await data.getUserReserveData(this.debt, vault)
 		const [totalCollateral] = await data.getUserReserveData(this.collateral, vault)
-		const debtToRepay = totalDebt * BigInt(share * multiplier + 1) / BigInt(multiplier)
-		const collateralToWithdraw = totalCollateral * BigInt(share * multiplier) / BigInt(multiplier)
+		const debtToRepay = totalDebt * BigInt(Math.floor(share * multiplier + 1)) / BigInt(multiplier)
+		const collateralToWithdraw = totalCollateral * BigInt(Math.floor(share * multiplier)) / BigInt(multiplier)
 
 		return {
 			debt: this.debt,
