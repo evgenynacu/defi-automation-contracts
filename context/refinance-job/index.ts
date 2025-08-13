@@ -40,7 +40,7 @@ async function refinanceJob() {
 
 	const id = setInterval(() => {
 		logAsync(checkAndRefinance(id, signer, morpho, aave, executor), "checkAndRefinance").then()
-	}, 5000)
+	}, 6000)
 }
 
 async function checkAndRefinance(id: NodeJS.Timeout, signer: Wallet, morpho: Morpho, aave: Aave, executor: StrategyExecutor<ContractTransactionResponse>) {
@@ -121,27 +121,38 @@ function createGasTool(provider: Provider): GasTool {
 	setInterval(async () => {
 		const fees = await provider.getFeeData()
 		cache = Promise.resolve(fees)
-		console.log("new fees", fees)
+		console.log("new fees", getGasSettings(fees))
 		console.log("---------------------------------------------------------")
-	}, 5000)
+	}, 6000)
 
 	return async (multiplier: number = 1.3) => {
 		const feeData = await cache
-		if (feeData.maxFeePerGas && feeData.maxPriorityFeePerGas) {
-			// EIP-1559 поддерживается
-			return {
-				maxFeePerGas: (feeData.maxFeePerGas * BigInt(Math.floor(multiplier * 100))) / 100n,
-				maxPriorityFeePerGas: (feeData.maxPriorityFeePerGas * BigInt(Math.floor(multiplier * 100))) / 100n
-			};
-		} else if (feeData.gasPrice) {
-			// Fallback к legacy
-			return {
-				gasPrice: (feeData.gasPrice * BigInt(Math.floor(multiplier * 100))) / 100n
-			};
-		} else {
-			return {}
-		}
+		return getGasSettings(feeData, multiplier)
 	}
 }
+
+function getGasSettings(feeData: FeeData, multiplier: number = 1.3) {
+	if (feeData.maxFeePerGas && feeData.maxPriorityFeePerGas) {
+		// EIP-1559 поддерживается
+		const maxPriorityFeePerGas = (feeData.maxPriorityFeePerGas * BigInt(Math.floor(multiplier * 100))) / 100n
+
+		return {
+			maxFeePerGas: (feeData.maxFeePerGas * BigInt(Math.floor(multiplier * 100))) / 100n,
+			maxPriorityFeePerGas: maxBigInt(maxPriorityFeePerGas, 100000000n)
+		};
+	} else if (feeData.gasPrice) {
+		// Fallback к legacy
+		return {
+			gasPrice: (feeData.gasPrice * BigInt(Math.floor(multiplier * 100))) / 100n
+		};
+	} else {
+		return {}
+	}
+}
+
+function maxBigInt(a: bigint, b: bigint): bigint {
+	return a > b ? a : b;
+}
+
 
 refinanceJob().then()
