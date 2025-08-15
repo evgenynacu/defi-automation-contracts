@@ -6,7 +6,6 @@ export async function logAsync<T>(p: Promise<T>, message?: string) {
 			console.error(message, e)
 		} else {
 			console.error(e)
-
 		}
 	}
 }

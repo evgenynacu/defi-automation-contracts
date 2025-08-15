@@ -39,11 +39,14 @@ async function refinanceJob() {
 	const aave = new Aave(PT_USDe_SEP, USDT_ADDRESS)
 
 	const id = setInterval(() => {
-		logAsync(checkAndRefinance(id, signer, morpho, aave, executor), "checkAndRefinance").then()
+		logAsync(checkAndRefinance(id, signer, morpho, aave, executor, gasTool), "checkAndRefinance").then()
 	}, 6000)
 }
 
-async function checkAndRefinance(id: NodeJS.Timeout, signer: Wallet, morpho: Morpho, aave: Aave, executor: StrategyExecutor<ContractTransactionResponse>) {
+async function checkAndRefinance(id: NodeJS.Timeout, signer: Wallet, morpho: Morpho, aave: Aave, executor: StrategyExecutor<ContractTransactionResponse>, gasTool: GasTool) {
+	const gasSettings = await gasTool()
+	console.log("executing with gas", gasSettings)
+
 	const { collateralToWithdraw } = await morpho.initWithdraw(executor, 1)
 	const collateralNumber = Number(collateralToWithdraw / (10n ** 18n))
 	console.log("collateral", collateralNumber)
@@ -91,7 +94,6 @@ async function executeStrategy(signer: Wallet, vaultAddress: address, operations
 		info,
 		ops,
 		faults,
-		calldata,
 		working
 	} = await calculateResult(signer.provider!, vaultAddress, toAddress(signer.address), operations, stateDiff)
 	console.log("calculate result", result)
@@ -114,21 +116,28 @@ type GasSettings = {
 }
 
 type GasTool = (multiplier?: number) => Promise<GasSettings>
+type CacheHolder = {
+	cache: Promise<FeeData>
+}
 
 function createGasTool(provider: Provider): GasTool {
-	let cache: Promise<FeeData> = provider.getFeeData()
+	const cacheHolder: CacheHolder = {
+		cache: provider.getFeeData()
+	}
 
-	setInterval(async () => {
-		const fees = await provider.getFeeData()
-		cache = Promise.resolve(fees)
-		console.log("new fees", getGasSettings(fees))
-		console.log("---------------------------------------------------------")
+	setInterval(() => {
+		logAsync(fetchAndSaveGasSettings(provider, cacheHolder), "fetchAndSaveGasSettings").then()
 	}, 6000)
 
 	return async (multiplier: number = 1.3) => {
-		const feeData = await cache
+		const feeData = await cacheHolder.cache
 		return getGasSettings(feeData, multiplier)
 	}
+}
+
+async function fetchAndSaveGasSettings(provider: Provider, cacheHolder: CacheHolder) {
+	const fees = await provider.getFeeData()
+	cacheHolder.cache = Promise.resolve(fees)
 }
 
 function getGasSettings(feeData: FeeData, multiplier: number = 1.3) {
