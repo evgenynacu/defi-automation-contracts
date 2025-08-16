@@ -235,9 +235,9 @@ async function runJobs() {
 				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
 				vault: "0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502",
 				collateralToken: PT_sUSDe_SEP,
-				debtToken: USDT_ADDRESS,
+				debtToken: usdc,
 			}),
-			"syncing Aave PT-sUSDE-Sep USDT"
+			"syncing Aave PT-sUSDE-Sep USDC"
 		)
 
 		//wstUSR-SEP

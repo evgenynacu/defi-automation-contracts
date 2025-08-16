@@ -8,6 +8,7 @@ export async function refinance<T>(
 	from: Lending,
 	to: Lending,
 	share: number,
+	multiplier: bigint = 100000n
 ) {
 
 	const txOrigin = await ex.getFrom()
@@ -27,8 +28,7 @@ export async function refinance<T>(
 	}
 
 	if (debt.toLowerCase() !== newDebt.toLowerCase()) {
-		const m = 100000n
-		const newDebtAmount = (await calculateAmountToSwap(newDebt, debt, debtToRepay)) * (m + 1n) / m
+		const newDebtAmount = (await calculateAmountToSwap(newDebt, debt, debtToRepay)) * (multiplier + 1n) / multiplier
 		console.log("newDebtAmount", newDebtAmount, "debtToRepay", debtToRepay)
 
 		return ex.execute([

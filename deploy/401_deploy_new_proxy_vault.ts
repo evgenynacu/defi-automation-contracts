@@ -5,12 +5,12 @@ import { sendOrEstimate } from "./send-or-estimate"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	await deployNewVaultProxy(hre, "AaveUsdcVaultProxy")
-	await sendOrEstimate(hre, ex => {
-		return ex.execute([{
-			type: "aave-init",
-			category: 13,
-		}])
-	}, "AaveUsdcVaultProxy")
+	// await sendOrEstimate(hre, ex => {
+	// 	return ex.execute([{
+	// 		type: "aave-init",
+	// 		category: 13,
+	// 	}])
+	// }, "AaveUsdcVaultProxy")
 }
 
 // noinspection JSUnusedGlobalSymbols
