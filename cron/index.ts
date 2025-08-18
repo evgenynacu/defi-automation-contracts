@@ -4,14 +4,13 @@ import { runMigrations } from "../context/db/run-migrations"
 import { logAsync } from "../common/log-async"
 import {
 	DAI_ADDRESS,
-	PT_eUSDe_AUG,
-	PT_sUSDe_SEP, PT_USDe_SEP,
+	PT_sUSDe_SEP,
+	PT_USDe_SEP,
 	SDAI_ADDRESS,
 	sUSDe_ADDRESS,
 	SYRUP_USDC,
 	usdc,
 	USDe_ADDRESS,
-	USDT_ADDRESS,
 	WEETH_ADDRESS,
 	WETH_ADDRESS,
 	WSTETH_ADDRESS
@@ -223,7 +222,7 @@ async function runJobs() {
 				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
 				vault: "0x45BeD3404b87b30fEF2A6EE679aa50178072bAbb",
 				collateralToken: PT_USDe_SEP,
-				debtToken: USDT_ADDRESS,
+				debtToken: usdc,
 			}),
 			"syncing PT-USDe-Sep"
 		)
