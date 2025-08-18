@@ -2,7 +2,7 @@ import { StrategyExecutor } from "./calculate-result"
 import { MaxUint256 } from "ethers"
 import { getDecimals } from "./decimals"
 import { Lending } from "./lending"
-
+import { PriceOracle__factory } from "../typechain-types"
 
 export async function withdraw<T>(
 	ex: StrategyExecutor<T>,
@@ -23,6 +23,24 @@ export async function withdraw<T>(
 		collateralToWithdraw,
 		getHealthFactor,
 	} = await lending.initWithdraw(ex, share)
+
+	console.log("totalDebt", totalDebt, "totalCollateral", totalCollateral)
+	const priceOracle = PriceOracle__factory.connect("0x56f8Df17564Fe3C0644f62CA50a4E913c188eD5d", ex.runner)
+	let posValue = 0
+	try {
+		const [collateralValue, debtValue] = await Promise.all([
+			priceOracle.getUsdValue(collateral, totalCollateral),
+			priceOracle.getUsdValue(debt, totalDebt),
+		])
+		posValue = Number(collateralValue - debtValue) / (10 ** 8)
+		if (process.env.DEBUG_VALUE) {
+			console.log("posValue", posValue)
+		}
+	} catch (e) {
+		if (process.env.DEBUG_VALUE) {
+			console.error("Failed to get price", e)
+		}
+	}
 
 	const result = await ex.execute([
 		{
@@ -52,6 +70,7 @@ export async function withdraw<T>(
 	return {
 		...result,
 		hf,
+		posValue: posValue == 0 ? undefined : posValue,
 		debt: Number(totalDebt) / (10 ** getDecimals(debt)),
 		collateral: Number(totalCollateral) / (10 ** getDecimals(collateral)),
 	}

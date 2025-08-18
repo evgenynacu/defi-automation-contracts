@@ -1,5 +1,6 @@
 import { HardhatUserConfig } from "hardhat/config"
 import "@nomicfoundation/hardhat-toolbox"
+import "@nomicfoundation/hardhat-verify"
 import "hardhat-deploy"
 import "hardhat-deploy-ethers"
 import { config as dotenvConfig } from "dotenv"
@@ -27,6 +28,9 @@ if (process.env.ADMIN_PRIVATE_KEY) {
 }
 
 const config: HardhatUserConfig = {
+	etherscan: {
+		apiKey: process.env.ETHERSCAN_API_KEY,
+	},
 	solidity: {
 		version: "0.8.24",
 		settings: {
