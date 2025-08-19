@@ -6,9 +6,19 @@ import "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.so
 
 interface IPendleOracle {
     function getPtToAssetRate(address market, uint32 duration) external view returns (uint256);
+
+    function getPtToSyRate(address market, uint32 duration) external view returns (uint256);
 }
 
-contract PriceOracle is Ownable {
+contract SyPriceOracle is Ownable {
+
+    // @notice Describes what to use for identifying the price of PT token
+    struct PTInfo {
+        // @notice if true, then SY will be used for identifying the price
+        bool useSy;
+        // @notice address of the Asset or SY
+        address token;
+    }
 
     uint8 public constant DECIMALS = 8;
     uint256 private constant WAD = 1e18;
@@ -21,12 +31,16 @@ contract PriceOracle is Ownable {
     address private constant USDT = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
     address private constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     address private constant USDe = 0x4c9EDD5852cd905f086C759E8383e09bff1E68B3;
+    address private constant sUSDe = 0x9D39A5DE30e57443BfF2A8307A4256c8797A3497;
+    address private constant USR = 0x66a1E37c9b0eAddca17d3662D6c05F4DECf3e110;
 
     // Chainlink Price Feed addresses (Ethereum Mainnet)
     address private constant USDC_USD_FEED = 0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6;
     address private constant USDT_USD_FEED = 0x3E7d1eAB13ad0104d2750B8863b489D65364e32D;
     address private constant DAI_USD_FEED = 0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9;
     address private constant USDe_USD_FEED = 0xa569d910839Ae8865Da8F8e70FfFb0cBA869F961;
+    address private constant USR_USD_FEED = 0x34ad75691e25A8E9b681AAA85dbeB7ef6561B42c;
+    address private constant sUSDe_USD_FEED = 0xFF3BC18cCBd5999CE63E788A1c250a88626aD099;
 
     // Token decimals
     uint8 private constant USDC_DECIMALS = 6;
@@ -40,7 +54,7 @@ contract PriceOracle is Ownable {
     mapping(address => address) public ptToMarket;
 
     // Mapping for PT tokens -> underlying stablecoin
-    mapping(address => address) public ptToUnderlying;
+    mapping(address => PTInfo) public ptToUnderlying;
 
     event PriceFeedUpdated(address indexed token, address indexed priceFeed);
     event PTTokenAdded(address indexed ptToken, address indexed market, address indexed underlying);
@@ -71,17 +85,23 @@ contract PriceOracle is Ownable {
      * @dev Get USD value of PT token using PendleOracle
      */
     function _getPTTokenUsdValue(address ptToken, uint256 amount, address market) private view returns (uint256) {
-        address underlying = ptToUnderlying[ptToken];
-        require(underlying != address(0), "PT underlying not found");
+        PTInfo memory underlying = ptToUnderlying[ptToken];
+        require(underlying.token != address(0), "PT underlying not found");
 
-        // Get PT to asset rate from PendleOracle
-        uint256 ptToAssetRate = IPendleOracle(PENDLE_ORACLE).getPtToAssetRate(market, 0);
+        uint256 ptRate;
+        if (underlying.useSy) {
+            // Get PT to SY rate from PendleOracle
+            ptRate = IPendleOracle(PENDLE_ORACLE).getPtToSyRate(market, 0);
+        } else {
+            // Get PT to asset rate from PendleOracle
+            ptRate = IPendleOracle(PENDLE_ORACLE).getPtToAssetRate(market, 0);
+        }
 
         // Calculate PT tokens value in USD
         // PT Rate * Amount * Underlying Price
-        uint256 ptValueInUnderlying = (amount * ptToAssetRate) / WAD;
+        uint256 ptValueInUnderlying = (amount * ptRate) / WAD;
 
-        return _getChainlinkUsdValue(underlying, ptValueInUnderlying);
+        return _getChainlinkUsdValue(underlying.token, ptValueInUnderlying);
     }
 
     /**
@@ -145,6 +165,12 @@ contract PriceOracle is Ownable {
         if (token == USDe) {
             return USDe_USD_FEED;
         }
+        if (token == USR) {
+            return USR_USD_FEED;
+        }
+        if (token == sUSDe) {
+            return sUSDe_USD_FEED;
+        }
 
         return priceFeeds[token];
     }
@@ -169,6 +195,7 @@ contract PriceOracle is Ownable {
     function addPTToken(
         address ptToken,
         address market,
+        bool useSy,
         address underlyingToken
     ) external onlyOwner {
         require(ptToken != address(0), "Invalid PT token");
@@ -177,7 +204,7 @@ contract PriceOracle is Ownable {
         require(_getPriceFeed(underlyingToken) != address(0), "Underlying must have price feed");
 
         ptToMarket[ptToken] = market;
-        ptToUnderlying[ptToken] = underlyingToken;
+        ptToUnderlying[ptToken] = PTInfo(useSy, underlyingToken);
 
         emit PTTokenAdded(ptToken, market, underlyingToken);
     }

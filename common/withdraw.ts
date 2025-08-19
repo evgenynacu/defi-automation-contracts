@@ -1,8 +1,9 @@
 import { StrategyExecutor } from "./calculate-result"
-import { MaxUint256 } from "ethers"
+import { MaxUint256, ContractRunner } from "ethers"
 import { getDecimals } from "./decimals"
 import { Lending } from "./lending"
 import { PriceOracle__factory } from "../typechain-types"
+import { address } from "./types"
 
 export async function withdraw<T>(
 	ex: StrategyExecutor<T>,
@@ -25,22 +26,8 @@ export async function withdraw<T>(
 	} = await lending.initWithdraw(ex, share)
 
 	console.log("totalDebt", totalDebt, "totalCollateral", totalCollateral)
-	const priceOracle = PriceOracle__factory.connect("0x56f8Df17564Fe3C0644f62CA50a4E913c188eD5d", ex.runner)
-	let posValue = 0
-	try {
-		const [collateralValue, debtValue] = await Promise.all([
-			priceOracle.getUsdValue(collateral, totalCollateral),
-			priceOracle.getUsdValue(debt, totalDebt),
-		])
-		posValue = Number(collateralValue - debtValue) / (10 ** 8)
-		if (process.env.DEBUG_VALUE) {
-			console.log("posValue", posValue)
-		}
-	} catch (e) {
-		if (process.env.DEBUG_VALUE) {
-			console.error("Failed to get price", e)
-		}
-	}
+	const posValue = await getPosValue("0x56f8Df17564Fe3C0644f62CA50a4E913c188eD5d", ex.runner, collateral, totalCollateral, debt, totalDebt)
+	const posSyValue = await getPosValue("0x60Cc2Da68f99746Fe1Bf8e5D40234A5FD4D2Ea11", ex.runner, collateral, totalCollateral, debt, totalDebt)
 
 	const result = await ex.execute([
 		{
@@ -71,7 +58,28 @@ export async function withdraw<T>(
 		...result,
 		hf,
 		posValue: posValue == 0 ? undefined : posValue,
+		posSyValue: posSyValue == 0 ? undefined : posSyValue,
 		debt: Number(totalDebt) / (10 ** getDecimals(debt)),
 		collateral: Number(totalCollateral) / (10 ** getDecimals(collateral)),
 	}
+}
+
+async function getPosValue(oracle: address, runner: ContractRunner, collateral: address, totalCollateral: bigint, debt: address, totalDebt: bigint) {
+	const priceOracle = PriceOracle__factory.connect(oracle, runner)
+	let posValue = 0
+	try {
+		const [collateralValue, debtValue] = await Promise.all([
+			priceOracle.getUsdValue(collateral, totalCollateral),
+			priceOracle.getUsdValue(debt, totalDebt),
+		])
+		posValue = Number(collateralValue - debtValue) / (10 ** 8)
+		if (process.env.DEBUG_VALUE) {
+			console.log("posValue", posValue)
+		}
+	} catch (e) {
+		if (process.env.DEBUG_VALUE) {
+			console.error("Failed to get price", e)
+		}
+	}
+	return posValue
 }
