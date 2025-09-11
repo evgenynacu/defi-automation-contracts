@@ -9,6 +9,11 @@ import { NetworksUserConfig } from "hardhat/types"
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
 const networks: NetworksUserConfig = {
+	mainnet_universal: {
+		url: "http://localhost:4000/rpc/code-123",
+		chainId: 1,
+		timeout: 60000,
+	},
 	hardhat: {
 		allowBlocksWithSameTimestamp: true,
 	}
@@ -18,11 +23,6 @@ if (process.env.ADMIN_PRIVATE_KEY) {
 	networks.mainnet = {
 		accounts: [process.env.ADMIN_PRIVATE_KEY!],
 		url: "https://eth.llamarpc.com",
-	}
-	networks.mainnet_universal = {
-		url: "http://localhost:4000/rpc/fff",
-		chainId: 1,
-		timeout: 60000,
 	}
 }
 
