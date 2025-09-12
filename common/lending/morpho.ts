@@ -1,9 +1,9 @@
-import { Deposit, Lending, Withdraw } from "../lending"
-import { MorphoBlue, MorphoBlue__factory, MorphoOracle__factory } from "../../typechain-types"
-import { createCalculateExecutor, StrategyExecutor } from "../calculate-result"
-import { MORPHO_BLUE } from "../addresses"
-import { address, toAddress } from "../types"
-import { getBalanceStorageSlot } from "../test-swap"
+import {Deposit, Lending, Withdraw} from "../lending"
+import {MorphoBlue, MorphoBlue__factory, MorphoOracle__factory} from "../../typechain-types"
+import {createCalculateExecutor, StrategyExecutor} from "../calculate-result"
+import {MORPHO_BLUE} from "../addresses"
+import {address, toAddress} from "../types"
+import {getTokenStateDiff} from "../test-swap"
 
 export class Morpho implements Lending {
 	private morpho: MorphoBlue | undefined
@@ -88,10 +88,8 @@ async function getTotalBorrowAssets(ex: StrategyExecutor<any>, marketId: string,
 	const vault = "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240"
 	const calc = createCalculateExecutor(ex.runner, vault, from, {
 		[loanToken]: {
-			stateDiff: {
-				[getBalanceStorageSlot(loanToken)]: "0x000000000000000000000000000ff00000000000000000006404586861f96590"
-			}
-		}
+			stateDiff: getTokenStateDiff(loanToken),
+		},
 	})
 	const res = await calc.execute([
 		{
