@@ -229,6 +229,17 @@ async function runJobs() {
 			"syncing Aave PT-sUSDE-Sep USDC"
 		)
 
+		// PT-USDe NOV / USDS
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0x8cdb63a27a48ac27fadc0f158a732104bcc4e10bb61c9a5095ea7c127204e26c"
+			}),
+			"syncing PT-USDe-NOV/USDS [BTC]"
+		)
+
 		//ezETH
 		// logAsync(
 		// 	syncService.syncData({
