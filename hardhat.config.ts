@@ -24,6 +24,10 @@ if (process.env.ADMIN_PRIVATE_KEY) {
 		accounts: [process.env.ADMIN_PRIVATE_KEY!],
 		url: "https://eth.llamarpc.com",
 	}
+	networks.arbitrum = {
+		accounts: [process.env.ADMIN_PRIVATE_KEY!],
+		url: "https://1rpc.io/arb",
+	}
 }
 
 const config: HardhatUserConfig = {

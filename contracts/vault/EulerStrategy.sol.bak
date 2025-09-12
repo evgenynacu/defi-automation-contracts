@@ -1,0 +1,208 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+
+
+contract EulerV2Strategy {
+    using SafeERC20 for IERC20;
+
+    address public immutable evc;
+
+    event Supplied(address indexed positionOwner, address indexed collateralVault, address collateralAsset, uint256 assets, uint256 sharesReceived);
+    event EnabledInEVC(address indexed positionOwner, address indexed collateralVault, address indexed borrowVault);
+    event Borrowed(address indexed positionOwner, address indexed borrowVault, address receiver, uint256 amount);
+    event Repaid(address indexed positionOwner, address indexed borrowVault, uint256 amount);
+    event Withdrawn(address indexed positionOwner, address indexed collateralVault, address receiver, uint256 amount);
+
+    constructor(address _evc) {
+        require(_evc != address(0), "evc is zero");
+        evc = _evc;
+    }
+
+    // Supply collateral and mint shares to positionOwner.
+    // Requirements:
+    // - collateralAsset tokens must be approved and transferred to this strategy beforehand (or via transferFrom in this call).
+    // - This function will pull collateralAmount from msg.sender if pullFromSender is true.
+    function supplyCollateral(
+        address positionOwner,
+        address collateralAsset,
+        address collateralVault,
+        uint256 collateralAmount,
+        bool pullFromSender
+    ) external returns (uint256 sharesMinted) {
+        require(positionOwner != address(0), "positionOwner is zero");
+        require(collateralAsset != address(0), "collateralAsset is zero");
+        require(collateralVault != address(0), "collateralVault is zero");
+        require(collateralAmount > 0, "collateralAmount is zero");
+
+        if (pullFromSender) {
+            IERC20(collateralAsset).safeTransferFrom(msg.sender, address(this), collateralAmount);
+        }
+
+        // Approve vault to pull collateral
+        _safeApprove(IERC20(collateralAsset), collateralVault, collateralAmount);
+
+        // Deposit to vault, crediting shares to positionOwner (not to this contract)
+        sharesMinted = IEVault(collateralVault).deposit(collateralAmount, positionOwner);
+
+        emit Supplied(positionOwner, collateralVault, collateralAsset, collateralAmount, sharesMinted);
+    }
+
+    // Enable EVC settings required to borrow:
+    // - mark collateralVault as collateral
+    // - mark borrowVault as controller
+    // Requires the strategy to be authorized in EVC to act for positionOwner.
+    function enableInEVC(
+        address positionOwner,
+        address collateralVault,
+        address borrowVault
+    ) public {
+        require(positionOwner != address(0), "positionOwner is zero");
+        require(collateralVault != address(0), "collateralVault is zero");
+        require(borrowVault != address(0), "borrowVault is zero");
+
+        IEVC(evc).enableCollateral(positionOwner, collateralVault);
+        IEVC(evc).enableController(positionOwner, borrowVault);
+
+        emit EnabledInEVC(positionOwner, collateralVault, borrowVault);
+    }
+
+    // Borrow on behalf of positionOwner; debt is attributed to positionOwner by calling via EVC.
+    // The borrowed assets are sent to receiver (commonly address(this)).
+    function borrow(
+        address positionOwner,
+        address borrowVault,
+        uint256 borrowAmount,
+        address receiver
+    ) public returns (uint256 borrowed) {
+        require(positionOwner != address(0), "positionOwner is zero");
+        require(borrowVault != address(0), "borrowVault is zero");
+        require(receiver != address(0), "receiver is zero");
+        require(borrowAmount > 0, "borrowAmount is zero");
+
+        // Make the borrow call through EVC to attribute the debt to positionOwner
+        bytes memory ret = IEVC(evc).call(
+            positionOwner,
+            borrowVault,
+            abi.encodeWithSelector(IEVault.borrow.selector, borrowAmount, receiver)
+        );
+
+        // Decode result if the vault returns the borrowed amount
+        if (ret.length >= 32) {
+            borrowed = abi.decode(ret, (uint256));
+        } else {
+            borrowed = borrowAmount; // best-effort assumption
+        }
+
+        emit Borrowed(positionOwner, borrowVault, receiver, borrowed);
+    }
+
+    // Repay debt on behalf of positionOwner using tokens held by this contract (or pulled from msg.sender).
+    // This avoids EVC for token sourcing convenience by using onBehalfOf.
+    function repay(
+        address positionOwner,
+        address borrowAsset,
+        address borrowVault,
+        uint256 repayAmount,
+        bool pullFromSender
+    ) public returns (uint256 repaid) {
+        require(positionOwner != address(0), "positionOwner is zero");
+        require(borrowAsset != address(0), "borrowAsset is zero");
+        require(borrowVault != address(0), "borrowVault is zero");
+        require(repayAmount > 0, "repayAmount is zero");
+
+        if (pullFromSender) {
+            IERC20(borrowAsset).safeTransferFrom(msg.sender, address(this), repayAmount);
+        }
+
+        _safeApprove(IERC20(borrowAsset), borrowVault, repayAmount);
+        repaid = IEVault(borrowVault).repay(repayAmount, positionOwner);
+
+        emit Repaid(positionOwner, borrowVault, repaid);
+    }
+
+    // Withdraw collateral that belongs to positionOwner.
+    // Uses EVC.call so the burn happens from the correct owner without share approval.
+    function withdraw(
+        address positionOwner,
+        address collateralVault,
+        uint256 withdrawAmount,
+        address receiver
+    ) public returns (uint256 sharesBurned) {
+        require(positionOwner != address(0), "positionOwner is zero");
+        require(collateralVault != address(0), "collateralVault is zero");
+        require(receiver != address(0), "receiver is zero");
+        require(withdrawAmount > 0, "withdrawAmount is zero");
+
+        bytes memory ret = IEVC(evc).call(
+            positionOwner,
+            collateralVault,
+            abi.encodeWithSelector(IEVault.withdraw.selector, withdrawAmount, receiver, positionOwner)
+        );
+
+        if (ret.length >= 32) {
+            sharesBurned = abi.decode(ret, (uint256));
+        } else {
+            sharesBurned = 0;
+        }
+
+        emit Withdrawn(positionOwner, collateralVault, receiver, withdrawAmount);
+    }
+
+    // Convenience function: supply collateral, enable in EVC, then borrow.
+    // This is a typical "open position" flow.
+    function openPosition(
+        address positionOwner,
+        address collateralAsset,
+        address borrowAsset,
+        address collateralVault,
+        address borrowVault,
+        uint256 collateralAmount,
+        uint256 borrowAmount,
+        address receiver,
+        bool pullCollateralFromSender
+    ) external {
+        if (collateralAmount > 0) {
+            supplyCollateral(positionOwner, collateralAsset, collateralVault, collateralAmount, pullCollateralFromSender);
+        }
+
+        enableInEVC(positionOwner, collateralVault, borrowVault);
+
+        if (borrowAmount > 0) {
+            borrow(positionOwner, borrowVault, borrowAmount, receiver);
+        }
+    }
+
+    // Convenience function: repay and withdraw in one go.
+    function closePositionPartially(
+        address positionOwner,
+        address collateralAsset,
+        address borrowAsset,
+        address collateralVault,
+        address borrowVault,
+        uint256 repayAmount,
+        uint256 withdrawAmount,
+        address receiver,
+        bool pullRepayFromSender
+    ) external {
+        if (repayAmount > 0) {
+            repay(positionOwner, borrowAsset, borrowVault, repayAmount, pullRepayFromSender);
+        }
+        if (withdrawAmount > 0) {
+            withdraw(positionOwner, collateralVault, withdrawAmount, receiver);
+        }
+    }
+
+    // Internal helper to safely set minimal approvals
+    function _safeApprove(IERC20 token, address spender, uint256 amount) internal {
+        uint256 current = token.allowance(address(this), spender);
+        if (current < amount) {
+            if (current != 0) {
+                token.safeApprove(spender, 0);
+            }
+            token.safeApprove(spender, amount);
+        }
+    }
+}
