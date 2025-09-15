@@ -1,24 +1,25 @@
-import { HardhatRuntimeEnvironment } from 'hardhat/types'
-import { DeployFunction } from 'hardhat-deploy/types'
-import { AAVE_POOL_ADDRESS_PROVIDER, MORPHO_BLUE } from "../common/addresses"
-import { ethers } from "hardhat"
-import { deployStrategies } from "./deploy-strategies"
-import { addressesEqual } from "./addresses-equal"
+import {HardhatRuntimeEnvironment} from 'hardhat/types'
+import {DeployFunction} from 'hardhat-deploy/types'
+import {ethers} from "hardhat"
+import {deployStrategies} from "./deploy-strategies"
+import {addressesEqual} from "./addresses-equal"
+import {getConfig} from "./config";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)
 
-	const { deploy } = hre.deployments;
-	const { deployer } = await hre.getNamedAccounts();
+	const {deploy} = hre.deployments;
+	const {deployer} = await hre.getNamedAccounts();
 
 	console.log("deploying contracts with the account:", deployer);
 
 	const strategies = await deployStrategies(hre)
 
 	console.log("Deploying vault or updating the code")
+	const config = getConfig(hre.network.name)
 	const vaultDeployResult = await deploy("AutomatedVault", {
 		from: deployer,
-		args: [MORPHO_BLUE, AAVE_POOL_ADDRESS_PROVIDER],
+		args: [config.morphoBlue, config.aavePoolAddressProvider],
 		proxy: {
 			proxyContract: "MyProxy",
 			execute: {

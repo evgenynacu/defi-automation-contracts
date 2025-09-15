@@ -1,15 +1,17 @@
-import { AAVE_POOL_ADDRESS_PROVIDER, MORPHO_BLUE } from "../common/addresses"
-import { HardhatRuntimeEnvironment } from 'hardhat/types'
+import {HardhatRuntimeEnvironment} from 'hardhat/types'
+import {getConfig} from "./config";
 
 export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
+	const config = getConfig(hre.network.name)
+
 	const erc20TransferStrategy = await deployStrategy(hre, "Erc20TransferStrategy")
 	//const swapStrategy = await deployStrategy(hre, "SwapStrategy")
-	const morphoFlashLoanStrategy = await deployStrategy(hre, "MorphoFlashLoanStrategy", [MORPHO_BLUE])
-	const aaveFlashLoanStrategy = await deployStrategy(hre, "AaveFlashLoanStrategy", [AAVE_POOL_ADDRESS_PROVIDER])
+	const morphoFlashLoanStrategy = await deployStrategy(hre, "MorphoFlashLoanStrategy", [config.morphoBlue])
+	const aaveFlashLoanStrategy = await deployStrategy(hre, "AaveFlashLoanStrategy", [config.aavePoolAddressProvider])
 	const compoundV3Strategy = await deployStrategy(hre, "CompoundV3Strategy")
-	const morphoStrategy = await deployStrategy(hre, "MorphoStrategy", [MORPHO_BLUE])
-	const genericAaveStrategy = await deployStrategy(hre, "GenericAaveStrategy", [AAVE_POOL_ADDRESS_PROVIDER])
-	const morphoReadStrategy = await deployStrategy(hre, "MorphoReadStrategy", [MORPHO_BLUE])
+	const morphoStrategy = await deployStrategy(hre, "MorphoStrategy", [config.morphoBlue])
+	const genericAaveStrategy = await deployStrategy(hre, "GenericAaveStrategy", [config.aavePoolAddressProvider])
+	const morphoReadStrategy = await deployStrategy(hre, "MorphoReadStrategy", [config.morphoBlue])
 	const pendleSwapStrategy = await deployStrategy(hre, "PendleSwapStrategy", ["0x888888888889758F76e7103c6CbF23ABbF58F946"])
 	const odosSwapStrategy = await deployStrategy(hre, "OdosSwapStrategy", ["0xCf5540fFFCdC3d510B18bFcA6d2b9987b0772559"])
 	const kyberSwapStrategy = await deployStrategy(hre, "KyberSwapStrategy", ["0x6131B5fae19EA4f9D964eAc0408E4408b66337b5"])
