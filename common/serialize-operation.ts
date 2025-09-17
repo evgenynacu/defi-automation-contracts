@@ -5,7 +5,7 @@ import { getSwaps } from "./swap/swap"
 import {
 	AaveFlashLoanStrategy__factory,
 	CompoundV3Strategy__factory,
-	Erc20TransferStrategy__factory,
+	Erc20TransferStrategy__factory, EulerV2Strategy__factory,
 	GenericAaveStrategy__factory,
 	MorphoFlashLoanStrategy__factory,
 	MorphoReadStrategy__factory,
@@ -24,6 +24,7 @@ export const MORPHO_READ_STRATEGY_INDEX = 7
 export const PENDLE_STRATEGY_INDEX = 8
 export const ODOS_STRATEGY_INDEX = 9
 export const KYBER_STRATEGY_INDEX = 10
+export const EULER_STRATEGY_INDEX = 11
 
 export type TransferErc20FromCallerOperation = {
 	type: 'erc20-transfer-from'
@@ -119,6 +120,40 @@ type MorphoOperation =
 	| MorphoBorrowOperation
 	| MorphoRepayOperation
 
+type EulerSupplyOperation = {
+	type: 'euler-supply'
+	onBehalfOf: string
+	vault: string
+	amount: bigint
+}
+
+type EulerWithdrawOperation = {
+	type: 'euler-withdraw'
+	onBehalfOf: string
+	vault: string
+	amount: bigint
+}
+
+type EulerBorrowOperation = {
+	type: 'euler-borrow'
+	onBehalfOf: string
+	vault: string
+	amount: bigint
+}
+
+type EulerRepayOperation = {
+	type: 'euler-repay'
+	onBehalfOf: string
+	vault: string
+	amount: bigint
+}
+
+type EulerOperation =
+	| EulerSupplyOperation
+	| EulerWithdrawOperation
+	| EulerBorrowOperation
+	| EulerRepayOperation
+
 export type AaveSupplyOperation = {
 	type: 'aave-supply'
 	token: string
@@ -181,6 +216,7 @@ export type InnerStrategyOperation =
 	| SwapOperation
 	| CompoundV3Operation
 	| MorphoOperation
+	| EulerOperation
 	| AaveOperation
 	| MorphoReadTotalBorrowAssetsOperation
 
@@ -277,6 +313,34 @@ async function serializeOperation(runner: ContractRunner, vault: address, op: St
 			return [{
 				position: MORPHO_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("repayDebt", [op.marketId, op.onBehalfOf, op.assets, op.shares]),
+			}]
+		}
+		case "euler-supply": {
+			const impl = EulerV2Strategy__factory.createInterface()
+			return [{
+				position: EULER_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("supplyCollateral", [op.onBehalfOf, op.vault, op.amount]),
+			}]
+		}
+		case "euler-withdraw": {
+			const impl = EulerV2Strategy__factory.createInterface()
+			return [{
+				position: EULER_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("withdrawCollateral", [op.onBehalfOf, op.vault, op.amount]),
+			}]
+		}
+		case "euler-borrow": {
+			const impl = EulerV2Strategy__factory.createInterface()
+			return [{
+				position: EULER_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("borrowDebt", [op.onBehalfOf, op.vault, op.amount]),
+			}]
+		}
+		case "euler-repay": {
+			const impl = EulerV2Strategy__factory.createInterface()
+			return [{
+				position: EULER_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("repayDebt", [op.onBehalfOf, op.vault, op.amount]),
 			}]
 		}
 		case "compound-v3-supply": {

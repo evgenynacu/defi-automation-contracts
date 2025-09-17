@@ -15,6 +15,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const pendleSwapStrategy = await deployStrategy(hre, "PendleSwapStrategy", ["0x888888888889758F76e7103c6CbF23ABbF58F946"])
 	const odosSwapStrategy = await deployStrategy(hre, "OdosSwapStrategy", ["0xCf5540fFFCdC3d510B18bFcA6d2b9987b0772559"])
 	const kyberSwapStrategy = await deployStrategy(hre, "KyberSwapStrategy", ["0x6131B5fae19EA4f9D964eAc0408E4408b66337b5"])
+	const eulerStrategy = await deployStrategy(hre, "EulerV2Strategy", [config.evc])
 	return [
 		erc20TransferStrategy.address,    //0
 		ZERO_ADDRESS,                     //1
@@ -27,6 +28,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 		pendleSwapStrategy.address,       //8
 		odosSwapStrategy.address,         //9
 		kyberSwapStrategy.address,        //10
+		eulerStrategy.address,            //11
 	]
 }
 
