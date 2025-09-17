@@ -2,7 +2,7 @@ import { Pool } from "pg"
 import { aaveFreeSupplyGauge, aaveHFGauge, compoundHFGauge, hfGauge, ltvGauge, openPositionSizeGauge, } from "./metrics"
 import { marketIds } from "../context/morpho"
 import { wallets } from "../context/wallets"
-import { aaveVaults } from "../context/aave"
+import {aaveVaults, eulerPositions} from "../context/aave"
 import { tokens } from "../context/tokens"
 import { address, toAddress } from "../common/types"
 
@@ -110,6 +110,20 @@ function parseJobId(jobId: string): ParsedJobId | undefined {
 				type: "position",
 				wallet: wallets[desc.owner] || desc.owner,
 				positionId: tokens[collateral] || collateral,
+			}
+		}
+	}
+	if (jobId.startsWith("euler-withdraw")) {
+		const parts = jobId.split("-")
+		const wallet = parts[2] as address
+		const collateralVault = parts[3] as address
+		const debtVault = parts[4] as address
+		const pos = eulerPositions.find(it => it.collateralVault == collateralVault && it.debtVault == debtVault)
+		if (pos !== undefined) {
+			return {
+				type: "position",
+				wallet: wallets[wallet] || wallet,
+				positionId: pos.collateral + "/" + pos.debt,
 			}
 		}
 	}

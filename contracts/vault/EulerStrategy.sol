@@ -42,7 +42,7 @@ contract EulerV2Strategy {
         address positionOwner,
         address collateralVault,
         uint256 amount
-    ) external returns (uint256 sharesMinted) {
+    ) external {
         require(positionOwner != address(0), "positionOwner is zero");
         require(collateralVault != address(0), "collateralVault is zero");
         require(amount > 0, "collateralAmount is zero");
@@ -60,7 +60,7 @@ contract EulerV2Strategy {
         _approveIfNeeded(collateralAsset, collateralVault, supplyAmount);
 
         // Deposit to vault, crediting shares to positionOwner (not to this contract)
-        sharesMinted = IEVault(collateralVault).deposit(supplyAmount, positionOwner);
+        IEVault(collateralVault).deposit(supplyAmount, positionOwner);
     }
 
     // Withdraw collateral that belongs to positionOwner.
@@ -68,7 +68,7 @@ contract EulerV2Strategy {
         address positionOwner,
         address collateralVault,
         uint256 withdrawAmount
-    ) public returns (uint256 sharesBurned) {
+    ) public {
         require(positionOwner != address(0), "positionOwner is zero");
         require(collateralVault != address(0), "collateralVault is zero");
         require(withdrawAmount > 0, "withdrawAmount is zero");
@@ -81,7 +81,6 @@ contract EulerV2Strategy {
         );
 
         require(ret.length == 32, "!ret.length");
-        sharesBurned = abi.decode(ret, (uint256));
     }
 
     // Borrow on behalf of positionOwner; debt is attributed to positionOwner by calling via EVC.
@@ -89,7 +88,7 @@ contract EulerV2Strategy {
         address positionOwner,
         address borrowVault,
         uint256 borrowAmount
-    ) external returns (uint256 borrowed) {
+    ) external {
         require(positionOwner != address(0), "positionOwner is zero");
         require(borrowVault != address(0), "borrowVault is zero");
         require(borrowAmount > 0, "borrowAmount is zero");
@@ -103,7 +102,6 @@ contract EulerV2Strategy {
         );
 
         require(ret.length == 32, "!ret.length");
-        borrowed = abi.decode(ret, (uint256));
     }
 
     // Repay debt on behalf of positionOwner using tokens held by this contract (or pulled from msg.sender).
@@ -112,7 +110,7 @@ contract EulerV2Strategy {
         address positionOwner,
         address borrowVault,
         uint256 repayAmount
-    ) public returns (uint256 repaid) {
+    ) public {
         require(positionOwner != address(0), "positionOwner is zero");
         require(borrowVault != address(0), "borrowVault is zero");
         require(repayAmount > 0, "repayAmount is zero");
@@ -120,7 +118,7 @@ contract EulerV2Strategy {
         address borrowAsset = IEVault(borrowVault).asset();
 
         _approveIfNeeded(borrowAsset, borrowVault, repayAmount);
-        repaid = IEVault(borrowVault).repay(repayAmount, positionOwner);
+        IEVault(borrowVault).repay(repayAmount, positionOwner);
     }
 
     /**

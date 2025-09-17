@@ -16,6 +16,24 @@ type AaveVault = {
 	owner: address,
 }
 
+type EulerPositions = {
+	collateralVault: address,
+	debtVault: address,
+	collateral: string,
+	debt: string,
+	owner: address,
+}
+
+export const eulerPositions: EulerPositions[] = [
+	{
+		collateralVault: "0xCfC6a55Aa72DCF3755A515aE8B82552028b63D2A",
+		debtVault: "0x53AfE3343f322c4189Ab69E0D048efd154259419",
+		collateral: "PT-pUSDe-16OCT2025",
+		debt: "USDC",
+		owner: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E"
+	}
+]
+
 export const aaveVaults: AaveVault[] = [
 	{
 		vault: toAddress("0xE92096ecf53E4Ed58c8Dbc15af62249FaA76a7C8"),
@@ -61,10 +79,11 @@ export const aaveVaults: AaveVault[] = [
 	}
 ]
 
-export const tokenMaturityDates: Record<address, Date> = {
+export const tokenMaturityDates: Record<string, Date> = {
 	[PT_eUSDe_AUG]: new Date("2025-08-14"),
 	[PT_sUSDe_SEP]: new Date("2025-09-25"),
 	[PT_USDe_SEP]: new Date("2025-09-25"),
 	[PT_sUSDe_JUL]: new Date("2025-07-31"),
 	[PT_USDe_NOV]: new Date("2025-11-27"),
+	["PT-pUSDe-16OCT2025"]: new Date("2025-10-16"),
 }

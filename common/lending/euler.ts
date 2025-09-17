@@ -62,7 +62,7 @@ export class Euler implements Lending {
 		const collateralAssets = await collateralVault.convertToAssets(collateralShares)
 
 		const debtToRepay = debtAssets * BigInt(Math.floor(share * multiplier)) / BigInt(multiplier)
-		const collateralToWithdraw = collateralAssets * BigInt(Math.floor(share * multiplier)) / BigInt(multiplier)
+		const collateralToWithdraw = collateralAssets * BigInt(Math.floor(share * multiplier - 1)) / BigInt(multiplier)
 
 		return {
 			debt: toAddress(debt),

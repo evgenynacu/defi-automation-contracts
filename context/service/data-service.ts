@@ -9,6 +9,8 @@ import { testSwap } from "../../common/test-swap"
 import { tokens } from "../tokens"
 import { getSupplyCaps } from "../aave"
 import { getCompoundHealthFactor } from "../../common/get-compound-health-factor"
+import {withdraw} from "../../common/withdraw";
+import {Euler} from "../../common/lending/euler";
 
 export class DataService {
 	constructor(private readonly ethRunner: ContractRunner, private readonly arbRunner: ContractRunner) {
@@ -73,6 +75,13 @@ async function getData(executor: StrategyExecutor<CalculateResult>, request: Dat
 				await withdrawFromCompound(executor, request.comet, request.collateralToken, 1),
 			)
 		}
+		case "euler-withdraw": {
+			const euler = new Euler(request.collateralVault, request.debtVault, request.accountId);
+			return toDataResult(
+				`euler-withdraw-${request.from}-${request.collateralVault}-${request.debtVault}`,
+				await withdraw(executor, euler, 1),
+			)
+		}
 		default:
 			throw new Error("Unknown request type " + JSON.stringify(request))
 	}
@@ -109,7 +118,7 @@ export type DataRequest =
 	| CompoundHealthFactorRequest
 	|
 	(CommonPart &
-		(MorphoWithdrawDataRequest | AaveWithdrawDataRequest | CompoundWithdrawDataRequest))
+		(MorphoWithdrawDataRequest | AaveWithdrawDataRequest | CompoundWithdrawDataRequest | EulerWithdrawDataRequest))
 
 export type AaveHealthFactorRequest = {
 	type: "aave-health-factor"
@@ -144,6 +153,13 @@ type CommonPart = {
 export type MorphoWithdrawDataRequest = {
 	type: "morpho-withdraw"
 	marketId: `0x${string}`
+}
+
+export type EulerWithdrawDataRequest = {
+	type: "euler-withdraw"
+	accountId: number
+	collateralVault: `0x${string}`
+	debtVault: `0x${string}`
 }
 
 export type AaveWithdrawDataRequest = {

@@ -1,7 +1,7 @@
 import { wallets } from "../wallets"
 import { Pool } from "pg"
 import { marketIds, marketMaturityDates } from "../morpho"
-import { aaveVaults, tokenMaturityDates } from "../aave"
+import {aaveVaults, eulerPositions, tokenMaturityDates} from "../aave"
 import { tokens } from "../tokens"
 
 export async function updateJobs(pool: Pool) {
@@ -14,6 +14,14 @@ export async function updateJobs(pool: Pool) {
 			jobs.push({ id, name, maturityDate })
 			console.log("Registered job " + id + " = " + name + " " + maturityDate)
 		}
+	}
+
+	for (const pos of eulerPositions) {
+		const id = `euler-withdraw-${pos.owner}-${pos.collateralVault}-${pos.debtVault}`
+		const name = `Euler ${pos.collateral}/${pos.debt} [${wallets[pos.owner]}]`
+		const maturityDate = tokenMaturityDates[pos.collateral]
+		jobs.push({ id, name, maturityDate })
+		console.log("Registered job " + id + " = " + name + " " + maturityDate)
 	}
 
 	for(const vault of aaveVaults) {
