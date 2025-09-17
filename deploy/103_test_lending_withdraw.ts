@@ -1,12 +1,9 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types'
 import {DeployFunction} from 'hardhat-deploy/types'
-import {createSendExecutor, executeStrategy, getSignerAddress, getVaultAddress} from "./execute-strategy";
+import {createSendExecutor, getSignerAddress, getVaultAddress} from "./execute-strategy";
 import {verifyAllowance} from "../common/verify-allowance";
-import {IEVC2__factory} from "../typechain-types";
-import {EVC_ARB} from "../common/addresses";
-import {Euler, xorSubAccountAddress} from "../common/lending/euler";
+import {Euler} from "../common/lending/euler";
 import {MaxUint256} from "ethers";
-import {vault} from "../typechain-types/contracts";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)

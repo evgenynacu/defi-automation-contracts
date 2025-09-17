@@ -1,13 +1,12 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types'
 import {DeployFunction} from 'hardhat-deploy/types'
-import {createSendExecutor, getSignerAddress, getVaultAddress} from "./execute-strategy";
+import {createSendExecutor, getSignerAddress} from "./execute-strategy";
 import {Euler} from "../common/lending/euler";
 import {MaxUint256} from "ethers";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)
 	const from = await getSignerAddress()
-	const vault = await getVaultAddress(hre)
 
 	const ex = await createSendExecutor(hre)
 	const lending = new Euler("0x78E3E051D32157AACD550fBB78458762d8f7edFF", "0x37512F45B4ba8808910632323b73783Ca938CD51", 2)
