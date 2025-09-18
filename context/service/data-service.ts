@@ -11,6 +11,7 @@ import { getSupplyCaps } from "../aave"
 import { getCompoundHealthFactor } from "../../common/get-compound-health-factor"
 import {withdraw} from "../../common/withdraw";
 import {Euler} from "../../common/lending/euler";
+import {PendleMarket__factory} from "../../typechain-types";
 
 export class DataService {
 	constructor(private readonly ethRunner: ContractRunner, private readonly arbRunner: ContractRunner) {
@@ -30,6 +31,11 @@ export class DataService {
 			}
 		} else if (request.type === "compound-health-factor") {
 			return this.getCompoundHF(request)
+		} else if (request.type === "pendle-implied-rate") {
+			return {
+				id: `pendle-implied-rate-${request.market}`,
+				result: await getPendleImpliedRate(this.ethRunner, request),
+			}
 		} else {
 			const executor = createCalculateExecutor(this.ethRunner, request.vault, request.from)
 			return getData(executor, request)
@@ -43,6 +49,12 @@ export class DataService {
 			result: hf
 		}
 	}
+}
+
+async function getPendleImpliedRate(runner: ContractRunner, request: PendleImpliedRateRequest) {
+	const market = PendleMarket__factory.connect(request.market, runner)
+	const { lastLnImpliedRate } = await market._storage()
+	return Math.round(10000 * (Math.exp(Number(lastLnImpliedRate) / 1e18) - 1))
 }
 
 async function getSwapRate(request: SwapRateRequest) {
@@ -114,6 +126,7 @@ type DataResult = {
 export type DataRequest =
 	AaveHealthFactorRequest
 	| AaveFreeSupplyRequest
+	| PendleImpliedRateRequest
 	| SwapRateRequest
 	| CompoundHealthFactorRequest
 	|
@@ -136,6 +149,11 @@ export type AaveFreeSupplyRequest = {
 	type: "aave-free-supply"
 	token: address
 	aToken: address
+}
+
+export type PendleImpliedRateRequest = {
+	type: "pendle-implied-rate"
+	market: address
 }
 
 export type SwapRateRequest = {
