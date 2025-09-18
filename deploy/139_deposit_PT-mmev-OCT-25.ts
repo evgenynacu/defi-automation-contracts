@@ -1,11 +1,6 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types'
 import {DeployFunction} from 'hardhat-deploy/types'
 import {sendOrEstimate} from "./send-or-estimate"
-import {Euler, xorSubAccountAddress} from "../common/lending/euler";
-import {deposit} from "../common/deposit";
-import {getSignerAddress, getVaultAddress} from "./execute-strategy";
-import {EVC} from "../common/addresses";
-import {ethers} from "hardhat";
 import {depositToMorpho} from "../common/deposit-to-morpho";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
