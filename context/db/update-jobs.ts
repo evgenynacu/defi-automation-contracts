@@ -1,8 +1,8 @@
 import { wallets } from "../wallets"
 import { Pool } from "pg"
 import { marketIds, marketMaturityDates } from "../morpho"
-import {aaveVaults, eulerPositions, tokenMaturityDates} from "../aave"
-import { tokens } from "../tokens"
+import {aaveVaults, eulerPositions} from "../aave"
+import { tokens, tokenMaturityDates } from "../tokens"
 
 export async function updateJobs(pool: Pool) {
 	const jobs: { id: string, name: string, maturityDate?: Date }[] = []
@@ -35,7 +35,7 @@ export async function updateJobs(pool: Pool) {
 	const client = await pool.connect()
 	try {
 		for (const job of jobs) {
-			client.query("BEGIN")
+			await client.query("BEGIN")
 			await client.query(
 				`
           INSERT INTO jobs (id, name, maturity_date)
@@ -45,9 +45,9 @@ export async function updateJobs(pool: Pool) {
 				[job.id, job.name, job.maturityDate || null],
 			)
 		}
-		client.query("COMMIT")
+		await client.query("COMMIT")
 	} catch(e) {
-		client.query("ROLLBACK")
+		await client.query("ROLLBACK")
 	} finally {
 		client.release()
 	}

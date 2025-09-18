@@ -78,12 +78,3 @@ export const aaveVaults: AaveVault[] = [
 		owner: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E"
 	}
 ]
-
-export const tokenMaturityDates: Record<string, Date> = {
-	[PT_eUSDe_AUG]: new Date("2025-08-14"),
-	[PT_sUSDe_SEP]: new Date("2025-09-25"),
-	[PT_USDe_SEP]: new Date("2025-09-25"),
-	[PT_sUSDe_JUL]: new Date("2025-07-31"),
-	[PT_USDe_NOV]: new Date("2025-11-27"),
-	["PT-pUSDe-16OCT2025"]: new Date("2025-10-16"),
-}
