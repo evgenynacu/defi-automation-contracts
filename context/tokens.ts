@@ -29,6 +29,17 @@ export const tokens: Record<address, string> = {
 	"0x80ac24aa929eaf5013f6436cda2a7ba190f5cc0b": "syrupUSDC",
 	"0xB10DA2F9147f9cf2B8826877Cd0c95c18A0f42dc": "PT-cUSDO-20NOV2025",
 	"0x61da65F0534C6A4F4c9757f2979A923c08d6D2aa": "PT-mMEV-30OCT2025",
+	"0xb6ac3d5da138918ac4e84441e924a20daa60dbdd": "PT-sUSDe-27NOV2025",
+	"0x4eaa571eafcd96f51728756bd7f396459bb9b869": "PT-USDe-27NOV2025",
+}
+
+export function findToken(address: address): string | undefined {
+	for (const [tokenAddress, tokenName] of Object.entries(tokens)) {
+		if (tokenAddress.toLowerCase() === address.toLowerCase()) {
+			return tokenName
+		}
+	}
+	return undefined
 }
 
 export const tokenMaturityDates: Record<string, Date> = {

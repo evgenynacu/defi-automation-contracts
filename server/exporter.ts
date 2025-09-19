@@ -11,7 +11,7 @@ import {
 import {marketIds} from "../context/morpho"
 import {wallets} from "../context/wallets"
 import {aaveVaults} from "../context/aave"
-import {tokens} from "../context/tokens"
+import {findToken, tokens} from "../context/tokens"
 import {address, toAddress} from "../common/types"
 import {eulerPositions} from "../context/euler";
 
@@ -161,7 +161,7 @@ function parseJobId(jobId: string): ParsedJobId | undefined {
 		const token = toAddress(parts[3])
 		return {
 			type: "aave-free-supply",
-			token: tokens[token] || token,
+			token: findToken(token) || token,
 		}
 	}
 	if (jobId.startsWith("pendle-implied-rate")) {
@@ -169,7 +169,7 @@ function parseJobId(jobId: string): ParsedJobId | undefined {
 		const a = toAddress(parts[3])
 		return {
 			type: "pendle-implied-rate",
-			token: tokens[a] || a,
+			token: findToken(a) || a,
 		}
 	}
 
