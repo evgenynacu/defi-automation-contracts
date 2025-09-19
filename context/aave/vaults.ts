@@ -1,4 +1,12 @@
-import {PT_eUSDe_AUG, PT_sUSDe_JUL, PT_sUSDe_SEP, PT_USDe_SEP, usdc, USDT_ADDRESS} from "../../common/addresses"
+import {
+	PT_eUSDe_AUG,
+	PT_sUSDe_JUL,
+	PT_sUSDe_SEP,
+	PT_USDe_NOV,
+	PT_USDe_SEP,
+	USDC,
+	USDT_ADDRESS
+} from "../../common/addresses"
 import {address, toAddress} from "../../common/types"
 
 type AaveVault = {
@@ -7,24 +15,6 @@ type AaveVault = {
 	debt: address,
 	owner: address,
 }
-
-type EulerPositions = {
-	collateralVault: address,
-	debtVault: address,
-	collateral: string,
-	debt: string,
-	owner: address,
-}
-
-export const eulerPositions: EulerPositions[] = [
-	{
-		collateralVault: "0xCfC6a55Aa72DCF3755A515aE8B82552028b63D2A",
-		debtVault: "0x53AfE3343f322c4189Ab69E0D048efd154259419",
-		collateral: "PT-pUSDe-16OCT2025",
-		debt: "USDC",
-		owner: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E"
-	}
-]
 
 export const aaveVaults: AaveVault[] = [
 	{
@@ -42,7 +32,7 @@ export const aaveVaults: AaveVault[] = [
 	{
 		vault: toAddress("0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502"),
 		collateral: PT_sUSDe_SEP,
-		debt: usdc,
+		debt: USDC,
 		owner: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E"
 	},
 	{
@@ -54,7 +44,7 @@ export const aaveVaults: AaveVault[] = [
 	{
 		vault: toAddress("0x45BeD3404b87b30fEF2A6EE679aa50178072bAbb"),
 		collateral: PT_USDe_SEP,
-		debt: usdc,
+		debt: USDC,
 		owner: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42"
 	},
 	{
@@ -66,7 +56,13 @@ export const aaveVaults: AaveVault[] = [
 	{
 		vault: toAddress("0x45BeD3404b87b30fEF2A6EE679aa50178072bAbb"),
 		collateral: PT_sUSDe_JUL,
-		debt: usdc,
+		debt: USDC,
 		owner: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E"
-	}
+	},
+	{
+		vault: toAddress("0xE92096ecf53E4Ed58c8Dbc15af62249FaA76a7C8"),
+		collateral: PT_USDe_NOV,
+		debt: USDC,
+		owner: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D"
+	},
 ]

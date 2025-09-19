@@ -38,7 +38,7 @@ export const srUSD: address = toAddress("0x738d1115b90efa71ae468f1287fc864775e23
 export const reservoirSavingModule: address = toAddress("0x5475611Dffb8ef4d697Ae39df9395513b6E947d7")
 export const reservoirPsm: address = toAddress("0x4809010926aec940b550D34a46A52739f996D75D")
 export const reservoirCreditEnforcer: address = toAddress("0x04716DB62C085D9e08050fcF6F7D775A03d07720")
-export const usdc: address = toAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48".toLowerCase())
+export const USDC: address = toAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48".toLowerCase())
 
 
 // 89284351019019534672035 * 985118577061080184000000 / 10**36 = 87955672829

@@ -4,12 +4,12 @@ import { runMigrations } from "../context/db/run-migrations"
 import { logAsync } from "../common/log-async"
 import {
 	DAI_ADDRESS,
-	PT_sUSDe_SEP,
+	PT_sUSDe_SEP, PT_USDe_NOV,
 	PT_USDe_SEP,
 	SDAI_ADDRESS,
 	sUSDe_ADDRESS,
 	SYRUP_USDC,
-	usdc,
+	USDC,
 	USDe_ADDRESS,
 	WEETH_ADDRESS,
 	WETH_ADDRESS,
@@ -104,7 +104,7 @@ async function runJobs() {
 		logAsync(
 			syncService.syncData({
 				type: "swap-rate",
-				fromToken: usdc,
+				fromToken: USDC,
 				toToken: SYRUP_USDC,
 				amount: 200000000000n,
 			}),
@@ -114,7 +114,7 @@ async function runJobs() {
 			syncService.syncData({
 				type: "swap-rate",
 				fromToken: SYRUP_USDC,
-				toToken: usdc,
+				toToken: USDC,
 				amount: 200000000000n,
 			}),
 			"checking syrupUSDC-usdc rate"
@@ -226,7 +226,7 @@ async function runJobs() {
 				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
 				vault: "0x45BeD3404b87b30fEF2A6EE679aa50178072bAbb",
 				collateralToken: PT_USDe_SEP,
-				debtToken: usdc,
+				debtToken: USDC,
 			}),
 			"syncing PT-USDe-Sep"
 		)
@@ -238,20 +238,20 @@ async function runJobs() {
 				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
 				vault: "0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502",
 				collateralToken: PT_sUSDe_SEP,
-				debtToken: usdc,
+				debtToken: USDC,
 			}),
 			"syncing Aave PT-sUSDE-Sep USDC"
 		)
 
-		// PT-USDe NOV / USDS
 		logAsync(
 			syncService.syncData({
-				type: "morpho-withdraw",
+				type: "aave-withdraw",
 				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0x8cdb63a27a48ac27fadc0f158a732104bcc4e10bb61c9a5095ea7c127204e26c"
+				vault: "0xE92096ecf53E4Ed58c8Dbc15af62249FaA76a7C8",
+				collateralToken: PT_USDe_NOV,
+				debtToken: USDC,
 			}),
-			"syncing PT-USDe-NOV/USDS [BTC]"
+			"syncing PT-USDe-NOV/USDC [BTC]"
 		)
 
 		logAsync(

@@ -1,13 +1,13 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
 import { depositToAave } from "../common/deposit-to-aave"
-import { PT_eUSDe_AUG, usdc } from "../common/addresses"
+import { PT_eUSDe_AUG, USDC } from "../common/addresses"
 import { sendOrEstimate } from "./send-or-estimate"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)
 
-	await sendOrEstimate(hre, ex => depositToAave(ex, 15000000000n, PT_eUSDe_AUG, usdc, 7), "AaveUsdcVaultProxy")
+	await sendOrEstimate(hre, ex => depositToAave(ex, 15000000000n, PT_eUSDe_AUG, USDC, 7), "AaveUsdcVaultProxy")
 }
 
 // noinspection JSUnusedGlobalSymbols

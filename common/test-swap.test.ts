@@ -4,7 +4,7 @@ import {
 	SDAI_ADDRESS,
 	sUSDe_ADDRESS,
 	SYRUP_USDC,
-	usdc,
+	USDC,
 	USDe_ADDRESS,
 	WEETH_ADDRESS,
 	WETH_ADDRESS,
@@ -49,12 +49,12 @@ describe("Test Swap", () => {
 	})
 
 	it("should try and swap usdc->syrupUSDC", async () => {
-		const out = await testSwap(usdc, 100000000000n, SYRUP_USDC)
+		const out = await testSwap(USDC, 100000000000n, SYRUP_USDC)
 		console.log("value is", out)
 	})
 
 	it("should try and swap syrupUSDC -> usdc", async () => {
-		const out = await testSwap(SYRUP_USDC, 100000000000n, usdc)
+		const out = await testSwap(SYRUP_USDC, 100000000000n, USDC)
 		console.log("value is", out)
 	})
 

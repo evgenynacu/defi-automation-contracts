@@ -1,12 +1,12 @@
 import { describe, it } from "mocha"
-import { usdc, WETH_ADDRESS } from "../../addresses"
+import { USDC, WETH_ADDRESS } from "../../addresses"
 import { OdosV2Provider } from "./OdosV2Provider"
 
 describe('provider', () => {
 	it("should work with the provider", async () => {
 		const p = new OdosV2Provider()
 		const quote = await p.getQuote({
-			fromToken: usdc,
+			fromToken: USDC,
 			toToken: WETH_ADDRESS,
 			chainId: 1,
 			decimalsIn: 6,

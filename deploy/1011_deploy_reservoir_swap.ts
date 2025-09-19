@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
-import { reservoirCreditEnforcer, reservoirPsm, reservoirSavingModule, rUSD, srUSD, usdc } from "../common/addresses"
+import { reservoirCreditEnforcer, reservoirPsm, reservoirSavingModule, rUSD, srUSD, USDC } from "../common/addresses"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)
@@ -13,7 +13,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	await deploy("ReservoirSwap", {
 		from: deployer,
 		args: [
-			rUSD, usdc, srUSD, reservoirSavingModule, reservoirPsm, reservoirCreditEnforcer
+			rUSD, USDC, srUSD, reservoirSavingModule, reservoirPsm, reservoirCreditEnforcer
 		],
 		log: true
 	});

@@ -2,9 +2,10 @@ import { Pool } from "pg"
 import { aaveFreeSupplyGauge, aaveHFGauge, compoundHFGauge, hfGauge, ltvGauge, openPositionSizeGauge, } from "./metrics"
 import { marketIds } from "../context/morpho"
 import { wallets } from "../context/wallets"
-import {aaveVaults, eulerPositions} from "../context/aave"
+import {aaveVaults} from "../context/aave"
 import { tokens } from "../context/tokens"
 import { address, toAddress } from "../common/types"
+import {eulerPositions} from "../context/euler";
 
 export async function exportLatestData(pool: Pool) {
 	const res = await pool.query<DataResultRow>(

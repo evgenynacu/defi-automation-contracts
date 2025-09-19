@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
-import { PT_USDe_SEP, usdc, USDT_ADDRESS } from "../common/addresses"
+import { PT_USDe_SEP, USDC, USDT_ADDRESS } from "../common/addresses"
 import { sendOrEstimate } from "./send-or-estimate"
 import { refinance } from "../common/refinance"
 import { Aave } from "../common/lending/aave"
@@ -9,7 +9,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)
 
 	const aaveFrom = new Aave(PT_USDe_SEP, USDT_ADDRESS)
-	const aaveTo = new Aave(PT_USDe_SEP, usdc)
+	const aaveTo = new Aave(PT_USDe_SEP, USDC)
 	await sendOrEstimate(hre, ex => refinance(ex, aaveFrom, aaveTo, 1, 10000000n), "AaveSusdeJulVaultProxy")
 }
 

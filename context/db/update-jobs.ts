@@ -1,8 +1,9 @@
 import { wallets } from "../wallets"
 import { Pool } from "pg"
 import { marketIds, marketMaturityDates } from "../morpho"
-import {aaveVaults, eulerPositions} from "../aave"
+import {aaveVaults} from "../aave"
 import { tokens, tokenMaturityDates } from "../tokens"
+import {eulerPositions} from "../euler";
 
 export async function updateJobs(pool: Pool) {
 	const jobs: { id: string, name: string, maturityDate?: Date }[] = []

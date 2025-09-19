@@ -2,7 +2,7 @@ import { ISwapProvider } from "./ISwapProvider"
 import { ProviderConfig, SwapParams, SwapResult } from "./types"
 import { toAddress, toHex } from "../../types"
 import { ReservoirSavingModule__factory, ReservoirSwap__factory } from "../../../typechain-types"
-import { reservoirSavingModule, rUSD, srUSD, usdc } from "../../addresses"
+import { reservoirSavingModule, rUSD, srUSD, USDC } from "../../addresses"
 import { type ContractRunner } from "ethers"
 
 const reservoirInterface = ReservoirSavingModule__factory.createInterface()
@@ -19,7 +19,7 @@ export class ReservoirProvider implements ISwapProvider {
 	}
 
 	async getQuote(params: SwapParams): Promise<SwapResult> {
-		if (params.toToken.toLowerCase() === srUSD && params.fromToken.toLowerCase() === usdc) {
+		if (params.toToken.toLowerCase() === srUSD && params.fromToken.toLowerCase() === USDC) {
 			return {
 				to: RESERVOIR_SWAP,
 				data: toHex(swapInterface.encodeFunctionData("swapUSDCToSavings", [params.swapAmount])),
@@ -42,7 +42,7 @@ export class ReservoirProvider implements ISwapProvider {
 			}
 		}
 
-		if (params.toToken.toLowerCase() === usdc) {
+		if (params.toToken.toLowerCase() === USDC) {
 			if (params.fromToken.toLowerCase() !== srUSD) {
 				throw new Error("only from srUSD is supported")
 			}
@@ -61,13 +61,13 @@ export class ReservoirProvider implements ISwapProvider {
 	}
 
 	async isUniqueFor(params: SwapParams) {
-		if (params.toToken.toLowerCase() === srUSD && params.fromToken.toLowerCase() === usdc) {
+		if (params.toToken.toLowerCase() === srUSD && params.fromToken.toLowerCase() === USDC) {
 			return true
 		}
 		if (params.toToken.toLowerCase() === rUSD && params.fromToken.toLowerCase() === srUSD) {
 			return true
 		}
-		return params.toToken.toLowerCase() === usdc && params.fromToken.toLowerCase() === srUSD;
+		return params.toToken.toLowerCase() === USDC && params.fromToken.toLowerCase() === srUSD;
 	}
 }
 
