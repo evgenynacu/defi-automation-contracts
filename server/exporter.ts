@@ -1,21 +1,31 @@
-import { Pool } from "pg"
-import { aaveFreeSupplyGauge, aaveHFGauge, compoundHFGauge, hfGauge, ltvGauge, openPositionSizeGauge, } from "./metrics"
-import { marketIds } from "../context/morpho"
-import { wallets } from "../context/wallets"
+import {Pool} from "pg"
+import {
+	aaveFreeSupplyGauge,
+	aaveHFGauge,
+	compoundHFGauge,
+	hfGauge,
+	ltvGauge,
+	openPositionSizeGauge,
+	pendleImpliedRateGauge,
+} from "./metrics"
+import {marketIds} from "../context/morpho"
+import {wallets} from "../context/wallets"
 import {aaveVaults} from "../context/aave"
-import { tokens } from "../context/tokens"
-import { address, toAddress } from "../common/types"
+import {tokens} from "../context/tokens"
+import {address, toAddress} from "../common/types"
 import {eulerPositions} from "../context/euler";
 
 export async function exportLatestData(pool: Pool) {
 	const res = await pool.query<DataResultRow>(
 		`with raw_data as (SELECT job_id,
-                              updated_at,
-                              data,
-                              row_number() over (partition by job_id order by updated_at desc) as rn
-                       FROM data
-                       where updated_at > current_timestamp - interval '2 minute')
-     select * from raw_data where rn = 1`
+                                  updated_at,
+                                  data,
+                                  row_number() over (partition by job_id order by updated_at desc) as rn
+                           FROM data
+                           where updated_at > current_timestamp - interval '2 minute')
+        select *
+        from raw_data
+        where rn = 1`
 	)
 	res.rows.forEach(row => {
 		const parsedId = parseJobId(row.job_id)
@@ -64,12 +74,10 @@ export async function exportLatestData(pool: Pool) {
 			)
 		}
 		if (parsedId !== undefined && parsedId.type === "aave-free-supply") {
-			aaveFreeSupplyGauge.set(
-				{
-					token: parsedId.token
-				},
-				row.data.result
-			)
+			aaveFreeSupplyGauge.set({token: parsedId.token}, row.data.result)
+		}
+		if (parsedId !== undefined && parsedId.type === "pendle-implied-rate") {
+			pendleImpliedRateGauge.set({token: parsedId.token}, row.data.result)
 		}
 	})
 }
@@ -88,6 +96,9 @@ type ParsedJobId = {
 	type: "compound-hf"
 	wallet: string
 	comet: string
+} | {
+	type: "pendle-implied-rate"
+	token: string
 }
 
 function parseJobId(jobId: string): ParsedJobId | undefined {
@@ -151,6 +162,14 @@ function parseJobId(jobId: string): ParsedJobId | undefined {
 		return {
 			type: "aave-free-supply",
 			token: tokens[token] || token,
+		}
+	}
+	if (jobId.startsWith("pendle-implied-rate")) {
+		const parts = jobId.split("-")
+		const a = toAddress(parts[3])
+		return {
+			type: "pendle-implied-rate",
+			token: tokens[a] || a,
 		}
 	}
 

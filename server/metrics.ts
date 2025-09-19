@@ -38,7 +38,13 @@ export const aaveFreeSupplyGauge = new Gauge({
 	labelNames: ['token'],
 })
 
+export const pendleImpliedRateGauge = new Gauge({
+	name: 'pendle_implied_rate',
+	help: 'Implied rate of pendle PT',
+	labelNames: ['token'],
+})
 
+register.registerMetric(pendleImpliedRateGauge)
 register.registerMetric(aaveHFGauge)
 register.registerMetric(compoundHFGauge)
 register.registerMetric(openPositionSizeGauge)
