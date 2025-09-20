@@ -219,18 +219,6 @@ async function runJobs() {
 			"syncing Misc HF"
 		)
 
-		//morpho PT-USDe-Sep
-		logAsync(
-			syncService.syncData({
-				type: "aave-withdraw",
-				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
-				vault: "0x45BeD3404b87b30fEF2A6EE679aa50178072bAbb",
-				collateralToken: PT_USDe_SEP,
-				debtToken: USDC,
-			}),
-			"syncing PT-USDe-Sep"
-		)
-
 		//aave PT-sUSDE-Sep
 		logAsync(
 			syncService.syncData({
