@@ -1,8 +1,8 @@
-import { HardhatRuntimeEnvironment } from 'hardhat/types'
-import { DeployFunction } from 'hardhat-deploy/types'
-import { depositToAave } from "../common/deposit-to-aave"
-import {PT_eUSDe_AUG, sUSDe_ADDRESS, USDC} from "../common/addresses"
-import { sendOrEstimate } from "./send-or-estimate"
+import {HardhatRuntimeEnvironment} from 'hardhat/types'
+import {DeployFunction} from 'hardhat-deploy/types'
+import {depositToAave} from "../common/deposit-to-aave"
+import {sUSDe_ADDRESS, USDC} from "../common/addresses"
+import {sendOrEstimate} from "./send-or-estimate"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)

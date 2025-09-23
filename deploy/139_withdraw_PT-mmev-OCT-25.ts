@@ -1,7 +1,6 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types'
 import {DeployFunction} from 'hardhat-deploy/types'
 import {sendOrEstimate} from "./send-or-estimate"
-import {Euler} from "../common/lending/euler";
 import {withdraw} from "../common/withdraw";
 import {Morpho} from "../common/lending/morpho";
 
