@@ -8,7 +8,8 @@ import { address } from "./types"
 export async function withdraw<T>(
 	ex: StrategyExecutor<T>,
 	lending: Lending,
-	share: number
+	debtshare: number,
+	collateralshare: number = debtshare,
 ): Promise<T> {
 
 	const from = await ex.getFrom()
@@ -23,7 +24,7 @@ export async function withdraw<T>(
 		getWithdrawOperation,
 		collateralToWithdraw,
 		getHealthFactor,
-	} = await lending.initWithdraw(ex, share)
+	} = await lending.initWithdraw(ex, debtshare, collateralshare)
 
 	console.log("totalDebt", totalDebt, "totalCollateral", totalCollateral)
 	const posValue = await getPosValue("0x56f8Df17564Fe3C0644f62CA50a4E913c188eD5d", ex.runner, collateral, totalCollateral, debt, totalDebt)

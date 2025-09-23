@@ -10,7 +10,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 	const aaveFrom = new Aave(PT_USDe_SEP, USDT_ADDRESS)
 	const aaveTo = new Aave(PT_USDe_SEP, USDC)
-	await sendOrEstimate(hre, ex => refinance(ex, aaveFrom, aaveTo, 1, 10000000n), "AaveSusdeJulVaultProxy")
+	await sendOrEstimate(hre, ex => refinance(ex, aaveFrom, aaveTo, 1, 1, 10000000n), "AaveSusdeJulVaultProxy")
 }
 
 // noinspection JSUnusedGlobalSymbols

@@ -5,7 +5,7 @@ import { MaxUint256 } from "ethers"
 
 export async function deleverage<T>(ex: StrategyExecutor<T>, lending: Lending, share: number) {
 	const from = await ex.getFrom()
-	const inst = await lending.initWithdraw(ex, share)
+	const inst = await lending.initWithdraw(ex, share, share)
 	const { debt, collateral, debtToRepay, repayOperation, getWithdrawOperation } = inst
 
 	const m = 100000n

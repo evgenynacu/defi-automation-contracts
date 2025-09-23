@@ -36,7 +36,7 @@ export class Morpho implements Lending {
 		}
 	}
 
-	async initWithdraw(ex: StrategyExecutor<any>, share: number): Promise<Withdraw> {
+	async initWithdraw(ex: StrategyExecutor<any>, debtShare: number, collateralShare: number): Promise<Withdraw> {
 		const onBehalfOf = this.onBehalfOf || await ex.getFrom()
 		const morpho = MorphoBlue__factory.connect(MORPHO_BLUE, ex.runner)
 		const params = await morpho.idToMarketParams(this.marketId)
@@ -47,9 +47,9 @@ export class Morpho implements Lending {
 		const totalCollateral = pos.collateral
 		const totalDebt = pos.borrowShares * totalBorrowAssets / market.totalBorrowShares
 
-		const debtToRepay = totalDebt * BigInt(Math.floor(share * multiplier + 1)) / BigInt(multiplier)
-		const debtSharesToRepay = pos.borrowShares * BigInt(Math.floor(share * multiplier)) / BigInt(multiplier)
-		const collateralToWithdraw = totalCollateral * BigInt(Math.floor(share * multiplier)) / BigInt(multiplier)
+		const debtToRepay = totalDebt * BigInt(Math.floor(debtShare * multiplier + 1)) / BigInt(multiplier)
+		const debtSharesToRepay = pos.borrowShares * BigInt(Math.floor(debtShare * multiplier)) / BigInt(multiplier)
+		const collateralToWithdraw = totalCollateral * BigInt(Math.floor(collateralShare * multiplier)) / BigInt(multiplier)
 
 		return {
 			debt: toAddress(params.loanToken),

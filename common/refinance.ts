@@ -7,7 +7,8 @@ export async function refinance<T>(
 	ex: StrategyExecutor<T>,
 	from: Lending,
 	to: Lending,
-	share: number,
+	debtShare: number,
+	collateralShare: number = debtShare,
 	multiplier: bigint = 100000n
 ) {
 
@@ -20,7 +21,7 @@ export async function refinance<T>(
 		collateralToWithdraw,
 		repayOperation,
 		getWithdrawOperation
-	} = await from.initWithdraw(ex, share)
+	} = await from.initWithdraw(ex, debtShare, collateralShare)
 
 	const { debt: newDebt, collateral: newCollateral, getSupplyOperation, getBorrowOperation } = await to.initDeposit(ex)
 	if (collateral.toLowerCase() !== newCollateral.toLowerCase()) {

@@ -12,7 +12,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 	const ex = await createSendExecutor(hre)
 	const lending = new Euler("0x78E3E051D32157AACD550fBB78458762d8f7edFF", "0x37512F45B4ba8808910632323b73783Ca938CD51", 2)
-	const withdraw = await lending.initWithdraw(ex, 1)
+	const withdraw = await lending.initWithdraw(ex, 1, 1)
 
 	await verifyAllowance(ex.runner, withdraw.debt, withdraw.debtToRepay, vault)
 	console.log(await withdraw.getHealthFactor())

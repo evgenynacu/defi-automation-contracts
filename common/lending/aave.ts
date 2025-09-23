@@ -29,14 +29,14 @@ export class Aave implements Lending {
 		}
 	}
 
-	async initWithdraw(ex: StrategyExecutor<any>, share: number): Promise<Withdraw> {
+	async initWithdraw(ex: StrategyExecutor<any>, debtShare: number, collateralShare: number): Promise<Withdraw> {
 		const data = IPoolDataProvider__factory.connect(AAVE_DATA_PROVIDER, ex.runner)
 		const vault = await ex.getVaultAddress()
 
 		const [, , totalDebt] = await data.getUserReserveData(this.debt, vault)
 		const [totalCollateral] = await data.getUserReserveData(this.collateral, vault)
-		const debtToRepay = totalDebt * BigInt(Math.floor(share * multiplier + 1)) / BigInt(multiplier)
-		const collateralToWithdraw = totalCollateral * BigInt(Math.floor(share * multiplier)) / BigInt(multiplier)
+		const debtToRepay = totalDebt * BigInt(Math.floor(debtShare * multiplier + 1)) / BigInt(multiplier)
+		const collateralToWithdraw = totalCollateral * BigInt(Math.floor(collateralShare * multiplier)) / BigInt(multiplier)
 
 		return {
 			debt: this.debt,

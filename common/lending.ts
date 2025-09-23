@@ -5,7 +5,7 @@ import { InnerStrategyOperation } from "./serialize-operation"
 export interface Lending {
 	initDeposit(ex: StrategyExecutor<any>): Promise<Deposit>
 
-	initWithdraw(ex: StrategyExecutor<any>, share: number): Promise<Withdraw>
+	initWithdraw(ex: StrategyExecutor<any>, debtShare: number, collateralShare: number): Promise<Withdraw>
 }
 
 export interface Deposit {

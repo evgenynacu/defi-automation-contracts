@@ -8,11 +8,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	await sendOrEstimate(hre, ex => {
 		return ex.execute([{
 			type: "aave-init",
-			category: 8,
+			category: 2,
 		}])
 	}, "AaveSusdeJulVaultProxy")
 }
 
 // noinspection JSUnusedGlobalSymbols
 export default func
-func.tags = ['deploy-aave-pt-susde-jul-vault-proxy']
+func.tags = ['deploy-aave-susde-vault-proxy']

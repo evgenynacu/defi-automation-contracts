@@ -244,6 +244,17 @@ async function runJobs() {
 
 		logAsync(
 			syncService.syncData({
+				type: "aave-withdraw",
+				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
+				vault: "0x45BeD3404b87b30fEF2A6EE679aa50178072bAbb",
+				collateralToken: sUSDe_ADDRESS,
+				debtToken: USDC,
+			}),
+			"syncing sUSDe/USDC [USD]"
+		)
+
+		logAsync(
+			syncService.syncData({
 				type: "morpho-withdraw",
 				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",

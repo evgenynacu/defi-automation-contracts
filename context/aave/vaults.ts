@@ -3,7 +3,7 @@ import {
 	PT_sUSDe_JUL,
 	PT_sUSDe_SEP,
 	PT_USDe_NOV,
-	PT_USDe_SEP,
+	PT_USDe_SEP, sUSDe_ADDRESS,
 	USDC,
 	USDT_ADDRESS
 } from "../../common/addresses"
@@ -64,5 +64,11 @@ export const aaveVaults: AaveVault[] = [
 		collateral: PT_USDe_NOV,
 		debt: USDC,
 		owner: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D"
+	},
+	{
+		vault: toAddress("0x45BeD3404b87b30fEF2A6EE679aa50178072bAbb"),
+		collateral: sUSDe_ADDRESS,
+		debt: USDC,
+		owner: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42"
 	},
 ]

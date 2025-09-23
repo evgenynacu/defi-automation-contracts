@@ -47,7 +47,7 @@ async function checkAndRefinance(id: NodeJS.Timeout, signer: Wallet, morpho: Mor
 	const gasSettings = await gasTool()
 	console.log("executing with gas", gasSettings)
 
-	const { collateralToWithdraw } = await morpho.initWithdraw(executor, 1)
+	const { collateralToWithdraw } = await morpho.initWithdraw(executor, 1, 1)
 	const collateralNumber = Number(collateralToWithdraw / (10n ** 18n))
 	console.log("collateral", collateralNumber)
 	if (collateralNumber == 0) {
