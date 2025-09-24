@@ -1,21 +1,19 @@
 import dotenv from "dotenv"
-import { createContext } from "../context"
-import { runMigrations } from "../context/db/run-migrations"
-import { logAsync } from "../common/log-async"
+import {createContext} from "../context"
+import {runMigrations} from "../context/db/run-migrations"
+import {logAsync} from "../common/log-async"
 import {
-	DAI_ADDRESS,
-	PT_sUSDe_SEP, PT_USDe_NOV,
+	PT_sUSDe_SEP,
+	PT_USDe_NOV,
 	PT_USDe_SEP,
-	SDAI_ADDRESS,
 	sUSDe_ADDRESS,
-	SYRUP_USDC,
 	USDC,
 	USDe_ADDRESS,
 	WEETH_ADDRESS,
 	WETH_ADDRESS,
 	WSTETH_ADDRESS
 } from "../common/addresses"
-import { updateJobs } from "../context/db/update-jobs"
+import {updateJobs} from "../context/db/update-jobs"
 
 dotenv.config()
 
