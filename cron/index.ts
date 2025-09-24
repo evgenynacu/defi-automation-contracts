@@ -28,7 +28,7 @@ async function runJobs() {
 
 	const cron = await import("node-cron")
 
-	cron.schedule('0 3 * * *', () => {
+	cron.schedule('0 3 */5 * *', () => {
 		console.log("Updating leverated strategies dune query")
 		logAsync(
 			duneService.executeQuery({
@@ -39,7 +39,7 @@ async function runJobs() {
 		)
 	})
 
-	cron.schedule('0 5 * * *', () => {
+	cron.schedule('0 5 */5 * *', () => {
 		console.log("Updating leverated strategies dune query data")
 		logAsync(
 			duneSyncService.syncQueryToPostgres({
