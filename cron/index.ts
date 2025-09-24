@@ -101,24 +101,6 @@ async function runJobs() {
 			}),
 			"checking PT sUSDe nov rate"
 		)
-		logAsync(
-			syncService.syncData({
-				type: "swap-rate",
-				fromToken: USDC,
-				toToken: SYRUP_USDC,
-				amount: 200000000000n,
-			}),
-			"checking usdc-syrupUSDC rate"
-		)
-		logAsync(
-			syncService.syncData({
-				type: "swap-rate",
-				fromToken: SYRUP_USDC,
-				toToken: USDC,
-				amount: 200000000000n,
-			}),
-			"checking syrupUSDC-usdc rate"
-		)
 
 		logAsync(
 			syncService.syncData({
@@ -170,24 +152,6 @@ async function runJobs() {
 				type: "swap-rate",
 				fromToken: sUSDe_ADDRESS,
 				toToken: USDe_ADDRESS,
-				amount: 100000000000000000000000n,
-			}),
-			"checking sUSDe-USDe rate"
-		)
-		logAsync(
-			syncService.syncData({
-				type: "swap-rate",
-				fromToken: SDAI_ADDRESS,
-				toToken: DAI_ADDRESS,
-				amount: 100000000000000000000000n,
-			}),
-			"checking USDe-sUSDe rate"
-		)
-		logAsync(
-			syncService.syncData({
-				type: "swap-rate",
-				fromToken: DAI_ADDRESS,
-				toToken: SDAI_ADDRESS,
 				amount: 100000000000000000000000n,
 			}),
 			"checking sUSDe-USDe rate"
