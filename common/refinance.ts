@@ -25,7 +25,40 @@ export async function refinance<T>(
 
 	const { debt: newDebt, collateral: newCollateral, getSupplyOperation, getBorrowOperation } = await to.initDeposit(ex)
 	if (collateral.toLowerCase() !== newCollateral.toLowerCase()) {
-		throw new Error("Collateral must be the same")
+		if (debt.toLowerCase() !== newDebt.toLowerCase()) {
+			throw new Error("Collateral must be the same")
+		}
+
+		return ex.execute([
+			{
+				type: "morpho-flash-loan",
+				token: debt,
+				amount: debtToRepay,
+				innerOperations: [
+					repayOperation,
+					getWithdrawOperation(collateralToWithdraw),
+					{
+						type: "swap",
+						from: collateral,
+						to: newCollateral,
+						amount: collateralToWithdraw,
+						txOrigin: txOrigin,
+					},
+					{
+						type: "aave-init",
+						category: 2,
+					},
+					getSupplyOperation(MaxUint256),
+					getBorrowOperation(debtToRepay),
+				]
+			},
+			{
+				type: "erc20-transfer-to",
+				token: debt,
+				amount: MaxUint256,
+				to: txOrigin,
+			}
+		])
 	}
 
 	if (debt.toLowerCase() !== newDebt.toLowerCase()) {
