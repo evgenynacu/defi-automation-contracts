@@ -2,15 +2,7 @@ import dotenv from "dotenv"
 import {createContext} from "../context"
 import {runMigrations} from "../context/db/run-migrations"
 import {logAsync} from "../common/log-async"
-import {
-	PT_USDe_SEP,
-	sUSDe_ADDRESS,
-	USDC,
-	USDe_ADDRESS,
-	WEETH_ADDRESS,
-	WETH_ADDRESS,
-	WSTETH_ADDRESS
-} from "../common/addresses"
+import {sUSDe_ADDRESS, USDC, USDe_ADDRESS, WEETH_ADDRESS, WETH_ADDRESS, WSTETH_ADDRESS} from "../common/addresses"
 import {updateJobs} from "../context/db/update-jobs"
 
 dotenv.config()
