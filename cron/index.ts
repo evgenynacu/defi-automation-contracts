@@ -3,7 +3,6 @@ import {createContext} from "../context"
 import {runMigrations} from "../context/db/run-migrations"
 import {logAsync} from "../common/log-async"
 import {
-	PT_USDe_NOV,
 	PT_USDe_SEP,
 	sUSDe_ADDRESS,
 	USDC,
@@ -190,17 +189,6 @@ async function runJobs() {
 				debtToken: USDC,
 			}),
 			"syncing Aave sUSDE/USDC"
-		)
-
-		logAsync(
-			syncService.syncData({
-				type: "aave-withdraw",
-				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
-				vault: "0xE92096ecf53E4Ed58c8Dbc15af62249FaA76a7C8",
-				collateralToken: PT_USDe_NOV,
-				debtToken: USDC,
-			}),
-			"syncing PT-USDe-NOV/USDC [BTC]"
 		)
 
 		logAsync(

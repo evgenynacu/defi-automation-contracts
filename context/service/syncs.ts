@@ -41,5 +41,10 @@ async function syncETH() {
 	})
 }
 
+async function sync() {
+	await syncETH()
+	await syncUSDe()
+}
 
-syncETH().then()
+
+sync().then()
