@@ -69,17 +69,6 @@ async function runJobs() {
 		)
 	})
 
-	setInterval(() => {
-		logAsync(
-			syncService.syncData({
-				type: "aave-free-supply",
-				token: PT_USDe_SEP,
-				aToken: "0x38A5357Ce55c81add62aBc84Fb32981e2626ADEf",
-			}),
-			"syncing PT-USDe-Sep supply cap"
-		)
-	}, 5000)
-
 	cron.schedule('* * * * *', () => {
 		console.log("Running cron job")
 
