@@ -232,7 +232,7 @@ async function runJobs() {
 				collateralVault: "0xCfC6a55Aa72DCF3755A515aE8B82552028b63D2A",
 				debtVault: "0x53AfE3343f322c4189Ab69E0D048efd154259419"
 			}),
-			"syncing PT-USDe-NOV/USDS [BTC]"
+			"syncing PT-pUSDe-OCT/USDS [BTC]"
 		)
 
 		//ezETH
