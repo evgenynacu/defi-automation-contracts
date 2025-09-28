@@ -38,6 +38,26 @@ describe("Test Swap", () => {
 		console.log("value is", out)
 	})
 
+	it("should try and swap sUSDe->USDC", async () => {
+		const result = await testSwap(sUSDe_ADDRESS, 100000000000000000000000n, USDC)
+
+		console.log("result is", result)
+		const mul = 1000000000
+		const rate = Number(result * BigInt(mul) * (10n ** 12n)/ 100000000000000000000000n) / mul
+
+		console.log("value is", rate)
+	})
+
+	it("should try and swap USDC->sUSDe", async () => {
+		const result = await testSwap(USDC, 100000000000n, sUSDe_ADDRESS)
+
+		console.log("result is", result)
+		const mul = 1000000000
+		const rate = Number(result * BigInt(mul) / (100000000000n * (10n ** 12n))) / mul
+
+		console.log("value is", rate)
+	})
+
 	it("should try and swap DAI->sDAI", async () => {
 		const out = await testSwap(DAI_ADDRESS, 100000000000000000000000n, SDAI_ADDRESS)
 		console.log("value is", out)

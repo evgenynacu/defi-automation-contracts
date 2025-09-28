@@ -60,7 +60,7 @@ async function getPendleImpliedRate(runner: ContractRunner, request: PendleImpli
 async function getSwapRate(request: SwapRateRequest) {
 	const result = await testSwap(request.fromToken, request.amount, request.toToken)
 	const mul = 10000000000
-	const rate = Number(result * BigInt(mul) / request.amount) / mul
+	const rate = Number(result * BigInt(mul) * (request.multiplier || 1n) / (request.amount * (request.divider || 1n))) / mul
 	return {
 		id: `swap-rate-${tokens[request.fromToken]}-${tokens[request.toToken]}`,
 		result: rate
@@ -161,6 +161,8 @@ export type SwapRateRequest = {
 	fromToken: address,
 	toToken: address,
 	amount: bigint,
+	multiplier?: bigint,
+	divider?: bigint,
 }
 
 type CommonPart = {

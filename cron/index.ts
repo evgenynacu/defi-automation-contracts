@@ -140,6 +140,7 @@ async function runJobs() {
 				fromToken: USDC,
 				toToken: sUSDe_ADDRESS,
 				amount: 100000000000n,
+				divider: 10n ** 12n,
 			}),
 			"checking USDC-sUSDe rate"
 		)
@@ -149,6 +150,7 @@ async function runJobs() {
 				fromToken: sUSDe_ADDRESS,
 				toToken: USDC,
 				amount: 100000000000000000000000n,
+				multiplier: 10n ** 12n,
 			}),
 			"checking sUSDe-USDC rate"
 		)
