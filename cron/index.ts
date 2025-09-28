@@ -173,13 +173,13 @@ async function runJobs() {
 			}),
 			"syncing ETH HF"
 		)
-		logAsync(
-			syncService.syncData({
-				type: "aave-health-factor",
-				from: "0x5764CfcFb4C206f497C5B65684Dd187dF8E30543",
-			}),
-			"syncing Misc HF"
-		)
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "aave-health-factor",
+		// 		from: "0x5764CfcFb4C206f497C5B65684Dd187dF8E30543",
+		// 	}),
+		// 	"syncing Misc HF"
+		// )
 
 		//aave PT-sUSDE-Sep
 		logAsync(
@@ -236,17 +236,6 @@ async function runJobs() {
 			}),
 			"syncing PT-pUSDe-OCT/USDS [BTC]"
 		)
-
-		//ezETH
-		// logAsync(
-		// 	syncService.syncData({
-		// 		type: "compound-withdraw",
-		// 		from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
-		// 		vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-		// 		comet: COMET_WETH_ADDRESS,
-		// 		collateralToken: EZETH_ADDRESS,
-		// 	})
-		// )
 	})
 
 	console.log("Initialized cron jobs")
