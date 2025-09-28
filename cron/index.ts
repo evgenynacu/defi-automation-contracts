@@ -136,6 +136,25 @@ async function runJobs() {
 
 		logAsync(
 			syncService.syncData({
+				type: "swap-rate",
+				fromToken: USDC,
+				toToken: sUSDe_ADDRESS,
+				amount: 100000000000n,
+			}),
+			"checking USDC-sUSDe rate"
+		)
+		logAsync(
+			syncService.syncData({
+				type: "swap-rate",
+				fromToken: sUSDe_ADDRESS,
+				toToken: USDC,
+				amount: 100000000000000000000000n,
+			}),
+			"checking sUSDe-USDC rate"
+		)
+
+		logAsync(
+			syncService.syncData({
 				type: "compound-health-factor",
 				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
 				comet: "0xd98Be00b5D27fc98112BdE293e487f8D4cA57d07",
