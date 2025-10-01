@@ -12,7 +12,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	const debtVault = "0x53AfE3343f322c4189Ab69E0D048efd154259419";
 
 	const euler = new Euler(collateralVault, debtVault, accountId)
-	await sendOrEstimate(hre, ex => withdraw(ex, euler, 1))
+	await sendOrEstimate(hre, ex => withdraw({ex, lending: euler}))
 }
 // noinspection JSUnusedGlobalSymbols
 export default func

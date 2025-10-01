@@ -1,14 +1,14 @@
-import { address } from "../../common/types"
-import { CalculateResult, createCalculateExecutor, StrategyExecutor } from "../../common/calculate-result"
-import { ContractRunner } from "ethers"
-import { withdrawFromMorpho } from "../../common/withdraw-from-morpho"
-import { withdrawFromCompound } from "../../common/withdraw-from-compound"
-import { withdrawFromAave } from "../../common/withdraw-from-aave"
-import { getAaveHealthFactor } from "../../common/get-aave-health-factor"
-import { testSwap } from "../../common/test-swap"
-import { tokens } from "../tokens"
-import { getSupplyCaps } from "../aave"
-import { getCompoundHealthFactor } from "../../common/get-compound-health-factor"
+import {address} from "../../common/types"
+import {CalculateResult, createCalculateExecutor, StrategyExecutor} from "../../common/calculate-result"
+import {ContractRunner} from "ethers"
+import {withdrawFromMorpho} from "../../common/withdraw-from-morpho"
+import {withdrawFromCompound} from "../../common/withdraw-from-compound"
+import {withdrawFromAave} from "../../common/withdraw-from-aave"
+import {getAaveHealthFactor} from "../../common/get-aave-health-factor"
+import {testSwap} from "../../common/test-swap"
+import {tokens} from "../tokens"
+import {getSupplyCaps} from "../aave"
+import {getCompoundHealthFactor} from "../../common/get-compound-health-factor"
 import {withdraw} from "../../common/withdraw";
 import {Euler} from "../../common/lending/euler";
 import {PendleMarket__factory} from "../../typechain-types";
@@ -43,7 +43,7 @@ export class DataService {
 	}
 
 	async getCompoundHF(request: CompoundHealthFactorRequest) {
-		const { hf } = await getCompoundHealthFactor(this.arbRunner.provider!, request.comet, request.from, request.collateral)
+		const {hf} = await getCompoundHealthFactor(this.arbRunner.provider!, request.comet, request.from, request.collateral)
 		return {
 			id: `compound-hf-${request.from}-${request.comet}`,
 			result: hf
@@ -53,7 +53,7 @@ export class DataService {
 
 async function getPendleImpliedRate(runner: ContractRunner, request: PendleImpliedRateRequest) {
 	const market = PendleMarket__factory.connect(request.market, runner)
-	const { lastLnImpliedRate } = await market._storage()
+	const {lastLnImpliedRate} = await market._storage()
 	return Math.round(10000 * (Math.exp(Number(lastLnImpliedRate) / 1e18) - 1))
 }
 
@@ -91,7 +91,7 @@ async function getData(executor: StrategyExecutor<CalculateResult>, request: Dat
 			const euler = new Euler(request.collateralVault, request.debtVault, request.accountId);
 			return toDataResult(
 				`euler-withdraw-${request.from}-${request.collateralVault}-${request.debtVault}`,
-				await withdraw(executor, euler, 1),
+				await withdraw({ex: executor, lending: euler, debtShare: 1}),
 			)
 		}
 		default:
@@ -99,7 +99,7 @@ async function getData(executor: StrategyExecutor<CalculateResult>, request: Dat
 	}
 }
 
-function toDataResult(id: string, { result, ops, calldata, ...data }: CalculateResult): DataResult {
+function toDataResult(id: string, {result, ops, calldata, ...data}: CalculateResult): DataResult {
 	let numResult: number
 	if (result > 10n ** 17n) {
 		numResult = Number(result) / 10 ** 18

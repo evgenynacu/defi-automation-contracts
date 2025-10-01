@@ -1,7 +1,7 @@
-import { StrategyExecutor } from "./calculate-result"
-import { withdraw } from "./withdraw"
-import { Aave } from "./lending/aave"
-import { toAddress } from "./types"
+import {StrategyExecutor} from "./calculate-result"
+import {withdraw} from "./withdraw"
+import {Aave} from "./lending/aave"
+import {toAddress} from "./types"
 
 export async function withdrawFromAave<T>(
 	ex: StrategyExecutor<T>,
@@ -9,5 +9,9 @@ export async function withdrawFromAave<T>(
 	debtToken: string,
 	share: number
 ): Promise<T> {
-	return withdraw(ex, new Aave(toAddress(collateralToken), toAddress(debtToken)), share)
+	return withdraw({
+		ex,
+		lending: new Aave(toAddress(collateralToken), toAddress(debtToken)),
+		debtShare: share,
+	})
 }

@@ -1,16 +1,17 @@
 import dotenv from "dotenv"
-import { getSupplyCaps } from "../aave"
-import { ContractTransactionResponse, ethers, Wallet, Provider, FeeData } from "ethers"
-import { PT_USDe_SEP, USDT_ADDRESS } from "../../common/addresses"
-import { calculateResult, StrategyExecutor } from "../../common/calculate-result"
-import { address, StateDiff, toAddress, toHex } from "../../common/types"
-import { StrategyOperation } from "../../common/serialize-operation"
-import { stringifyWithBigInt } from "../../common/stringify"
-import { AutomatedVault__factory } from "../../typechain-types"
-import { Morpho } from "../../common/lending/morpho"
-import { Aave } from "../../common/lending/aave"
-import { refinance } from "../../common/refinance"
-import { logAsync } from "../../common/log-async"
+import {getSupplyCaps} from "../aave"
+import {ContractTransactionResponse, ethers, Wallet} from "ethers"
+import {PT_USDe_SEP, USDT_ADDRESS} from "../../common/addresses"
+import {calculateResult, StrategyExecutor} from "../../common/calculate-result"
+import {address, StateDiff, toAddress, toHex} from "../../common/types"
+import {StrategyOperation} from "../../common/serialize-operation"
+import {stringifyWithBigInt} from "../../common/stringify"
+import {AutomatedVault__factory} from "../../typechain-types"
+import {Morpho} from "../../common/lending/morpho"
+import {Aave} from "../../common/lending/aave"
+import {refinance} from "../../common/refinance"
+import {logAsync} from "../../common/log-async"
+import {createGasTool, GasTool} from "../gas-tool";
 
 dotenv.config()
 
@@ -104,63 +105,6 @@ async function executeStrategy(signer: Wallet, vaultAddress: address, operations
 	const gasSettings = await gasTool()
 	console.log("executing with gas", gasSettings)
 	return await vault.rebalance(ops, gasSettings)
-}
-
-type GasSettings = {
-	maxFeePerGas: bigint
-	maxPriorityFeePerGas: bigint
-} | {
-	gasPrice: bigint
-} | {
-
-}
-
-type GasTool = (multiplier?: number) => Promise<GasSettings>
-type CacheHolder = {
-	cache: Promise<FeeData>
-}
-
-function createGasTool(provider: Provider): GasTool {
-	const cacheHolder: CacheHolder = {
-		cache: provider.getFeeData()
-	}
-
-	setInterval(() => {
-		logAsync(fetchAndSaveGasSettings(provider, cacheHolder), "fetchAndSaveGasSettings").then()
-	}, 6000)
-
-	return async (multiplier: number = 1.3) => {
-		const feeData = await cacheHolder.cache
-		return getGasSettings(feeData, multiplier)
-	}
-}
-
-async function fetchAndSaveGasSettings(provider: Provider, cacheHolder: CacheHolder) {
-	const fees = await provider.getFeeData()
-	cacheHolder.cache = Promise.resolve(fees)
-}
-
-function getGasSettings(feeData: FeeData, multiplier: number = 1.3) {
-	if (feeData.maxFeePerGas && feeData.maxPriorityFeePerGas) {
-		// EIP-1559 поддерживается
-		const maxPriorityFeePerGas = (feeData.maxPriorityFeePerGas * BigInt(Math.floor(multiplier * 100))) / 100n
-
-		return {
-			maxFeePerGas: (feeData.maxFeePerGas * BigInt(Math.floor(multiplier * 100))) / 100n,
-			maxPriorityFeePerGas: maxBigInt(maxPriorityFeePerGas, 100000000n)
-		};
-	} else if (feeData.gasPrice) {
-		// Fallback к legacy
-		return {
-			gasPrice: (feeData.gasPrice * BigInt(Math.floor(multiplier * 100))) / 100n
-		};
-	} else {
-		return {}
-	}
-}
-
-function maxBigInt(a: bigint, b: bigint): bigint {
-	return a > b ? a : b;
 }
 
 

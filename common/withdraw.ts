@@ -1,16 +1,20 @@
-import { StrategyExecutor } from "./calculate-result"
-import { MaxUint256, ContractRunner } from "ethers"
-import { getDecimals } from "./decimals"
-import { Lending } from "./lending"
-import { PriceOracle__factory } from "../typechain-types"
-import { address } from "./types"
+import {StrategyExecutor} from "./calculate-result"
+import {ContractRunner, MaxUint256} from "ethers"
+import {getDecimals} from "./decimals"
+import {Lending} from "./lending"
+import {PriceOracle__factory} from "../typechain-types"
+import {address} from "./types"
 
-export async function withdraw<T>(
+export type WitdrawRequest<T> = {
 	ex: StrategyExecutor<T>,
 	lending: Lending,
-	debtshare: number,
-	collateralshare: number = debtshare,
-): Promise<T> {
+	debtShare?: number,
+	collateralShare?: number,
+	recipient?: address,
+	amount?: bigint,
+}
+
+export async function withdraw<T>({ex, lending, debtShare, collateralShare, recipient, amount}: WitdrawRequest<T>): Promise<T> {
 
 	const from = await ex.getFrom()
 
@@ -24,7 +28,7 @@ export async function withdraw<T>(
 		getWithdrawOperation,
 		collateralToWithdraw,
 		getHealthFactor,
-	} = await lending.initWithdraw(ex, debtshare, collateralshare)
+	} = await lending.initWithdraw(ex, debtShare || 1, collateralShare || debtShare || 1)
 
 	console.log("totalDebt", totalDebt, "totalCollateral", totalCollateral)
 	const posValue = await getPosValue("0x56f8Df17564Fe3C0644f62CA50a4E913c188eD5d", ex.runner, collateral, totalCollateral, debt, totalDebt)
@@ -50,8 +54,8 @@ export async function withdraw<T>(
 		{
 			type: "erc20-transfer-to",
 			token: debt,
-			amount: MaxUint256,
-			to: from,
+			amount: amount || MaxUint256,
+			to: recipient || from,
 		}
 	])
 	const hf = await getHealthFactor()

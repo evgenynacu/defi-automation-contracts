@@ -88,7 +88,7 @@ export class DuneService {
 	 * @param pollInterval Polling interval in milliseconds (default: 1000)
 	 * @returns Promise that resolves when execution is complete
 	 */
-	async waitForExecution(executionId: string, apiKey: string, pollInterval: number = 1000): Promise<void> {
+	async waitForExecution(executionId: string, apiKey: string, pollInterval: number = 2000): Promise<void> {
 		let status = 'QUERY_STATE_PENDING'
 
 		while (status !== 'QUERY_STATE_COMPLETED') {
