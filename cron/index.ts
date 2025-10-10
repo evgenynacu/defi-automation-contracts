@@ -223,19 +223,6 @@ async function runJobs() {
 			}),
 			"syncing PT-mMEV OCT / USDC [USD]"
 		)
-
-		// PT-pUSDe OCT / USDC
-		logAsync(
-			syncService.syncData({
-				type: "euler-withdraw",
-				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
-				accountId: 1,
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				collateralVault: "0xCfC6a55Aa72DCF3755A515aE8B82552028b63D2A",
-				debtVault: "0x53AfE3343f322c4189Ab69E0D048efd154259419"
-			}),
-			"syncing PT-pUSDe-OCT/USDS [BTC]"
-		)
 	})
 
 	console.log("Initialized cron jobs")
