@@ -1,7 +1,7 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types'
 import {DeployFunction} from 'hardhat-deploy/types'
 import {withdrawFromAave} from "../common/withdraw-from-aave"
-import {sUSDe_ADDRESS, USDC, USDe_ADDRESS} from "../common/addresses"
+import {USDC, USDe_ADDRESS} from "../common/addresses"
 import {sendOrEstimate} from "./send-or-estimate"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
