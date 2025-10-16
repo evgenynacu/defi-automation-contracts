@@ -1,20 +1,15 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types'
 import {DeployFunction} from 'hardhat-deploy/types'
-import {sUSDe_ADDRESS, USDC} from "../common/addresses"
+import {withdrawFromAave} from "../common/withdraw-from-aave"
+import {sUSDe_ADDRESS, USDC, USDe_ADDRESS} from "../common/addresses"
 import {sendOrEstimate} from "./send-or-estimate"
-import {Aave} from "../common/lending/aave";
-import {withdraw} from "../common/withdraw";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`withdrawing on network ${hre.network.name}`)
 
-	const aave = new Aave(sUSDe_ADDRESS, USDC)
-	await sendOrEstimate(hre, ex => withdraw({
-		ex,
-		lending: aave,
-	}), "AaveSusdeJulVaultProxy")
+	await sendOrEstimate(hre, ex => withdrawFromAave(ex, USDe_ADDRESS, USDC, 0.5, 1), "AaveSusdeJulVaultProxy")
 }
 
 // noinspection JSUnusedGlobalSymbols
 export default func
-func.tags = ['withdraw-sUSDe-AAVE-300']
+func.tags = ['withdraw-USDe-5050-AAVE']

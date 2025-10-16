@@ -200,6 +200,21 @@ async function runJobs() {
 				vault: "0x45BeD3404b87b30fEF2A6EE679aa50178072bAbb",
 				collateralToken: sUSDe_ADDRESS,
 				debtToken: USDC,
+				debtShare: 0.5,
+				collateralShare: 1,
+			}),
+			"syncing sUSDe/USDC [USD]"
+		)
+
+		logAsync(
+			syncService.syncData({
+				type: "aave-withdraw",
+				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
+				vault: "0x45BeD3404b87b30fEF2A6EE679aa50178072bAbb",
+				collateralToken: USDe_ADDRESS,
+				debtToken: USDC,
+				debtShare: 0.5,
+				collateralShare: 1,
 			}),
 			"syncing sUSDe/USDC [USD]"
 		)

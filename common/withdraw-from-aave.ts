@@ -7,11 +7,13 @@ export async function withdrawFromAave<T>(
 	ex: StrategyExecutor<T>,
 	collateralToken: string,
 	debtToken: string,
-	share: number
+	debtShare: number = 1,
+	collateralShare?: number,
 ): Promise<T> {
 	return withdraw({
 		ex,
 		lending: new Aave(toAddress(collateralToken), toAddress(debtToken)),
-		debtShare: share,
+		debtShare: debtShare,
+		collateralShare: collateralShare,
 	})
 }

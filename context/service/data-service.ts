@@ -78,7 +78,7 @@ async function getData(executor: StrategyExecutor<CalculateResult>, request: Dat
 		case "aave-withdraw": {
 			return toDataResult(
 				`aave-withdraw-${request.vault}-${request.collateralToken}-${request.debtToken}`,
-				await withdrawFromAave(executor, request.collateralToken, request.debtToken, 1)
+				await withdrawFromAave(executor, request.collateralToken, request.debtToken, request.debtShare, request.collateralShare)
 			)
 		}
 		case "compound-withdraw": {
@@ -188,6 +188,8 @@ export type AaveWithdrawDataRequest = {
 	from: address
 	collateralToken: address
 	debtToken: address
+	debtShare?: number
+	collateralShare?: number
 }
 
 export type CompoundWithdrawDataRequest = {

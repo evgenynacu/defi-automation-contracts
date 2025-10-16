@@ -64,12 +64,12 @@ async function syncweETH() {
 async function sync() {
 	await syncUSDe()
 	console.log("sync USDe completed")
-	await sleep(5000)
-	await syncwstETH()
-	console.log("sync wstETH completed")
-	await sleep(5000)
-	await syncweETH()
-	console.log("sync weETH completed")
+	// await sleep(5000)
+	// await syncwstETH()
+	// console.log("sync wstETH completed")
+	// await sleep(5000)
+	// await syncweETH()
+	// console.log("sync weETH completed")
 }
 
 
