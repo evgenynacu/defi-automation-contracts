@@ -4,7 +4,7 @@ import {
 	PT_sUSDe_SEP,
 	PT_USDe_NOV,
 	PT_USDe_SEP, sUSDe_ADDRESS,
-	USDC,
+	USDC, USDe_ADDRESS,
 	USDT_ADDRESS
 } from "../../common/addresses"
 import {address, toAddress} from "../../common/types"
@@ -77,4 +77,10 @@ export const aaveVaults: AaveVault[] = [
 		debt: USDC,
 		owner: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42"
 	},
+	{
+		vault: toAddress("0x45BeD3404b87b30fEF2A6EE679aa50178072bAbb"),
+		collateral: USDe_ADDRESS,
+		debt: USDC,
+		owner: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42"
+	}
 ]
