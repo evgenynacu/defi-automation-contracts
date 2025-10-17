@@ -6,7 +6,7 @@ import {
 	AaveFlashLoanStrategy__factory,
 	CompoundV3Strategy__factory,
 	Erc20TransferStrategy__factory, EulerV2Strategy__factory,
-	GenericAaveStrategy__factory,
+	GenericAaveStrategy__factory, MerklStrategy__factory,
 	MorphoFlashLoanStrategy__factory,
 	MorphoReadStrategy__factory,
 	MorphoStrategy__factory,
@@ -25,6 +25,12 @@ export const PENDLE_STRATEGY_INDEX = 8
 export const ODOS_STRATEGY_INDEX = 9
 export const KYBER_STRATEGY_INDEX = 10
 export const EULER_STRATEGY_INDEX = 11
+export const MERKL_STRATEGY_INDEX = 12
+
+export type MerklStrategyOperation = {
+	type: 'merkl'
+	data: `0x${string}`
+}
 
 export type TransferErc20FromCallerOperation = {
 	type: 'erc20-transfer-from'
@@ -221,6 +227,7 @@ export type InnerStrategyOperation =
 	| MorphoReadTotalBorrowAssetsOperation
 
 export type StrategyOperation =
+	| MerklStrategyOperation
 	| InnerStrategyOperation
 	| MorphoFlashLoanOperation
 	| AaveFlashLoanOperation
@@ -245,6 +252,13 @@ export type OperationWithInfo = HasOperation.OperationStruct & {
  */
 async function serializeOperation(runner: ContractRunner, vault: address, op: StrategyOperation): Promise<OperationWithInfo[]> {
 	switch (op["type"]) {
+		case "merkl": {
+			const impl = MerklStrategy__factory.createInterface()
+			return [{
+				position: MERKL_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("getRewards", [op.data])
+			}]
+		}
 		case "morpho-read-total-borrow-assets": {
 			const impl = MorphoReadStrategy__factory.createInterface()
 			return [{

@@ -1,4 +1,4 @@
-import { address } from "../common/types"
+import {address} from "../common/types"
 import {
 	DAI_ADDRESS,
 	PT_eUSDe_AUG, PT_sUSDe_JUL, PT_sUSDe_SEP, PT_USDe_NOV, PT_USDe_SEP, SDAI_ADDRESS, sUSDe_ADDRESS, USDC,
@@ -51,4 +51,5 @@ export const tokenMaturityDates: Record<string, Date> = {
 	["PT-pUSDe-16OCT2025"]: new Date("2025-10-16"),
 	"0xB10DA2F9147f9cf2B8826877Cd0c95c18A0f42dc": new Date("2025-11-20"),
 	"0x61da65F0534C6A4F4c9757f2979A923c08d6D2aa": new Date("2025-10-30"),
+	"0x1135b22d6e8fd0809392478eedcd8c107db6af9d": new Date("2025-12-18"),
 }

@@ -10,10 +10,10 @@ import {ethers} from "hardhat";
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`deploying contracts on network ${hre.network.name}`)
 
-	const accountId = 1
 	const collateralVault = "0xCfC6a55Aa72DCF3755A515aE8B82552028b63D2A"
 	const debtVault = "0x53AfE3343f322c4189Ab69E0D048efd154259419";
 
+	const accountId = 1
 	const from = await getSignerAddress()
 	const vault = await getVaultAddress(hre)
 	const owner = xorSubAccountAddress(from, accountId)

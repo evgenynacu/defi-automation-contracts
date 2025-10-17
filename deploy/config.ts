@@ -10,6 +10,7 @@ export type Config = {
 	morphoBlue: address,
 	aavePoolAddressProvider: address,
 	evc: address,
+	merkl: address
 }
 
 const config: Record<string, Config> = {
@@ -17,11 +18,13 @@ const config: Record<string, Config> = {
 		morphoBlue: MORPHO_BLUE_ARB,
 		aavePoolAddressProvider: AAVE_POOL_ADDRESS_PROVIDER_ARB,
 		evc: EVC_ARB,
+		merkl: "0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae", //todo identify on arbitrum
 	},
 	"default": {
 		morphoBlue: MORPHO_BLUE,
 		aavePoolAddressProvider: AAVE_POOL_ADDRESS_PROVIDER,
-		evc: EVC
+		evc: EVC,
+		merkl: "0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae",
 	}
 }
 
