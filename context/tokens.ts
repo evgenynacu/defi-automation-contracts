@@ -31,7 +31,10 @@ export const tokens: Record<address, string> = {
 	"0x61da65F0534C6A4F4c9757f2979A923c08d6D2aa": "PT-mMEV-30OCT2025",
 	"0xb6ac3d5da138918ac4e84441e924a20daa60dbdd": "PT-sUSDe-27NOV2025",
 	"0x4eaa571eafcd96f51728756bd7f396459bb9b869": "PT-USDe-27NOV2025",
-	"0x1135b22d6e8fd0809392478eedcd8c107db6af9d": "PT-tUSDe-18DEC2025"
+	"0x1135b22d6e8fd0809392478eedcd8c107db6af9d": "PT-tUSDe-18DEC2025",
+	"0xC3c7E5E277d31CD24a3Ac4cC9af3B6770F30eA33": "PT-stcUSD-29JAN2026",
+	"0x1Fb3C5c35D95F48e48FFC8e36bCCe5CB5f29F57c": "PT-srUSDe-15JAN2026",
+	"0xe4d30ccf87cb3e5e637b64a2ee21bd5d3901839a": "PT-mHYPER-20NOV2025",
 }
 
 export function findToken(address: address): string | undefined {
