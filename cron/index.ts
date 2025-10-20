@@ -166,17 +166,6 @@ async function runJobs() {
 		// 	"syncing Misc HF"
 		// )
 
-		//aave PT-sUSDE-Sep
-		logAsync(
-			syncService.syncData({
-				type: "aave-withdraw",
-				from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
-				vault: "0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502",
-				collateralToken: sUSDe_ADDRESS,
-				debtToken: USDC,
-			}),
-			"syncing Aave sUSDE/USDC"
-		)
 
 		logAsync(
 			syncService.syncData({
