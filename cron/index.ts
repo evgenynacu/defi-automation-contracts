@@ -234,7 +234,17 @@ async function runJobs() {
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0x79b4e55cef9e7c214b5cc965e1984229ada26a66051e35366a75c4d92b776735"
 			}),
-			"syncing PT-CUSDO NOV / USDC [USD]"
+			"syncing PT-srUSDe JAN / USDC [Vault]"
+		)
+
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0x03f715ef1ae508ab3e1faf4dffdbf2a077d1f0ad10c5aad42cf4438d5e3328af"
+			}),
+			"syncing PT-stcUSD JAN / USDC [Vault]"
 		)
 
 		logAsync(
