@@ -22,5 +22,12 @@ export const eulerPositions: EulerPositions[] = [
 		collateral: "PT-tUSDe-18DEC2025",
 		debt: "USDC",
 		owner: "0x089fa9741628c1A4576F5BA47E02D1180b581e36"
-	}
+	},
+	{
+		collateralVault: "0xad857E37bCdb3dD0712f5F3267D33ec1085F1a1d",
+		debtVault: "0x8aFF4fe319c30475D27eC623D7d44bD5eCFe9616",
+		collateral: "PT-mHYPER-20NOV2025",
+		debt: "USDC",
+		owner: "0x089fa9741628c1A4576F5BA47E02D1180b581e36"
+	},
 ]
