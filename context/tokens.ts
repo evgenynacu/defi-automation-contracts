@@ -56,4 +56,7 @@ export const tokenMaturityDates: Record<string, Date> = {
 	"0xB10DA2F9147f9cf2B8826877Cd0c95c18A0f42dc": new Date("2025-11-20"),
 	"0x61da65F0534C6A4F4c9757f2979A923c08d6D2aa": new Date("2025-10-30"),
 	"0x1135b22d6e8fd0809392478eedcd8c107db6af9d": new Date("2025-12-18"),
+	"0xC3c7E5E277d31CD24a3Ac4cC9af3B6770F30eA33": new Date("2026-01-29"),
+	"0x1Fb3C5c35D95F48e48FFC8e36bCCe5CB5f29F57c": new Date("2026-01-15"),
+	"0xe4d30ccf87cb3e5e637b64a2ee21bd5d3901839a": new Date("2025-11-20"),
 }
