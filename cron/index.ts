@@ -66,21 +66,6 @@ async function runJobs() {
 
 		logAsync(
 			syncService.syncData({
-				type: "pendle-implied-rate",
-				market: "0x4eaa571eafcd96f51728756bd7f396459bb9b869"
-			}),
-			"checking PT USDe Nov rate"
-		)
-		logAsync(
-			syncService.syncData({
-				type: "pendle-implied-rate",
-				market: "0xb6ac3d5da138918ac4e84441e924a20daa60dbdd"
-			}),
-			"checking PT sUSDe nov rate"
-		)
-
-		logAsync(
-			syncService.syncData({
 				type: "swap-rate",
 				fromToken: WETH_ADDRESS,
 				toToken: WEETH_ADDRESS,
