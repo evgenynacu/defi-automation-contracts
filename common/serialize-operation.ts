@@ -26,6 +26,7 @@ export const ODOS_STRATEGY_INDEX = 9
 export const KYBER_STRATEGY_INDEX = 10
 export const EULER_STRATEGY_INDEX = 11
 export const MERKL_STRATEGY_INDEX = 12
+export const STRATA_STRATEGY_INDEX = 13
 
 export type MerklStrategyOperation = {
 	type: 'merkl'
@@ -442,6 +443,7 @@ function getSwapStrategyPosition(provider: string) {
 		case "pendle": return PENDLE_STRATEGY_INDEX
 		case "odos-v2": return ODOS_STRATEGY_INDEX
 		case "kyberswap-api": return KYBER_STRATEGY_INDEX
+		case "strata-swap": return STRATA_STRATEGY_INDEX
 		default: throw new Error("Unknown swap strategy provider " + provider)
 	}
 }

@@ -1,5 +1,6 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types'
 import {getConfig} from "./config";
+import {PENDLE_ROUTER, srUSDe_ADDRESS, sUSDe_ADDRESS} from "../common/addresses";
 
 export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const config = getConfig(hre.network.name)
@@ -17,6 +18,10 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const kyberSwapStrategy = await deployStrategy(hre, "KyberSwapStrategy", ["0x6131B5fae19EA4f9D964eAc0408E4408b66337b5"])
 	const eulerStrategy = await deployStrategy(hre, "EulerV2Strategy", [config.evc])
 	const merklStrategy = await deployStrategy(hre, "MerklStrategy", [config.merkl])
+
+	const strataSwapAddress = await deployStrataSwap(hre)
+	const strataSwapStrategy = await deployStrategy(hre, "StrataSwapStrategy", [strataSwapAddress])
+
 	return [
 		erc20TransferStrategy.address,    //0
 		ZERO_ADDRESS,                     //1
@@ -31,7 +36,29 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 		kyberSwapStrategy.address,        //10
 		eulerStrategy.address,            //11
 		merklStrategy.address,            //12
+		strataSwapStrategy.address,       //13
 	]
+}
+
+async function deployStrataSwap(hre: HardhatRuntimeEnvironment) {
+	const { deploy } = hre.deployments;
+	const { deployer } = await hre.getNamedAccounts();
+
+	console.log("deploying contracts with the account:", deployer);
+
+	// Deploy StrataSwap contract
+	const strataSwap = await deploy("StrataSwap", {
+		from: deployer,
+		args: [
+			PENDLE_ROUTER,   // _pendleRouter
+			srUSDe_ADDRESS,  // _srUSDe
+			sUSDe_ADDRESS,   // _sUSDe
+		],
+		log: true
+	});
+
+	console.log("StrataSwap deployed at:", strataSwap.address);
+	return strataSwap.address;
 }
 
 async function deployStrategy(hre: HardhatRuntimeEnvironment, strategyName: string, args: any[] = []) {
