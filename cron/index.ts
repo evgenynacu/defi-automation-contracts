@@ -186,6 +186,18 @@ async function runJobs() {
 				type: "euler-withdraw",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+				accountId: 5,
+				collateralVault: "0xA655D6F7550B43B73948fEbdE6cDC7bD201Ba218",
+				debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
+			}),
+			"syncing PT-alUSD-DEC-25/USDT"
+		)
+
+		logAsync(
+			syncService.syncData({
+				type: "euler-withdraw",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 				accountId: 3,
 				collateralVault: "0xad857E37bCdb3dD0712f5F3267D33ec1085F1a1d",
 				debtVault: "0x8aFF4fe319c30475D27eC623D7d44bD5eCFe9616",

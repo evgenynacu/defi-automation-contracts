@@ -37,6 +37,7 @@ export const tokens: Record<address, string> = {
 	"0xe4d30ccf87cb3e5e637b64a2ee21bd5d3901839a": "PT-mHYPER-20NOV2025",
 	"0xb44cdBEF3145C1c1E772e8228E1154c80e70618e": "PT-iUSD-4DEC2025",
 	"0x4956b52aE2fF65D74CA2d61207523288e4528f96": "RLP",
+	"0xd2e230f71ca8db211067bc4070a94d268b313fa3": "PT-alUSD-11DEC2025",
 }
 
 export function findToken(address: address): string | undefined {
@@ -62,4 +63,5 @@ export const tokenMaturityDates: Record<string, Date> = {
 	"0x1Fb3C5c35D95F48e48FFC8e36bCCe5CB5f29F57c": new Date("2026-01-15"),
 	"0xe4d30ccf87cb3e5e637b64a2ee21bd5d3901839a": new Date("2025-11-20"),
 	"0xb44cdBEF3145C1c1E772e8228E1154c80e70618e": new Date("2025-12-04"),
+	"0xd2e230f71ca8db211067bc4070a94d268b313fa3": new Date("2025-12-11"),
 }
