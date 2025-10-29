@@ -287,16 +287,6 @@ async function runJobs() {
 			}),
 			"syncing PT-stcUSD JAN / USDC [Vault]"
 		)
-
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0xd3146eb281fff405b3fe418723899a890cb2f29646160a07af81ca241e2ec96e"
-			}),
-			"syncing PT-mMEV OCT / USDC [USD]"
-		)
 	})
 
 	console.log("Initialized cron jobs")
