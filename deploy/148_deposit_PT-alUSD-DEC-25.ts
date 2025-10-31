@@ -24,16 +24,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	// await evc.enableController(owner, debtVault)
 
 	const euler = new Euler(collateralVault, debtVault, accountId)
-	await sendOrEstimate(hre, ex => deposit(ex, euler, 100000000000n, 4.5))
+	await sendOrEstimate(hre, ex => deposit(ex, euler, 29601000000n, 4.5))
 }
 
 // noinspection JSUnusedGlobalSymbols
 export default func
 func.tags = ['deposit-PT-alUSD-DEC-25']
 
-//195528.947425 - 24000 * 7 * (1 + 0.1 * 41 / 365) - 24000 = 1641
-//113794.161798 - 15000 * 6.5 * (1 + 0.12 * 30 / 365) - 15000 = 332
-//256849.318528008667124480 - 50000 * 4 * (1 + 0.08 * 93 / 365) - 50000 = 2772 = 21.7%
-//282514.060368499622889054 - 50000 * 4.5 * (1 + 0.08 * 93 / 365) - 50000 = 2927 = 22.9%
 //228436.426427 - 50000 * 3.5 * (1 + 0.08 * 44 / 365) - 50000 = 1748 = 29%
 //456600.700452 - 100000 * 3.5 * (1 + 0.08 * 44 / 365) - 100000 = 3225 = 26.7
+//135185.361941 - 29601 * 3.5 * (1 + 0.1 * 42 / 365) - 29601 = 788 = 23%
