@@ -5,7 +5,9 @@ interface IEVC2 {
     function setAccountOperator(address account, address operator, bool authorized) external payable;
 
     function enableCollateral(address account, address vault) external;
+    function disableCollateral(address account, address vault) external;
     function enableController(address account, address vault) external;
+    function disableController(address account, address vault) external;
 
     function call(
         address targetContract,
