@@ -135,7 +135,7 @@ function parseJobId(jobId: string): ParsedJobId | undefined {
 			return {
 				type: "position",
 				wallet: wallets[wallet] || wallet,
-				positionId: pos.collateral + "/" + pos.debt,
+				positionId: pos.collateral + "/" + pos.debt + " Euler",
 			}
 		}
 	}
