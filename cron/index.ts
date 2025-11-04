@@ -198,18 +198,6 @@ async function runJobs() {
 				type: "euler-withdraw",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-				accountId: 3,
-				collateralVault: "0xad857E37bCdb3dD0712f5F3267D33ec1085F1a1d",
-				debtVault: "0x8aFF4fe319c30475D27eC623D7d44bD5eCFe9616",
-			}),
-			"syncing PT-mHYPER/USDC NOV-25"
-		)
-
-		logAsync(
-			syncService.syncData({
-				type: "euler-withdraw",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 				accountId: 7,
 				collateralVault: "0xE067311975278b7e7b81Bf57d2a9e58E3eaD75b4",
 				debtVault: "0xe0a80d35bB6618CBA260120b279d357978c42BCE",
