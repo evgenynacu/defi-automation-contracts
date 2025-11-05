@@ -262,10 +262,12 @@ async function runJobs() {
 
 		logAsync(
 			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+				type: "euler-withdraw",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0x79b4e55cef9e7c214b5cc965e1984229ada26a66051e35366a75c4d92b776735"
+				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+				accountId: 8,
+				collateralVault: "0x50E6bBa3847357e5ee2Cc55Cc2F5F5E69FdaBE36",
+				debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
 			}),
 			"syncing PT-srUSDe JAN / USDC [Vault]"
 		)
