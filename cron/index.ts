@@ -66,42 +66,42 @@ async function runJobs() {
 	cron.schedule('* * * * *', () => {
 		console.log("Running cron job")
 
-		logAsync(
-			syncService.syncData({
-				type: "swap-rate",
-				fromToken: WETH_ADDRESS,
-				toToken: WEETH_ADDRESS,
-				amount: 100000000000000000000n,
-			}),
-			"checking WETH-weETH rate"
-		)
-		logAsync(
-			syncService.syncData({
-				type: "swap-rate",
-				fromToken: WETH_ADDRESS,
-				toToken: WSTETH_ADDRESS,
-				amount: 100000000000000000000n,
-			}),
-			"checking WETH-wstETH rate"
-		)
-		logAsync(
-			syncService.syncData({
-				type: "swap-rate",
-				fromToken: WEETH_ADDRESS,
-				toToken: WETH_ADDRESS,
-				amount: 100000000000000000000n,
-			}),
-			"checking weETH-WETH rate"
-		)
-		logAsync(
-			syncService.syncData({
-				type: "swap-rate",
-				fromToken: WSTETH_ADDRESS,
-				toToken: WETH_ADDRESS,
-				amount: 100000000000000000000n,
-			}),
-			"checking wstETH-WETH rate"
-		)
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "swap-rate",
+		// 		fromToken: WETH_ADDRESS,
+		// 		toToken: WEETH_ADDRESS,
+		// 		amount: 100000000000000000000n,
+		// 	}),
+		// 	"checking WETH-weETH rate"
+		// )
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "swap-rate",
+		// 		fromToken: WETH_ADDRESS,
+		// 		toToken: WSTETH_ADDRESS,
+		// 		amount: 100000000000000000000n,
+		// 	}),
+		// 	"checking WETH-wstETH rate"
+		// )
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "swap-rate",
+		// 		fromToken: WEETH_ADDRESS,
+		// 		toToken: WETH_ADDRESS,
+		// 		amount: 100000000000000000000n,
+		// 	}),
+		// 	"checking weETH-WETH rate"
+		// )
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "swap-rate",
+		// 		fromToken: WSTETH_ADDRESS,
+		// 		toToken: WETH_ADDRESS,
+		// 		amount: 100000000000000000000n,
+		// 	}),
+		// 	"checking wstETH-WETH rate"
+		// )
 		logAsync(
 			syncService.syncData({
 				type: "swap-rate",
@@ -121,26 +121,26 @@ async function runJobs() {
 			"checking sUSDe-USDe rate"
 		)
 
-		logAsync(
-			syncService.syncData({
-				type: "swap-rate",
-				fromToken: USDC,
-				toToken: sUSDe_ADDRESS,
-				amount: 100000000000n,
-				divider: 10n ** 12n,
-			}),
-			"checking USDC-sUSDe rate"
-		)
-		logAsync(
-			syncService.syncData({
-				type: "swap-rate",
-				fromToken: sUSDe_ADDRESS,
-				toToken: USDC,
-				amount: 100000000000000000000000n,
-				multiplier: 10n ** 12n,
-			}),
-			"checking sUSDe-USDC rate"
-		)
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "swap-rate",
+		// 		fromToken: USDC,
+		// 		toToken: sUSDe_ADDRESS,
+		// 		amount: 100000000000n,
+		// 		divider: 10n ** 12n,
+		// 	}),
+		// 	"checking USDC-sUSDe rate"
+		// )
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "swap-rate",
+		// 		fromToken: sUSDe_ADDRESS,
+		// 		toToken: USDC,
+		// 		amount: 100000000000000000000000n,
+		// 		multiplier: 10n ** 12n,
+		// 	}),
+		// 	"checking sUSDe-USDC rate"
+		// )
 
 		logAsync(
 			syncService.syncData({
