@@ -18,7 +18,7 @@ export const eulerPositions: EulerPositions[] = [
 	},
 	{
 		collateralVault: "0x0391d9029713B1E9Ee1e241CB53D6BC89bAf299d",
-		debtVault: "0xe0a80d35bB6618CBA260120b279d357978c42BCE",
+		debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
 		collateral: "PT-tUSDe-18DEC2025",
 		debt: "USDC",
 		owner: "0x089fa9741628c1A4576F5BA47E02D1180b581e36"
@@ -27,7 +27,7 @@ export const eulerPositions: EulerPositions[] = [
 		collateralVault: "0xad857E37bCdb3dD0712f5F3267D33ec1085F1a1d",
 		debtVault: "0x8aFF4fe319c30475D27eC623D7d44bD5eCFe9616",
 		collateral: "PT-mHYPER-20NOV2025",
-		debt: "USDC",
+		debt: "USDT",
 		owner: "0x089fa9741628c1A4576F5BA47E02D1180b581e36"
 	},
 	{
@@ -39,9 +39,9 @@ export const eulerPositions: EulerPositions[] = [
 	},
 	{
 		collateralVault: "0xE067311975278b7e7b81Bf57d2a9e58E3eaD75b4",
-		debtVault: "0xe0a80d35bB6618CBA260120b279d357978c42BCE",
+		debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
 		collateral: "PT-cUSD-29JAN2026",
-		debt: "USDC",
+		debt: "USDT",
 		owner: "0x089fa9741628c1A4576F5BA47E02D1180b581e36"
 	},
 	{

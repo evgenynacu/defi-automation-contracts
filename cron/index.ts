@@ -176,9 +176,9 @@ async function runJobs() {
 				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 				accountId: 2,
 				collateralVault: "0x0391d9029713B1E9Ee1e241CB53D6BC89bAf299d",
-				debtVault: "0xe0a80d35bB6618CBA260120b279d357978c42BCE",
+				debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
 			}),
-			"syncing PT-tUSDe/USDC DEC-25"
+			"syncing PT-tUSDe/USDT DEC-25"
 		)
 
 		logAsync(
@@ -200,9 +200,9 @@ async function runJobs() {
 				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 				accountId: 7,
 				collateralVault: "0xE067311975278b7e7b81Bf57d2a9e58E3eaD75b4",
-				debtVault: "0xe0a80d35bB6618CBA260120b279d357978c42BCE",
+				debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
 			}),
-			"syncing PT-cUSD-29JAN2026/USDC JAN-26"
+			"syncing PT-cUSD-29JAN2026/USDT JAN-26"
 		)
 
 		logAsync(
@@ -250,7 +250,7 @@ async function runJobs() {
 				debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
 				accountId: 9,
 			}),
-			"syncing PT-CUSDO NOV / USDC [vault]"
+			"syncing PT-CUSDO NOV / USDT [vault]"
 		)
 		logAsync(
 			syncService.syncData({
@@ -280,7 +280,7 @@ async function runJobs() {
 				collateralVault: "0x50E6bBa3847357e5ee2Cc55Cc2F5F5E69FdaBE36",
 				debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
 			}),
-			"syncing PT-srUSDe JAN / USDC [Vault]"
+			"syncing PT-srUSDe JAN / USDT [Vault]"
 		)
 
 		logAsync(
