@@ -243,6 +243,15 @@ async function runJobs() {
 		)
 		logAsync(
 			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0x7fd694cd13880ce994c61e8f8991ce0c9e321e3d50f548dd62a1b6e610d29f32"
+			}),
+			"syncing PT-CUSDO NOV / USDT [Vault]"
+		)
+		logAsync(
+			syncService.syncData({
 				type: "euler-withdraw",
 				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
@@ -250,7 +259,7 @@ async function runJobs() {
 				debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
 				accountId: 9,
 			}),
-			"syncing PT-CUSDO NOV / USDT [vault]"
+			"syncing PT-CUSDO NOV / USDT [Vault]"
 		)
 		logAsync(
 			syncService.syncData({
