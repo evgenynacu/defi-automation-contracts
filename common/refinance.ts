@@ -62,6 +62,7 @@ export async function refinance<T>(
 	}
 
 	if (debt.toLowerCase() !== newDebt.toLowerCase()) {
+		console.log("refinancing using debt swap")
 		const newDebtAmount = (await calculateAmountToSwap(newDebt, debt, debtToRepay)) * (multiplier + 1n) / multiplier
 		console.log("newDebtAmount", newDebtAmount, "debtToRepay", debtToRepay)
 
@@ -92,6 +93,7 @@ export async function refinance<T>(
 			}
 		])
 	} else {
+		console.log("refinancing. no debt swap is needed")
 		return ex.execute([
 			{
 				type: "morpho-flash-loan",

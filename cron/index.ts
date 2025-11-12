@@ -186,18 +186,6 @@ async function runJobs() {
 				type: "euler-withdraw",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-				accountId: 5,
-				collateralVault: "0xA655D6F7550B43B73948fEbdE6cDC7bD201Ba218",
-				debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
-			}),
-			"syncing PT-alUSD-DEC-25/USDT"
-		)
-
-		logAsync(
-			syncService.syncData({
-				type: "euler-withdraw",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 				accountId: 7,
 				collateralVault: "0xE067311975278b7e7b81Bf57d2a9e58E3eaD75b4",
 				debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
@@ -282,12 +270,10 @@ async function runJobs() {
 
 		logAsync(
 			syncService.syncData({
-				type: "euler-withdraw",
+				type: "morpho-withdraw",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-				accountId: 8,
-				collateralVault: "0x50E6bBa3847357e5ee2Cc55Cc2F5F5E69FdaBE36",
-				debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
+				marketId: "0x79b4e55cef9e7c214b5cc965e1984229ada26a66051e35366a75c4d92b776735",
 			}),
 			"syncing PT-srUSDe JAN / USDT [Vault]"
 		)

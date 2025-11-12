@@ -9,7 +9,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`withdrawing on network ${hre.network.name}`)
 
 	const collateralVault = "0x0391d9029713B1E9Ee1e241CB53D6BC89bAf299d" as const
-	const debtVault = "0xe0a80d35bB6618CBA260120b279d357978c42BCE" as const
+	const debtVault = "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8" as const
 
 	const accountId = 2
 
