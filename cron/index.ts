@@ -151,47 +151,6 @@ async function runJobs() {
 			}),
 			"syncing BTC HF"
 		)
-		// logAsync(
-		// 	syncService.syncData({
-		// 		type: "compound-health-factor",
-		// 		from: "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
-		// 		comet: "0xd98Be00b5D27fc98112BdE293e487f8D4cA57d07",
-		// 		collateral: "0x5979D7b546E38E414F7E9822514be443A4800529"
-		// 	}),
-		// 	"syncing ETH HF"
-		// )
-		// logAsync(
-		// 	syncService.syncData({
-		// 		type: "aave-health-factor",
-		// 		from: "0x5764CfcFb4C206f497C5B65684Dd187dF8E30543",
-		// 	}),
-		// 	"syncing Misc HF"
-		// )
-
-
-		// logAsync(
-		// 	syncService.syncData({
-		// 		type: "euler-withdraw",
-		// 		vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-		// 		from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-		// 		accountId: 2,
-		// 		collateralVault: "0x0391d9029713B1E9Ee1e241CB53D6BC89bAf299d",
-		// 		debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
-		// 	}),
-		// 	"syncing PT-tUSDe/USDT DEC-25"
-		// )
-
-		// logAsync(
-		// 	syncService.syncData({
-		// 		type: "euler-withdraw",
-		// 		vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-		// 		from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-		// 		accountId: 7,
-		// 		collateralVault: "0xE067311975278b7e7b81Bf57d2a9e58E3eaD75b4",
-		// 		debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
-		// 	}),
-		// 	"syncing PT-cUSD-29JAN2026/USDT JAN-26"
-		// )
 
 		logAsync(
 			syncService.syncData({
@@ -201,15 +160,6 @@ async function runJobs() {
 				marketId: "0x3274643db77a064abd3bc851de77556a4ad2e2f502f4f0c80845fa8f909ecf0b"
 			}),
 			"syncing sUSDS/USDT"
-		)
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0x8a71a66ac828c2b6d4f8accce5859aba0822b502f3833bec4aff09479affffdb"
-			}),
-			"syncing PT-CUSDO NOV / USDC [USD]"
 		)
 		logAsync(
 			syncService.syncData({
@@ -238,17 +188,6 @@ async function runJobs() {
 			}),
 			"syncing PT-CUSDO NOV / USDT [Vault]"
 		)
-		// logAsync(
-		// 	syncService.syncData({
-		// 		type: "euler-withdraw",
-		// 		from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-		// 		vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-		// 		collateralVault: "0xaabc07A47D2a63a9b06A7924a0780c2F3cAE7bf9",
-		// 		debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
-		// 		accountId: 9,
-		// 	}),
-		// 	"syncing PT-CUSDO NOV / USDT [Vault]"
-		// )
 		logAsync(
 			syncService.syncData({
 				type: "morpho-withdraw",
