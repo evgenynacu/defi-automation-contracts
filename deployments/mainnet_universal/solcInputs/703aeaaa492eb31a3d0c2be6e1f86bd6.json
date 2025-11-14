@@ -1,0 +1,37 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/vault/EthenaS4Strategy.sol": {
+      "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.10;\n\ncontract EthenaS4Strategy {\n    address private immutable distributor;\n\n    constructor(address _distributor) {\n        distributor = _distributor;\n    }\n\n    function getRewards(bytes calldata data) external {\n        (bool success, bytes memory result) = distributor.call(data);\n        if (!success) {\n            string memory errorMessage = result.length > 0\n                ? abi.decode(result, (string))\n                : \"Unknown error\";\n            revert(errorMessage);\n        }\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "viaIR": true,
+    "evmVersion": "paris",
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
