@@ -18,6 +18,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const kyberSwapStrategy = await deployStrategy(hre, "KyberSwapStrategy", ["0x6131B5fae19EA4f9D964eAc0408E4408b66337b5"])
 	const eulerStrategy = await deployStrategy(hre, "EulerV2Strategy", [config.evc])
 	const merklStrategy = await deployStrategy(hre, "MerklStrategy", [config.merkl])
+	const ethenaS4Strategy = await deployStrategy(hre, "EthenaS4Strategy", [config.ethenaS4Distributor])
 
 	const strataSwapAddress = await deployStrataSwap(hre)
 	const strataSwapStrategy = await deployStrategy(hre, "StrataSwapStrategy", [strataSwapAddress])
@@ -37,6 +38,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 		eulerStrategy.address,            //11
 		merklStrategy.address,            //12
 		strataSwapStrategy.address,       //13
+		ethenaS4Strategy.address,         //14
 	]
 }
 

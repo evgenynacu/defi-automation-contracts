@@ -41,6 +41,7 @@ export const reservoirSavingModule: address = toAddress("0x5475611Dffb8ef4d697Ae
 export const reservoirPsm: address = toAddress("0x4809010926aec940b550D34a46A52739f996D75D")
 export const reservoirCreditEnforcer: address = toAddress("0x04716DB62C085D9e08050fcF6F7D775A03d07720")
 export const USDC: address = toAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48".toLowerCase())
+export const sENA: address = toAddress("0x8bE3460A480c80728a8C4D7a5D5303c85ba7B3b9")
 
 export const PENDLE_ROUTER = "0x888888888889758F76e7103c6CbF23ABbF58F946"
 export const STRATA_SWAP = "0xbed375fAcbB6A4F3100a697fA2Bb47153CEf2bcc"

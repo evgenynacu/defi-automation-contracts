@@ -5,7 +5,7 @@ import { getSwaps } from "./swap/swap"
 import {
 	AaveFlashLoanStrategy__factory,
 	CompoundV3Strategy__factory,
-	Erc20TransferStrategy__factory, EulerV2Strategy__factory,
+	Erc20TransferStrategy__factory, EthenaS4Strategy__factory, EulerV2Strategy__factory,
 	GenericAaveStrategy__factory, MerklStrategy__factory,
 	MorphoFlashLoanStrategy__factory,
 	MorphoReadStrategy__factory,
@@ -27,9 +27,15 @@ export const KYBER_STRATEGY_INDEX = 10
 export const EULER_STRATEGY_INDEX = 11
 export const MERKL_STRATEGY_INDEX = 12
 export const STRATA_STRATEGY_INDEX = 13
+export const ETHENA_S4_STRATEGY_INDEX = 14
 
 export type MerklStrategyOperation = {
 	type: 'merkl'
+	data: `0x${string}`
+}
+
+export type EthenaS4StrategyOperation = {
+	type: 'ethenaS4'
 	data: `0x${string}`
 }
 
@@ -229,6 +235,7 @@ export type InnerStrategyOperation =
 
 export type StrategyOperation =
 	| MerklStrategyOperation
+	| EthenaS4StrategyOperation
 	| InnerStrategyOperation
 	| MorphoFlashLoanOperation
 	| AaveFlashLoanOperation
@@ -257,6 +264,13 @@ async function serializeOperation(runner: ContractRunner, vault: address, op: St
 			const impl = MerklStrategy__factory.createInterface()
 			return [{
 				position: MERKL_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("getRewards", [op.data])
+			}]
+		}
+		case "ethenaS4": {
+			const impl = EthenaS4Strategy__factory.createInterface()
+			return [{
+				position: ETHENA_S4_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("getRewards", [op.data])
 			}]
 		}

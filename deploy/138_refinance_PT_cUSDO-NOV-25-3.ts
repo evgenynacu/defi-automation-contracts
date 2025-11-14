@@ -33,7 +33,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 	const euler = new Euler(collateralVault, debtVault, accountId)
 
-	await sendOrEstimate(hre, ex => refinance(ex, euler, morpho, 0.2))
+	await sendOrEstimate(hre, ex => refinance(ex, euler, morpho, 1))
 }
 
 // noinspection JSUnusedGlobalSymbols

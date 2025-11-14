@@ -169,29 +169,29 @@ async function runJobs() {
 		// )
 
 
-		logAsync(
-			syncService.syncData({
-				type: "euler-withdraw",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-				accountId: 2,
-				collateralVault: "0x0391d9029713B1E9Ee1e241CB53D6BC89bAf299d",
-				debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
-			}),
-			"syncing PT-tUSDe/USDT DEC-25"
-		)
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "euler-withdraw",
+		// 		vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+		// 		from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+		// 		accountId: 2,
+		// 		collateralVault: "0x0391d9029713B1E9Ee1e241CB53D6BC89bAf299d",
+		// 		debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
+		// 	}),
+		// 	"syncing PT-tUSDe/USDT DEC-25"
+		// )
 
-		logAsync(
-			syncService.syncData({
-				type: "euler-withdraw",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-				accountId: 7,
-				collateralVault: "0xE067311975278b7e7b81Bf57d2a9e58E3eaD75b4",
-				debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
-			}),
-			"syncing PT-cUSD-29JAN2026/USDT JAN-26"
-		)
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "euler-withdraw",
+		// 		vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+		// 		from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+		// 		accountId: 7,
+		// 		collateralVault: "0xE067311975278b7e7b81Bf57d2a9e58E3eaD75b4",
+		// 		debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
+		// 	}),
+		// 	"syncing PT-cUSD-29JAN2026/USDT JAN-26"
+		// )
 
 		logAsync(
 			syncService.syncData({
@@ -238,17 +238,17 @@ async function runJobs() {
 			}),
 			"syncing PT-CUSDO NOV / USDT [Vault]"
 		)
-		logAsync(
-			syncService.syncData({
-				type: "euler-withdraw",
-				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				collateralVault: "0xaabc07A47D2a63a9b06A7924a0780c2F3cAE7bf9",
-				debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
-				accountId: 9,
-			}),
-			"syncing PT-CUSDO NOV / USDT [Vault]"
-		)
+		// logAsync(
+		// 	syncService.syncData({
+		// 		type: "euler-withdraw",
+		// 		from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+		// 		vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+		// 		collateralVault: "0xaabc07A47D2a63a9b06A7924a0780c2F3cAE7bf9",
+		// 		debtVault: "0x7c280DBDEf569e96c7919251bD2B0edF0734C5A8",
+		// 		accountId: 9,
+		// 	}),
+		// 	"syncing PT-CUSDO NOV / USDT [Vault]"
+		// )
 		logAsync(
 			syncService.syncData({
 				type: "morpho-withdraw",
