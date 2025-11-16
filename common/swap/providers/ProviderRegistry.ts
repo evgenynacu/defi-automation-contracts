@@ -3,7 +3,6 @@ import {OdosV2Provider} from "./OdosV2Provider"
 import {KyberSwapProvider} from "./KyberSwapProvider"
 import {PendleProvider} from "./PendleProvider"
 import {ReservoirProvider} from "./ReservoirProvider"
-import {StrataSwapProvider} from "./StrataSwapProvider"
 
 export class ProviderRegistry {
 	private static instance: ProviderRegistry
@@ -42,7 +41,7 @@ export class ProviderRegistry {
 			// new OpenoceanProvider(),
 			// new UsorProvider(),
 			// new ZeroexProvider(),
-			new StrataSwapProvider(),
+			// new StrataSwapProvider(),
 			new PendleProvider(),
 			new ReservoirProvider(),
 		]

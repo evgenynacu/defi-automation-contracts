@@ -3,6 +3,7 @@ import {DeployFunction} from 'hardhat-deploy/types'
 import {sendOrEstimate} from "./send-or-estimate"
 import {withdraw} from "../common/withdraw";
 import {Euler} from "../common/lending/euler";
+import {Morpho} from "../common/lending/morpho";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`withdrawing on network ${hre.network.name}`)
@@ -13,7 +14,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	const accountId = 8
 
 	const euler = new Euler(collateralVault, debtVault, accountId)
-	await sendOrEstimate(hre, ex => withdraw({ex, lending: euler}))
+	const morpho = new Morpho("0x79b4e55cef9e7c214b5cc965e1984229ada26a66051e35366a75c4d92b776735")
+	await sendOrEstimate(hre, ex => withdraw({ex, lending: morpho}))
 }
 // noinspection JSUnusedGlobalSymbols
 export default func
