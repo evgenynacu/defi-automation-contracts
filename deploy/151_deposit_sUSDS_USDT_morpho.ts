@@ -9,7 +9,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	await sendOrEstimate(
 		hre,
 		ex =>
-			depositToMorpho(ex, "0x3274643db77a064abd3bc851de77556a4ad2e2f502f4f0c80845fa8f909ecf0b", 36000000000n, 15) //33483
+			depositToMorpho(ex, "0x3274643db77a064abd3bc851de77556a4ad2e2f502f4f0c80845fa8f909ecf0b", 54412050778n, 15) //33483
 	)
 }
 
@@ -17,8 +17,3 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 export default func
 func.tags = ['deposit-sUSDS-USDT-morpho']
 
-//195528.947425 - 24000 * 7 * (1 + 0.1 * 41 / 365) - 24000 = 1641
-//232105.012840051710326563 - 30000 * 6.5 * (1 + 0.085 * 100 / 365) - 30000 = 2563 = 31%
-//139626.727614084420607718
-//558506.9104563377
-//502656.2194107039

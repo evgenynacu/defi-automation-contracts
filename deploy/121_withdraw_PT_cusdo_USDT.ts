@@ -6,8 +6,8 @@ import { sendOrEstimate } from "./send-or-estimate"
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`withdrawing on network ${hre.network.name}`)
 
-	await sendOrEstimate(hre, ex => withdrawFromMorpho(ex, "0x457b54a03c6bba984470d5687ec6df7967c0168bdc0052315713bfd287cd576c", 0.9))
+	await sendOrEstimate(hre, ex => withdrawFromMorpho(ex, "0x7fd694cd13880ce994c61e8f8991ce0c9e321e3d50f548dd62a1b6e610d29f32", 1))
 }
 // noinspection JSUnusedGlobalSymbols
 export default func
-func.tags = ['withdraw-PT-cusdo-USDC']
+func.tags = ['withdraw-PT-cusdo-USDT']

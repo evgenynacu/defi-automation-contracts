@@ -22,10 +22,10 @@ export class PendleProvider implements ISwapProvider {
 			}
 
 			const quote: QuoteResponse = await res.json()
-
+			const data = quote.tx.data
 			return {
 				to: quote.tx.to,
-				data: quote.tx.data,
+				data: data.replace("888888888889758f76e7103c6cbf23abbf58f946", params.vault.substring(2)) as `0x${string}`,
 				outAmount: BigInt(quote.data.amountOut),
 			}
 		}
