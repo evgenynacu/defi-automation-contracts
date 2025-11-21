@@ -3,6 +3,9 @@ import { ProviderConfig, SwapParams, SwapResult } from "./types"
 import { address } from "../../types"
 import { MAX_SLIPPAGE_BPS } from "./config"
 
+//export const ENABLED_AGGREGATORS = ["paraswap"].join(",")
+export const ENABLED_AGGREGATORS = ["kyberswap", "odos", "okx", "paraswap"].join(",")
+
 export class PendleProvider implements ISwapProvider {
 	getConfig(): ProviderConfig {
 		return {
@@ -15,7 +18,7 @@ export class PendleProvider implements ISwapProvider {
 		const market = await findActiveMarket(params.fromToken, params.toToken)
 		if (market) {
 			console.log("Found active Pendle Market. using it: " + market)
-			const url = `https://api-v2.pendle.finance/core/v2/sdk/${params.chainId}/markets/${market}/swap?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&aggregators=kyberswap,odos,okx&tokenIn=${params.fromToken}&tokenOut=${params.toToken}&amountIn=${params.swapAmount.toString()}`
+			const url = `https://api-v2.pendle.finance/core/v2/sdk/${params.chainId}/markets/${market}/swap?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&aggregators=${ENABLED_AGGREGATORS}&tokenIn=${params.fromToken}&tokenOut=${params.toToken}&amountIn=${params.swapAmount.toString()}`
 			const res = await fetch(url)
 			if (res.status !== 200) {
 				throw new Error("Failed to fetch quote " + await res.text())
@@ -25,7 +28,7 @@ export class PendleProvider implements ISwapProvider {
 			const data = quote.tx.data
 			return {
 				to: quote.tx.to,
-				data: data.replace("888888888889758f76e7103c6cbf23abbf58f946", params.vault.substring(2)) as `0x${string}`,
+				data: data,
 				outAmount: BigInt(quote.data.amountOut),
 			}
 		}
@@ -33,7 +36,7 @@ export class PendleProvider implements ISwapProvider {
 		const inactiveMarket = await findInactiveMarket(params.fromToken, params.toToken)
 		if (inactiveMarket) {
 			console.log("Found inactive Pendle Market. using it: " + inactiveMarket)
-			const exitUrl = `https://api-v2.pendle.finance/core/v2/sdk/1/markets/${inactiveMarket}/exit-positions?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&aggregators=kyberswap,odos,okx&ptAmount=${params.swapAmount.toString()}&ytAmount=0&lpAmount=0&tokenOut=${params.toToken}`
+			const exitUrl = `https://api-v2.pendle.finance/core/v2/sdk/1/markets/${inactiveMarket}/exit-positions?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&aggregators=${ENABLED_AGGREGATORS}&ptAmount=${params.swapAmount.toString()}&ytAmount=0&lpAmount=0&tokenOut=${params.toToken}`
 			const res = await fetch(exitUrl)
 
 			if (res.status !== 200) {

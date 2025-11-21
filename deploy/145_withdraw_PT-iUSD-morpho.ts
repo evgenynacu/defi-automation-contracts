@@ -7,9 +7,9 @@ import {Morpho} from "../common/lending/morpho";
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`withdrawing on network ${hre.network.name}`)
 
-	const morpho = new Morpho("0x3274643db77a064abd3bc851de77556a4ad2e2f502f4f0c80845fa8f909ecf0b")
-	await sendOrEstimate(hre, ex => withdraw({ex, lending: morpho, collateralShare: 1, debtShare: 1}))
+	const morpho = new Morpho("0x21b67f89513da0b0c94af8778134a1ba3f762f944f16208b42cc0663b07eaf05")
+	await sendOrEstimate(hre, ex => withdraw({ex, lending: morpho}))
 }
 // noinspection JSUnusedGlobalSymbols
 export default func
-func.tags = ['withdraw-sUSDS-USDT-morpho']
+func.tags = ['withdraw-PT-iUSD-morpho']
