@@ -46,20 +46,16 @@ async function runJobs() {
 	})
 */
 
-	cron.schedule('*/30 * * * *', () => {
+	cron.schedule('0 * * * *', () => {
 		console.log("Updating views")
 
 		logAsync(
-			connectionPool.query("REFRESH MATERIALIZED VIEW main_data_week"),
-			"refreshing main_data_week"
-		)
-		logAsync(
-			connectionPool.query("REFRESH MATERIALIZED VIEW main_data_day"),
-			"refreshing main_data_day"
-		)
-		logAsync(
-			connectionPool.query("REFRESH MATERIALIZED VIEW position_values_ext_mat"),
-			"refreshing position_values_ext_mat"
+			Promise.all([
+				connectionPool.query("REFRESH MATERIALIZED VIEW main_data_week"),
+				connectionPool.query("REFRESH MATERIALIZED VIEW main_data_day"),
+				connectionPool.query("REFRESH MATERIALIZED VIEW position_values_ext_mat"),
+			]),
+			"refreshing views"
 		)
 	})
 
