@@ -3,6 +3,7 @@ import {OdosV2Provider} from "./OdosV2Provider"
 import {KyberSwapProvider} from "./KyberSwapProvider"
 import {PendleProvider} from "./PendleProvider"
 import {ReservoirProvider} from "./ReservoirProvider"
+import {EnsoApiProvider} from "./EnsoProvider";
 
 export class ProviderRegistry {
 	private static instance: ProviderRegistry
@@ -42,6 +43,7 @@ export class ProviderRegistry {
 			// new UsorProvider(),
 			// new ZeroexProvider(),
 			// new StrataSwapProvider(),
+			new EnsoApiProvider(),
 			new PendleProvider(),
 			new ReservoirProvider(),
 		]

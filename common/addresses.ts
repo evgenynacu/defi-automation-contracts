@@ -34,6 +34,7 @@ export const USDe_ADDRESS = "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3"
 export const DAI_ADDRESS = "0x6B175474E89094C44Da98b954EedeAC495271d0F"
 export const SYRUP_USDC = "0x80ac24aa929eaf5013f6436cda2a7ba190f5cc0b"
 export const USDS = "0xdC035D45d973E3EC169d2276DDab16f1e407384F"
+export const stcUSD = "0x88887bE419578051FF9F4eb6C858A951921D8888"
 
 export const rUSD: address = toAddress("0x09D4214C03D01F49544C0448DBE3A27f768F2b34".toLowerCase())
 export const srUSD: address = toAddress("0x738d1115b90efa71ae468f1287fc864775e23a31".toLowerCase())

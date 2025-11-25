@@ -5,7 +5,7 @@ import {
 	DAI_ADDRESS,
 	PT_sUSDe_SEP,
 	rUSD,
-	SDAI_ADDRESS,
+	SDAI_ADDRESS, stcUSD,
 	sUSDe_ADDRESS,
 	SYRUP_USDC,
 	USDC,
@@ -66,7 +66,8 @@ export function getBalanceStorageSlot(token: address): `0x${string}` {
 		}
 	}
 
-	throw new Error("Unknown token for storage slot " + token)
+	console.warn("using default storage slot for balance0x6011ef8ab201e2fab1f8a08cc98ee8ac9f35e18f8e1e90fb93e1a70ff037480d")
+	return "0x6011ef8ab201e2fab1f8a08cc98ee8ac9f35e18f8e1e90fb93e1a70ff037480d"
 }
 
 function getAllowanceStorageSlot(token: address): `0x${string}` | undefined {
@@ -76,7 +77,8 @@ function getAllowanceStorageSlot(token: address): `0x${string}` | undefined {
 		}
 	}
 
-	return undefined
+	console.warn("using default storage slot for allowance 0x62fbb6bc62844b18e29b0c6750eb1e243f3dce9428157b74814e1fa1939abd5f")
+	return "0x62fbb6bc62844b18e29b0c6750eb1e243f3dce9428157b74814e1fa1939abd5f"
 }
 
 
@@ -93,10 +95,12 @@ const SLOTS: Record<address, `0x${string}`> = {
 	[USDT_ADDRESS]: "0x6011ef8ab201e2fab1f8a08cc98ee8ac9f35e18f8e1e90fb93e1a70ff037480d",
 	[rUSD]: "0x04f57dd85ec5e81f7372eb95c7ed0161bd7e95fa724be8f8aeee3a93b24598cf",
 	[PT_sUSDe_SEP]: "0xcbce38d2a396df10bbdba0503c72fc20ab34efc98f9cda900b01217a4dfee62d",
-	[USDS]: "0x6011ef8ab201e2fab1f8a08cc98ee8ac9f35e18f8e1e90fb93e1a70ff037480d"
+	[USDS]: "0x6011ef8ab201e2fab1f8a08cc98ee8ac9f35e18f8e1e90fb93e1a70ff037480d",
+	[stcUSD]: "0x363789dbbc35f2397ee55b6c011bd73d0fd73dfe01edc1a941fd949f936d8e2b",
 }
 
 const ALLOWANCE_SLOTS: Record<address, `0x${string}`> = {
 	[PT_sUSDe_SEP]: "0x0fafcce95fdb13f3372abd7f8bb2f110896a3f84a8c991c01ca7d7711c812472",
 	[USDS]: "0x62fbb6bc62844b18e29b0c6750eb1e243f3dce9428157b74814e1fa1939abd5f",
+	[stcUSD]: "0xe33263bc3aef3da6b7cb9e306cc338dfd288267398253c06b24d46ad63608d6b",
 }
