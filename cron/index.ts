@@ -179,15 +179,6 @@ async function runJobs() {
 				type: "morpho-withdraw",
 				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0x21b67f89513da0b0c94af8778134a1ba3f762f944f16208b42cc0663b07eaf05"
-			}),
-			"syncing PT-iUSD DEC / USDC [vault]"
-		)
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0xe1b65304edd8ceaea9b629df4c3c926a37d1216e27900505c04f14b2ed279f33"
 			}),
 			"syncing RLP / USDC [vault]"
