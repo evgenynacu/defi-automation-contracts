@@ -44,17 +44,6 @@ describe("testSwapAndBack", () => {
 		console.log(await testSwapAndBack(USDT_ADDRESS, 100000000000n, sUSDS)) // 0.000381 %
 	})
 
-	const t = {
-		"chainId": 1,
-		"from": "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-		"to": "0x3f04b65Ddbd87f9CE0A2e7Eb24d80e7fb87625b5",
-		"data": "0x230ae89c000000000000000000000000089fa9741628c1a4576f5ba47e02d1180b581e3600000000000000000000000000000000000000000000000000000000000f4240",
-		"gas": "0xda05e",
-		"maxFeePerGas": "0x22f3c100",
-		"maxPriorityFeePerGas": "0x22f3c100",
-		"nonce": "0x8f"
-	}
-
 	// reUSD: too low liqudity
 	// F-ONE: requires KYC + losses ~ 1%
 	// thBILL: too low liquidity
