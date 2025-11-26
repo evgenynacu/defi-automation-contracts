@@ -1,7 +1,7 @@
 import {address} from "../common/types"
 import {
 	DAI_ADDRESS,
-	PT_eUSDe_AUG, PT_sUSDe_JUL, PT_sUSDe_SEP, PT_USDe_NOV, PT_USDe_SEP, SDAI_ADDRESS, sUSDe_ADDRESS, USDC,
+	PT_eUSDe_AUG, PT_sUSDe_JUL, PT_sUSDe_SEP, PT_USDe_NOV, PT_USDe_SEP, SDAI_ADDRESS, siUSD, sUSDe_ADDRESS, USDC,
 	USDe_ADDRESS, USDS,
 	USDT_ADDRESS,
 	WEETH_ADDRESS,
@@ -25,6 +25,7 @@ export const tokens: Record<address, string> = {
 	[DAI_ADDRESS]: "DAI",
 	[SDAI_ADDRESS]: "sDAI",
 	[USDS]: "USDS",
+	[siUSD]: "siUSD",
 	"0xCcE7D12f683c6dAe700154f0BAdf779C0bA1F89A": "PT-syrupUSDC-AUG25",
 	"0x80ac24aa929eaf5013f6436cda2a7ba190f5cc0b": "syrupUSDC",
 	"0xB10DA2F9147f9cf2B8826877Cd0c95c18A0f42dc": "PT-cUSDO-20NOV2025",
