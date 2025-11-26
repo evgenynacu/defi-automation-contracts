@@ -1,6 +1,6 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types'
 import {getConfig} from "./config";
-import {PENDLE_ROUTER, srUSDe_ADDRESS, sUSDe_ADDRESS} from "../common/addresses";
+import {infinifiGateway, iUSD, PENDLE_ROUTER, siUSD, srUSDe_ADDRESS, sUSDe_ADDRESS, USDC} from "../common/addresses";
 
 export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const config = getConfig(hre.network.name)
@@ -23,6 +23,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 
 	const strataSwapAddress = await deployStrataSwap(hre)
 	const strataSwapStrategy = await deployStrategy(hre, "StrataSwapStrategy", [strataSwapAddress])
+	await deployInfinifiSwap(hre)
 
 	return [
 		erc20TransferStrategy.address,    //0
@@ -44,14 +45,33 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	]
 }
 
+async function deployInfinifiSwap(hre: HardhatRuntimeEnvironment) {
+	const { deploy } = hre.deployments;
+	const { deployer } = await hre.getNamedAccounts();
+
+	// Deploy StrataSwap contract
+	const swap = await deploy("InfinifiSwap", {
+		from: deployer,
+		args: [
+			siUSD,
+			iUSD,
+			USDC,
+			infinifiGateway,
+		],
+		log: true
+	});
+
+	console.log("InfinifiSwap deployed at:", swap.address);
+	return swap.address;
+
+}
+
 async function deployStrataSwap(hre: HardhatRuntimeEnvironment) {
 	const { deploy } = hre.deployments;
 	const { deployer } = await hre.getNamedAccounts();
 
-	console.log("deploying contracts with the account:", deployer);
-
 	// Deploy StrataSwap contract
-	const strataSwap = await deploy("StrataSwap", {
+	const swap = await deploy("StrataSwap", {
 		from: deployer,
 		args: [
 			PENDLE_ROUTER,   // _pendleRouter
@@ -61,8 +81,8 @@ async function deployStrataSwap(hre: HardhatRuntimeEnvironment) {
 		log: true
 	});
 
-	console.log("StrataSwap deployed at:", strataSwap.address);
-	return strataSwap.address;
+	console.log("StrataSwap deployed at:", swap.address);
+	return swap.address;
 }
 
 async function deployStrategy(hre: HardhatRuntimeEnvironment, strategyName: string, args: any[] = []) {

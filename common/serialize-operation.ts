@@ -460,6 +460,7 @@ function getSwapStrategyPosition(provider: string) {
 		case "kyberswap-api": return KYBER_STRATEGY_INDEX
 		case "strata-swap": return STRATA_STRATEGY_INDEX
 		case "enso-api": return GENERIC_SWAP_STRATEGY_INDEX
+		case "infinifi": return GENERIC_SWAP_STRATEGY_INDEX
 		default: throw new Error("Unknown swap strategy provider " + provider)
 	}
 }

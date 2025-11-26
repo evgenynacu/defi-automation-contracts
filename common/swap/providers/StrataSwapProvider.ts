@@ -2,7 +2,7 @@ import {ISwapProvider} from "./ISwapProvider"
 import {ProviderConfig, SwapParams, SwapResult} from "./types"
 import {toHex} from "../../types"
 import {ISrUSDe__factory, IStrataStrategy__factory, StrataSwap__factory,} from "../../../typechain-types"
-import {PT_srUSDe_JAN, srUSDe_ADDRESS, STRATA_SWAP, sUSDe_ADDRESS,} from "../../addresses"
+import {PT_srUSDe_JAN_26, srUSDe_ADDRESS, STRATA_SWAP, sUSDe_ADDRESS,} from "../../addresses"
 import {PendleProvider} from "./PendleProvider"
 import {OdosV2Provider} from "./OdosV2Provider";
 import {MAX_SLIPPAGE_BPS} from "./config";
@@ -94,7 +94,7 @@ export class StrataSwapProvider implements ISwapProvider {
 	}
 
 	private isPTsrUSDeToken(token: string): boolean {
-		return PT_srUSDe_JAN.toLowerCase() == token.toLowerCase()
+		return PT_srUSDe_JAN_26.toLowerCase() == token.toLowerCase()
 	}
 }
 

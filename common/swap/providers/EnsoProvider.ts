@@ -27,6 +27,9 @@ export class EnsoApiProvider implements ISwapProvider {
 		}
 
 		const quote: EnsoQuoteResponse = await res.json()
+		if (process.env.DEBUG_ENSO) {
+			console.log("Enso quote is", quote)
+		}
 
 		return {
 			to: quote.tx.to,

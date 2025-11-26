@@ -9,11 +9,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	await sendOrEstimate(
 		hre,
 		ex =>
-			depositToMorpho(ex, "0x3274643db77a064abd3bc851de77556a4ad2e2f502f4f0c80845fa8f909ecf0b", 50000000000n, 15) //33483
+			depositToMorpho(ex, "0xbbf7ce1b40d32d3e3048f5cf27eeaa6de8cb27b80194690aab191a63381d8c99", 15431000000n, 8)
 	)
 }
 
 // noinspection JSUnusedGlobalSymbols
 export default func
-func.tags = ['deposit-sUSDS-USDT-morpho']
-
+func.tags = ['deposit-siUSD-USDC-morpho']

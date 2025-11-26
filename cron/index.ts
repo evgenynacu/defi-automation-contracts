@@ -147,7 +147,15 @@ async function runJobs() {
 			}),
 			"syncing BTC HF"
 		)
-
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0xbbf7ce1b40d32d3e3048f5cf27eeaa6de8cb27b80194690aab191a63381d8c99"
+			}),
+			"syncing siUSD/USDC"
+		)
 		logAsync(
 			syncService.syncData({
 				type: "morpho-withdraw",

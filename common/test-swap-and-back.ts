@@ -17,5 +17,5 @@ export async function testSwapAndBack(
 	const toTokenAmount = await testSwap(fromToken, amount, toToken)
 	console.log("Trying to swap toToken to fromToken", toTokenAmount)
 	const fromTokenAmount = await testSwap(toToken, toTokenAmount, fromToken)
-	return Number(1000000000n * fromTokenAmount / amount) / 1000000000
+	return 1 - Number(1000000000n * fromTokenAmount / amount) / 1000000000
 }

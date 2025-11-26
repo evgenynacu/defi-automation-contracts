@@ -4,6 +4,7 @@ import {KyberSwapProvider} from "./KyberSwapProvider"
 import {PendleProvider} from "./PendleProvider"
 import {ReservoirProvider} from "./ReservoirProvider"
 import {EnsoApiProvider} from "./EnsoProvider";
+import {InfinifiProvider} from "./InfinifiProvider";
 
 export class ProviderRegistry {
 	private static instance: ProviderRegistry
@@ -29,6 +30,7 @@ export class ProviderRegistry {
 
 	public static createAllProviders(): ISwapProvider[] {
 		return [
+			new InfinifiProvider(),
 			// new OneInchProvider(),
 			new OdosV2Provider(),
 			// new SushiSwapProvider(),
