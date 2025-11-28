@@ -10,7 +10,6 @@ import {
 	sUSDe_ADDRESS,
 	USDC, wsrUSD
 } from "../common/addresses";
-import {ReservoirWsrUsdZap} from "../typechain-types/contracts/reservoir/WsrUsdSwap.sol/ReservoirWsrUsdZap";
 
 export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const config = getConfig(hre.network.name)
@@ -61,7 +60,7 @@ async function deployInfinifiSwap(hre: HardhatRuntimeEnvironment) {
 	const { deployer } = await hre.getNamedAccounts();
 
 	// Deploy StrataSwap contract
-	const swap = await deploy("InfinifiSwap", {
+	const swap = await deploy("ReservoirWsrUsdZap", {
 		from: deployer,
 		args: [
 			siUSD,
@@ -72,7 +71,7 @@ async function deployInfinifiSwap(hre: HardhatRuntimeEnvironment) {
 		log: true
 	});
 
-	console.log("InfinifiSwap deployed at:", swap.address);
+	console.log("ReservoirWsrUsdZap deployed at:", swap.address);
 	return swap.address;
 
 }
