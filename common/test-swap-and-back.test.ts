@@ -24,11 +24,11 @@ describe("testSwapAndBack", () => {
 	})
 
 	it("should swap siUSD to USDC and back", async () => {
-		console.log(await testSwapAndBack(USDC, 1000000000000n, siUSD)) // 42 % TODO fix siUSD convert
+		console.log(await testSwapAndBack(USDC, 1000000000000n, siUSD)) //  0 % !!!
 	})
 
 	it("should swap wsrUSD to USDT and back", async () => {
-		console.log(await testSwapAndBack(USDT_ADDRESS, 10000000000n, wsrUSD)) // 0 % !!!
+		console.log(await testSwapAndBack(USDT_ADDRESS, 10000000000n, wsrUSD)) // 0.6 %
 		//todo can we use other way here? through usdc?
 	})
 

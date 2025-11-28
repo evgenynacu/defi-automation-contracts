@@ -32,6 +32,12 @@ export const hfGauge = new Gauge({
 	labelNames: ['position_id', 'wallet'],
 })
 
+export const collateralPriceGauge = new Gauge({
+	name: 'collateral_price',
+	help: 'Collateral price denominated in debt tokens',
+	labelNames: ['position_id', 'wallet'],
+})
+
 export const aaveFreeSupplyGauge = new Gauge({
 	name: 'aave_free_supply',
 	help: 'Aave free supply',
@@ -44,6 +50,7 @@ export const pendleImpliedRateGauge = new Gauge({
 	labelNames: ['token'],
 })
 
+register.registerMetric(collateralPriceGauge)
 register.registerMetric(pendleImpliedRateGauge)
 register.registerMetric(aaveHFGauge)
 register.registerMetric(compoundHFGauge)

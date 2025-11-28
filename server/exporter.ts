@@ -1,7 +1,7 @@
 import {Pool} from "pg"
 import {
 	aaveFreeSupplyGauge,
-	aaveHFGauge,
+	aaveHFGauge, collateralPriceGauge,
 	compoundHFGauge,
 	hfGauge,
 	ltvGauge,
@@ -45,6 +45,16 @@ export async function exportLatestData(pool: Pool) {
 					},
 					row.data.ltv
 				)
+			}
+			if (row.data.rate) {
+				collateralPriceGauge.set(
+					{
+						wallet: parsedId.wallet,
+						position_id: parsedId.positionId
+					},
+					row.data.rate
+				)
+
 			}
 			if (row.data.hf) {
 				hfGauge.set(
@@ -183,5 +193,6 @@ type DataResultRow = {
 		result: number
 		ltv?: number
 		hf?: number
+		rate?: number
 	}
 }
