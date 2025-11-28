@@ -5,7 +5,7 @@ import {
 	USDe_ADDRESS, USDS,
 	USDT_ADDRESS,
 	WEETH_ADDRESS,
-	WETH_ADDRESS,
+	WETH_ADDRESS, wsrUSD,
 	WSTETH_ADDRESS
 } from "../common/addresses"
 
@@ -40,6 +40,7 @@ export const tokens: Record<address, string> = {
 	"0x4956b52aE2fF65D74CA2d61207523288e4528f96": "RLP",
 	"0xd2e230f71ca8db211067bc4070a94d268b313fa3": "PT-alUSD-11DEC2025",
 	"0x545A490f9ab534AdF409A2E682bc4098f49952e3": "PT-cUSD-29JAN2026",
+	[wsrUSD]: "wsrUSD"
 }
 
 export function findToken(address: address): string | undefined {

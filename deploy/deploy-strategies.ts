@@ -1,6 +1,16 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types'
 import {getConfig} from "./config";
-import {infinifiGateway, iUSD, PENDLE_ROUTER, siUSD, srUSDe_ADDRESS, sUSDe_ADDRESS, USDC} from "../common/addresses";
+import {
+	infinifiGateway,
+	iUSD,
+	PENDLE_ROUTER, reservoirCreditEnforcer, reservoirPsm,
+	rUSD,
+	siUSD,
+	srUSDe_ADDRESS,
+	sUSDe_ADDRESS,
+	USDC, wsrUSD
+} from "../common/addresses";
+import {ReservoirWsrUsdZap} from "../typechain-types/contracts/reservoir/WsrUsdSwap.sol/ReservoirWsrUsdZap";
 
 export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const config = getConfig(hre.network.name)
@@ -24,6 +34,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const strataSwapAddress = await deployStrataSwap(hre)
 	const strataSwapStrategy = await deployStrategy(hre, "StrataSwapStrategy", [strataSwapAddress])
 	await deployInfinifiSwap(hre)
+	await deployReservoirWsrUsdZap(hre)
 
 	return [
 		erc20TransferStrategy.address,    //0
@@ -65,6 +76,28 @@ async function deployInfinifiSwap(hre: HardhatRuntimeEnvironment) {
 	return swap.address;
 
 }
+
+async function deployReservoirWsrUsdZap(hre: HardhatRuntimeEnvironment) {
+	const { deploy } = hre.deployments;
+	const { deployer } = await hre.getNamedAccounts();
+
+	// Deploy StrataSwap contract
+	const swap = await deploy("ReservoirWsrUsdZap", {
+		from: deployer,
+		args: [
+			USDC,
+			rUSD,
+			wsrUSD,
+			reservoirPsm,
+			reservoirCreditEnforcer,
+		],
+		log: true
+	});
+
+	console.log("ReservoirWsrUsdZap deployed at:", swap.address);
+	return swap.address;
+}
+
 
 async function deployStrataSwap(hre: HardhatRuntimeEnvironment) {
 	const { deploy } = hre.deployments;

@@ -33,7 +33,7 @@ describe("testSwapAndBack", () => {
 	})
 
 	it("should swap wsrUSD to USDC and back", async () => {
-		console.log(await testSwapAndBack(USDC, 10000000000n, wsrUSD)) // 0.3 %
+		console.log(await testSwapAndBack(USDC, 10000000000n, wsrUSD)) // 0 % !!!
 	})
 
 	it("should swap PT-srUSDe-JAN26 to USDC and back", async () => {

@@ -1,7 +1,8 @@
 import {Pool} from "pg"
 import {
 	aaveFreeSupplyGauge,
-	aaveHFGauge, collateralPriceGauge,
+	aaveHFGauge,
+	collateralPriceGauge,
 	compoundHFGauge,
 	hfGauge,
 	ltvGauge,
