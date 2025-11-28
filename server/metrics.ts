@@ -38,6 +38,12 @@ export const collateralPriceGauge = new Gauge({
 	labelNames: ['position_id', 'wallet'],
 })
 
+export const swapRateGauge = new Gauge({
+	name: 'swap_rate',
+	help: 'Swap Rate',
+	labelNames: ['from', 'to'],
+})
+
 export const aaveFreeSupplyGauge = new Gauge({
 	name: 'aave_free_supply',
 	help: 'Aave free supply',
@@ -50,6 +56,7 @@ export const pendleImpliedRateGauge = new Gauge({
 	labelNames: ['token'],
 })
 
+register.registerMetric(swapRateGauge)
 register.registerMetric(collateralPriceGauge)
 register.registerMetric(pendleImpliedRateGauge)
 register.registerMetric(aaveHFGauge)

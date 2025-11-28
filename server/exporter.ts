@@ -7,7 +7,7 @@ import {
 	hfGauge,
 	ltvGauge,
 	openPositionSizeGauge,
-	pendleImpliedRateGauge,
+	pendleImpliedRateGauge, swapRateGauge,
 } from "./metrics"
 import {marketIds} from "../context/morpho"
 import {wallets} from "../context/wallets"
@@ -67,6 +67,15 @@ export async function exportLatestData(pool: Pool) {
 				)
 			}
 		}
+		if (parsedId !== undefined && parsedId.type === "swap-rate") {
+			swapRateGauge.set(
+				{
+					from: parsedId.fromToken,
+					to: parsedId.toToken,
+				},
+				row.data.result
+			)
+		}
 		if (parsedId !== undefined && parsedId.type === "aave-hf") {
 			aaveHFGauge.set(
 				{
@@ -110,6 +119,10 @@ type ParsedJobId = {
 } | {
 	type: "pendle-implied-rate"
 	token: string
+} | {
+	type: "swap-rate"
+	fromToken: string
+	toToken: string
 }
 
 function parseJobId(jobId: string): ParsedJobId | undefined {
@@ -183,7 +196,14 @@ function parseJobId(jobId: string): ParsedJobId | undefined {
 			token: findToken(a) || a,
 		}
 	}
-
+	if (jobId.startsWith("swap-rate")) {
+		const parts = jobId.split("-")
+		return {
+			type: "swap-rate",
+			fromToken: parts[2],
+			toToken: parts[3],
+		}
+	}
 	return undefined
 }
 

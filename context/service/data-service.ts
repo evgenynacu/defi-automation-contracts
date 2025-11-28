@@ -72,7 +72,7 @@ async function getData(executor: StrategyExecutor<CalculateResult>, request: Dat
 		case "morpho-withdraw": {
 			return toDataResult(
 				`morpho-withdraw-${request.from}-${request.marketId}`,
-				await withdrawFromMorpho(executor, request.marketId, 1)
+				await withdrawFromMorpho(executor, request.marketId, request.debtShare || 1, request.collateralShare)
 			)
 		}
 		case "aave-withdraw": {
@@ -173,6 +173,8 @@ type CommonPart = {
 export type MorphoWithdrawDataRequest = {
 	type: "morpho-withdraw"
 	marketId: `0x${string}`
+	debtShare?: number
+	collateralShare?: number
 }
 
 export type EulerWithdrawDataRequest = {
