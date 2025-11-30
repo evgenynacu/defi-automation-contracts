@@ -1,7 +1,7 @@
-import { ISwapProvider } from "./ISwapProvider"
-import { ProviderConfig, SwapParams, SwapResult } from "./types"
-import { address } from "../../types"
-import { MAX_SLIPPAGE_BPS } from "./config"
+import {ISwapProvider} from "./ISwapProvider"
+import {ProviderConfig, SwapParams, SwapResult} from "./types"
+import {address} from "../../types"
+import {MAX_SLIPPAGE_BPS} from "./config"
 
 //export const ENABLED_AGGREGATORS = ["paraswap"].join(",")
 export const ENABLED_AGGREGATORS = ["kyberswap", "odos", "okx", "paraswap"].join(",")
@@ -21,7 +21,11 @@ export class PendleProvider implements ISwapProvider {
 			const url = `https://api-v2.pendle.finance/core/v2/sdk/${params.chainId}/markets/${market}/swap?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&aggregators=${ENABLED_AGGREGATORS}&tokenIn=${params.fromToken}&tokenOut=${params.toToken}&amountIn=${params.swapAmount.toString()}`
 			const res = await fetch(url)
 			if (res.status !== 200) {
-				throw new Error("Failed to fetch quote " + await res.text())
+				const text = await res.text()
+				if (process.env.DEBUG_PENDLE) {
+					console.error("Failed to fetch quote " + text)
+				}
+				throw new Error("Failed to fetch quote " + text)
 			}
 
 			const quote: QuoteResponse = await res.json()
@@ -40,7 +44,11 @@ export class PendleProvider implements ISwapProvider {
 			const res = await fetch(exitUrl)
 
 			if (res.status !== 200) {
-				throw new Error("Failed to fetch quote " + await res.text())
+				const text = await res.text()
+				if (process.env.DEBUG_PENDLE) {
+					console.error("Failed to fetch quote " + text)
+				}
+				throw new Error("Failed to fetch quote " + text)
 			}
 
 			const quote: QuoteResponse = await res.json()
@@ -100,7 +108,11 @@ async function getMarketsByUrl(url: string) {
 	}
 	const res = await fetch(url)
 	if (res.status !== 200) {
-		throw new Error("Failed to fetch markets " + await res.text())
+		const text = await res.text()
+		if (process.env.DEBUG_PENDLE) {
+			console.error("Failed to fetch markets " + text)
+		}
+		throw new Error("Failed to fetch markets " + text)
 	}
 	const markets: Markets = await res.json()
 	cache[url] = {

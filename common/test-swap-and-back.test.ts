@@ -1,5 +1,6 @@
 import {testSwapAndBack} from "./test-swap-and-back";
 import {
+	cUSD,
 	PT_cUSD_JAN_26,
 	PT_srUSDe_JAN_26,
 	PT_stcUSD_JAN_26,
@@ -13,6 +14,10 @@ import {
 describe("testSwapAndBack", () => {
 	it("should swap stcUSD to USDC and back", async () => {
 		console.log(await testSwapAndBack(USDC, 100000000000n, stcUSD)) // 0.1 %
+	})
+
+	it("should swap cUSD to USDC and back", async () => {
+		console.log(await testSwapAndBack(USDC, 100000000000n, cUSD)) // 0.1 %
 	})
 
 	it("should swap PT-stcUSD-JAN26 to USDC and back", async () => {
