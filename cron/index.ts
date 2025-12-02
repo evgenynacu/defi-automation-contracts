@@ -188,7 +188,6 @@ async function runJobs() {
 async function syncAllPTs(syncService: SyncService) {
 	const start = Date.now()
 
-	// PT-cusd JAN / USDC
 	try {
 		await syncService.syncData({
 			type: "morpho-withdraw",
@@ -197,9 +196,9 @@ async function syncAllPTs(syncService: SyncService) {
 			marketId: "0x802ec6e878dc9fe6905b8a0a18962dcca10440a87fa2242fbf4a0461c7b0c789"
 		})
 	} catch (e) {
+		console.error("error syncing PT-cusd JAN / USDC", e)
 	}
 
-	// PT-srUSDe JAN / USDT
 	try {
 		await syncService.syncData({
 			type: "morpho-withdraw",
@@ -208,9 +207,9 @@ async function syncAllPTs(syncService: SyncService) {
 			marketId: "0x79b4e55cef9e7c214b5cc965e1984229ada26a66051e35366a75c4d92b776735",
 		})
 	} catch (e) {
+		console.error("error syncing PT-srUSDe JAN / USDT", e)
 	}
 
-	// PT-stcUSD JAN / USDC
 	try {
 		await syncService.syncData({
 			type: "morpho-withdraw",
@@ -219,6 +218,7 @@ async function syncAllPTs(syncService: SyncService) {
 			marketId: "0x03f715ef1ae508ab3e1faf4dffdbf2a077d1f0ad10c5aad42cf4438d5e3328af"
 		})
 	} catch (e) {
+		console.error("error syncing PT-stcUSD JAN / USDC", e)
 	}
 
 	console.log("PTs synchronized in", (Date.now() - start), "ms")
@@ -228,14 +228,17 @@ async function refreshViews(connectionPool: Pool) {
 	try {
 		await connectionPool.query("REFRESH MATERIALIZED VIEW main_data_week")
 	} catch (e) {
+		console.error(e)
 	}
 	try {
 		await connectionPool.query("REFRESH MATERIALIZED VIEW main_data_day")
 	} catch (e) {
+		console.error(e)
 	}
 	try {
 		await connectionPool.query("REFRESH MATERIALIZED VIEW position_values_ext_mat")
 	} catch (e) {
+		console.error(e)
 	}
 }
 
