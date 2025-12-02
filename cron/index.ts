@@ -165,6 +165,17 @@ async function runJobs() {
 			}),
 			"syncing wsrUSD/USDC"
 		)
+		logAsync(
+			syncService.syncData({
+				type: "morpho-withdraw",
+				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
+				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+				marketId: "0xa9f70093360419b4544f17a4553ac5847d896be23f020295bd95c24af4df700e",
+				collateralShare: 1,
+				debtShare: 1,
+			}),
+			"syncing wsrUSD/USDT"
+		)
 
 		logAsync(
 			syncService.syncData({
