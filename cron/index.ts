@@ -4,13 +4,15 @@ import {runMigrations} from "../context/db/run-migrations"
 import {logAsync} from "../common/log-async"
 import {sUSDe_ADDRESS, USDe_ADDRESS} from "../common/addresses"
 import {updateJobs} from "../context/db/update-jobs"
+import {Pool} from "pg";
+import {SyncService} from "../context/service/sync-service";
 
 dotenv.config()
 
 async function runJobs() {
 	console.log("Starting cron jobs")
 
-	const { connectionPool, syncService, duneSyncService, duneService } = await createContext()
+	const {connectionPool, syncService, duneSyncService, duneService} = await createContext()
 	await runMigrations(connectionPool)
 
 	console.log("Updating jobs")
@@ -18,43 +20,39 @@ async function runJobs() {
 
 	const cron = await import("node-cron")
 
-/*
-	cron.schedule('0 3 *!/5 * *', () => {
-		console.log("Updating leverated strategies dune query")
-		logAsync(
-			duneService.executeQuery({
-				queryId: "5514773",
-				apiKey: process.env.DUNE_API_KEY!,
-			}),
-			"updating leverated strategies details dune query"
-		)
-	})
+	/*
+		cron.schedule('0 3 *!/5 * *', () => {
+			console.log("Updating leverated strategies dune query")
+			logAsync(
+				duneService.executeQuery({
+					queryId: "5514773",
+					apiKey: process.env.DUNE_API_KEY!,
+				}),
+				"updating leverated strategies details dune query"
+			)
+		})
 
-	cron.schedule('0 5 *!/5 * *', () => {
-		console.log("Updating leverated strategies dune query data")
-		logAsync(
-			duneSyncService.syncQueryToPostgres({
-				queryId: "5514773",
-				apiKey: process.env.DUNE_API_KEY!,
-				truncateBeforeInsert: true,
-				tableName: "leveraged_strategies_details",
-				doNotExecute: true,
-				pageSize: 2000,
-			}),
-			"updating leverated strategies details dune query"
-		)
-	})
-*/
+		cron.schedule('0 5 *!/5 * *', () => {
+			console.log("Updating leverated strategies dune query data")
+			logAsync(
+				duneSyncService.syncQueryToPostgres({
+					queryId: "5514773",
+					apiKey: process.env.DUNE_API_KEY!,
+					truncateBeforeInsert: true,
+					tableName: "leveraged_strategies_details",
+					doNotExecute: true,
+					pageSize: 2000,
+				}),
+				"updating leverated strategies details dune query"
+			)
+		})
+	*/
 
 	cron.schedule('0 * * * *', () => {
 		console.log("Updating views")
 
 		logAsync(
-			Promise.all([
-				connectionPool.query("REFRESH MATERIALIZED VIEW main_data_week"),
-				connectionPool.query("REFRESH MATERIALIZED VIEW main_data_day"),
-				connectionPool.query("REFRESH MATERIALIZED VIEW position_values_ext_mat"),
-			]),
+			refreshViews(connectionPool),
 			"refreshing views"
 		)
 	})
@@ -152,15 +150,6 @@ async function runJobs() {
 				type: "morpho-withdraw",
 				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0xbbf7ce1b40d32d3e3048f5cf27eeaa6de8cb27b80194690aab191a63381d8c99"
-			}),
-			"syncing siUSD/USDC"
-		)
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0x3274643db77a064abd3bc851de77556a4ad2e2f502f4f0c80845fa8f909ecf0b"
 			}),
 			"syncing sUSDS/USDT"
@@ -182,42 +171,72 @@ async function runJobs() {
 				type: "morpho-withdraw",
 				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0x802ec6e878dc9fe6905b8a0a18962dcca10440a87fa2242fbf4a0461c7b0c789"
-			}),
-			"syncing PT-cusd JAN / USDC [vault]"
-		)
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 				marketId: "0xe1b65304edd8ceaea9b629df4c3c926a37d1216e27900505c04f14b2ed279f33"
 			}),
 			"syncing RLP / USDC [vault]"
 		)
 
 		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-				marketId: "0x79b4e55cef9e7c214b5cc965e1984229ada26a66051e35366a75c4d92b776735",
-			}),
-			"syncing PT-srUSDe JAN / USDT [Vault]"
-		)
-
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0x03f715ef1ae508ab3e1faf4dffdbf2a077d1f0ad10c5aad42cf4438d5e3328af"
-			}),
-			"syncing PT-stcUSD JAN / USDC [Vault]"
+			syncAllPTs(syncService),
+			"syncing PTs"
 		)
 	})
 
 	console.log("Initialized cron jobs")
+}
+
+async function syncAllPTs(syncService: SyncService) {
+	const start = Date.now()
+
+	// PT-cusd JAN / USDC
+	try {
+		await syncService.syncData({
+			type: "morpho-withdraw",
+			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+			marketId: "0x802ec6e878dc9fe6905b8a0a18962dcca10440a87fa2242fbf4a0461c7b0c789"
+		})
+	} catch (e) {
+	}
+
+	// PT-srUSDe JAN / USDT
+	try {
+		await syncService.syncData({
+			type: "morpho-withdraw",
+			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+			marketId: "0x79b4e55cef9e7c214b5cc965e1984229ada26a66051e35366a75c4d92b776735",
+		})
+	} catch (e) {
+	}
+
+	// PT-stcUSD JAN / USDC
+	try {
+		await syncService.syncData({
+			type: "morpho-withdraw",
+			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+			marketId: "0x03f715ef1ae508ab3e1faf4dffdbf2a077d1f0ad10c5aad42cf4438d5e3328af"
+		})
+	} catch (e) {
+	}
+
+	console.log("PTs synchronized in", (Date.now() - start), "ms")
+}
+
+async function refreshViews(connectionPool: Pool) {
+	try {
+		await connectionPool.query("REFRESH MATERIALIZED VIEW main_data_week")
+	} catch (e) {
+	}
+	try {
+		await connectionPool.query("REFRESH MATERIALIZED VIEW main_data_day")
+	} catch (e) {
+	}
+	try {
+		await connectionPool.query("REFRESH MATERIALIZED VIEW position_values_ext_mat")
+	} catch (e) {
+	}
 }
 
 runJobs().then()

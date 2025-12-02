@@ -106,6 +106,7 @@ async function getMarketsByUrl(url: string) {
 			return byUrl.markets
 		}
 	}
+	console.log(`Fetching markets for ${url}`)
 	const res = await fetch(url)
 	if (res.status !== 200) {
 		const text = await res.text()
