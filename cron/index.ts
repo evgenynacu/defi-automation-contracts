@@ -165,7 +165,7 @@ async function syncAllNonPTs(syncService: SyncService) {
 	const start = Date.now()
 
 	try {
-		syncService.syncData({
+		await syncService.syncData({
 			type: "morpho-withdraw",
 			from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
 			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
@@ -178,7 +178,7 @@ async function syncAllNonPTs(syncService: SyncService) {
 	}
 
 	try {
-		syncService.syncData({
+		await syncService.syncData({
 			type: "morpho-withdraw",
 			from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
 			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
@@ -191,7 +191,7 @@ async function syncAllNonPTs(syncService: SyncService) {
 	}
 
 	try {
-		syncService.syncData({
+		await syncService.syncData({
 			type: "morpho-withdraw",
 			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
@@ -202,7 +202,7 @@ async function syncAllNonPTs(syncService: SyncService) {
 	}
 
 	try {
-		syncService.syncData({
+		await syncService.syncData({
 			type: "morpho-withdraw",
 			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
