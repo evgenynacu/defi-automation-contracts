@@ -145,47 +145,12 @@ async function runJobs() {
 			}),
 			"syncing BTC HF"
 		)
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0x3274643db77a064abd3bc851de77556a4ad2e2f502f4f0c80845fa8f909ecf0b"
-			}),
-			"syncing sUSDS/USDT"
-		)
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0x32e253d33f1594a67fc6ef51bf7a39cc4bf2d14904998dee769706fcde489ed9",
-				collateralShare: 0.1,
-				debtShare: 0.1,
-			}),
-			"syncing wsrUSD/USDC"
-		)
-		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0xa9f70093360419b4544f17a4553ac5847d896be23f020295bd95c24af4df700e",
-				collateralShare: 1,
-				debtShare: 1,
-			}),
-			"syncing wsrUSD/USDT"
-		)
 
 		logAsync(
-			syncService.syncData({
-				type: "morpho-withdraw",
-				from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-				vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-				marketId: "0xe1b65304edd8ceaea9b629df4c3c926a37d1216e27900505c04f14b2ed279f33"
-			}),
-			"syncing RLP / USDC [vault]"
+			syncAllNonPTs(syncService),
+			"syncing non-PTs"
 		)
+
 
 		logAsync(
 			syncAllPTs(syncService),
@@ -194,6 +159,60 @@ async function runJobs() {
 	})
 
 	console.log("Initialized cron jobs")
+}
+
+async function syncAllNonPTs(syncService: SyncService) {
+	const start = Date.now()
+
+	try {
+		syncService.syncData({
+			type: "morpho-withdraw",
+			from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
+			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+			marketId: "0xa9f70093360419b4544f17a4553ac5847d896be23f020295bd95c24af4df700e",
+			collateralShare: 1,
+			debtShare: 1,
+		})
+	} catch (e) {
+		console.error("Error syncing wsrUSD/USDT", e)
+	}
+
+	try {
+		syncService.syncData({
+			type: "morpho-withdraw",
+			from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
+			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+			marketId: "0x32e253d33f1594a67fc6ef51bf7a39cc4bf2d14904998dee769706fcde489ed9",
+			collateralShare: 0.1,
+			debtShare: 0.1,
+		})
+	} catch (e) {
+		console.error("Error syncing wsrUSD/USDC", e)
+	}
+
+	try {
+		syncService.syncData({
+			type: "morpho-withdraw",
+			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+			marketId: "0x3274643db77a064abd3bc851de77556a4ad2e2f502f4f0c80845fa8f909ecf0b"
+		})
+	} catch (e) {
+		console.error("Error syncing sUSDS/USDT", e)
+	}
+
+	try {
+		syncService.syncData({
+			type: "morpho-withdraw",
+			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+			marketId: "0xe1b65304edd8ceaea9b629df4c3c926a37d1216e27900505c04f14b2ed279f33"
+		})
+	} catch (e) {
+		console.error("Error syncing RLP/USDC", e)
+	}
+
+	console.log("non-PTs synchronized in", (Date.now() - start), "ms")
 }
 
 async function syncAllPTs(syncService: SyncService) {
