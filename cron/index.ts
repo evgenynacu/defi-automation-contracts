@@ -255,6 +255,7 @@ async function syncAllPTs(syncService: SyncService) {
 }
 
 async function refreshViews(connectionPool: Pool) {
+	const start = Date.now()
 	try {
 		await connectionPool.query("REFRESH MATERIALIZED VIEW main_data_week")
 	} catch (e) {
@@ -270,6 +271,7 @@ async function refreshViews(connectionPool: Pool) {
 	} catch (e) {
 		console.error(e)
 	}
+	console.log("Refreshed views in", (Date.now() - start), "ms")
 }
 
 runJobs().then()
