@@ -1,11 +1,22 @@
 import {address} from "../common/types"
 import {
 	DAI_ADDRESS,
-	PT_eUSDe_AUG, PT_sUSDe_JUL, PT_sUSDe_SEP, PT_USDe_NOV, PT_USDe_SEP, SDAI_ADDRESS, siUSD, sUSDe_ADDRESS, USDC,
-	USDe_ADDRESS, USDS,
+	PT_eUSDe_AUG,
+	PT_sUSDe_JUL,
+	PT_sUSDe_SEP,
+	PT_USDe_NOV,
+	PT_USDe_SEP,
+	SDAI_ADDRESS,
+	siUSD,
+	stcUSD,
+	sUSDe_ADDRESS,
+	USDC,
+	USDe_ADDRESS,
+	USDS,
 	USDT_ADDRESS,
 	WEETH_ADDRESS,
-	WETH_ADDRESS, wsrUSD,
+	WETH_ADDRESS,
+	wsrUSD,
 	WSTETH_ADDRESS
 } from "../common/addresses"
 
@@ -40,7 +51,8 @@ export const tokens: Record<address, string> = {
 	"0x4956b52aE2fF65D74CA2d61207523288e4528f96": "RLP",
 	"0xd2e230f71ca8db211067bc4070a94d268b313fa3": "PT-alUSD-11DEC2025",
 	"0x545A490f9ab534AdF409A2E682bc4098f49952e3": "PT-cUSD-29JAN2026",
-	[wsrUSD]: "wsrUSD"
+	[wsrUSD]: "wsrUSD",
+	[stcUSD]: "stcUSD",
 }
 
 export function findToken(address: address): string | undefined {
