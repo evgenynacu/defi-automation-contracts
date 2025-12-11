@@ -58,9 +58,10 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 async function deployInfinifiSwap(hre: HardhatRuntimeEnvironment) {
 	const { deploy } = hre.deployments;
 	const { deployer } = await hre.getNamedAccounts();
+	console.log("deploying InfinifiSwap")
 
 	// Deploy StrataSwap contract
-	const swap = await deploy("ReservoirWsrUsdZap", {
+	const swap = await deploy("InfinifiSwap", {
 		from: deployer,
 		args: [
 			siUSD,
@@ -79,6 +80,7 @@ async function deployInfinifiSwap(hre: HardhatRuntimeEnvironment) {
 async function deployReservoirWsrUsdZap(hre: HardhatRuntimeEnvironment) {
 	const { deploy } = hre.deployments;
 	const { deployer } = await hre.getNamedAccounts();
+	console.log("deploying ReservoirWsrUsdZap")
 
 	// Deploy StrataSwap contract
 	const swap = await deploy("ReservoirWsrUsdZap", {

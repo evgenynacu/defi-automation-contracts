@@ -3,10 +3,10 @@ import {
 	cUSD,
 	PT_cUSD_JAN_26,
 	PT_srUSDe_JAN_26,
-	PT_stcUSD_JAN_26,
+	PT_stcUSD_JAN_26, PT_sUSDe_FEB26,
 	siUSD,
 	stcUSD, sUSDS,
-	USDC,
+	USDC, USDe_ADDRESS,
 	USDT_ADDRESS,
 	wsrUSD
 } from "./addresses";
@@ -47,6 +47,10 @@ describe("testSwapAndBack", () => {
 
 	it("should swap sUSDS to USDT and back", async () => {
 		console.log(await testSwapAndBack(USDT_ADDRESS, 100000000000n, sUSDS)) // 0.000381 %
+	})
+
+	it("should swap USDe to PT-sUSDe-FEB25 and back", async () => {
+		console.log(await testSwapAndBack(USDe_ADDRESS, 100000000000000000000000n, PT_sUSDe_FEB26)) // 0.0385% !!!
 	})
 
 	// reUSD: too low liqudity

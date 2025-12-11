@@ -20,7 +20,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	const lendingFrom = new Morpho("0x32e253d33f1594a67fc6ef51bf7a39cc4bf2d14904998dee769706fcde489ed9")
 	const lendingTo = new Morpho("0xa9f70093360419b4544f17a4553ac5847d896be23f020295bd95c24af4df700e")
 
-	await sendOrEstimate(hre, ex => refinance(ex, lendingFrom, lendingTo, 0.1))
+	await sendOrEstimate(hre, ex => refinance(ex, lendingFrom, lendingTo, 0.4))
 }
 
 // noinspection JSUnusedGlobalSymbols

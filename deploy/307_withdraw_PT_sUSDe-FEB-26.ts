@@ -1,15 +1,23 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types'
 import {DeployFunction} from 'hardhat-deploy/types'
+import {PT_sUSDe_FEB26, sUSDe_ADDRESS, USDC, USDe_ADDRESS} from "../common/addresses"
 import {sendOrEstimate} from "./send-or-estimate"
+import {Aave} from "../common/lending/aave";
 import {withdraw} from "../common/withdraw";
-import {Morpho} from "../common/lending/morpho";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`withdrawing on network ${hre.network.name}`)
 
-	const morpho = new Morpho("0xeb17955ea422baeddbfb0b8d8c9086c5be7a9cfdefb292119a102e981a30062e")
-	await sendOrEstimate(hre, ex => withdraw({ex, lending: morpho, collateralShare: 1, debtShare: 1}))
+	const aave = new Aave(PT_sUSDe_FEB26, USDe_ADDRESS)
+	await sendOrEstimate(hre, ex => withdraw({
+		ex,
+		lending: aave,
+		collateralShare: 0.1,
+		debtShare: 0.1,
+	}), "AaveUsdcVaultProxy")
 }
+
 // noinspection JSUnusedGlobalSymbols
 export default func
-func.tags = ['withdraw-stcUSD-USDC-morpho']
+func.tags = ['withdraw-PT-sUSDe-FEB-26-AAVE']
+// 66770.011804882551741836

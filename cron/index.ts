@@ -2,7 +2,7 @@ import dotenv from "dotenv"
 import {createContext} from "../context"
 import {runMigrations} from "../context/db/run-migrations"
 import {logAsync} from "../common/log-async"
-import {sUSDe_ADDRESS, USDe_ADDRESS} from "../common/addresses"
+import {PT_sUSDe_FEB26, sUSDe_ADDRESS, USDe_ADDRESS} from "../common/addresses"
 import {updateJobs} from "../context/db/update-jobs"
 import {Pool} from "pg";
 import {SyncService} from "../context/service/sync-service";
@@ -241,6 +241,21 @@ async function syncAllPTs(syncService: SyncService) {
 	} catch (e) {
 		console.error("error syncing PT-cusd JAN / USDC", e)
 	}
+
+	try {
+		await syncService.syncData({
+			type: "aave-withdraw",
+			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+			vault: "0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502",
+			collateralToken: PT_sUSDe_FEB26,
+			debtToken: USDe_ADDRESS,
+			debtShare: 0.1,
+			collateralShare: 0.1,
+		})
+	} catch (e) {
+		console.error("error syncing PT-cusd JAN / USDC", e)
+	}
+
 
 	try {
 		await syncService.syncData({

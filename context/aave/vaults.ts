@@ -1,5 +1,5 @@
 import {
-	PT_eUSDe_AUG,
+	PT_eUSDe_AUG, PT_sUSDe_FEB26,
 	PT_sUSDe_JUL,
 	PT_sUSDe_SEP,
 	PT_USDe_NOV,
@@ -82,5 +82,11 @@ export const aaveVaults: AaveVault[] = [
 		collateral: USDe_ADDRESS,
 		debt: USDC,
 		owner: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42"
-	}
+	},
+	{
+		vault: toAddress("0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502"),
+		collateral: PT_sUSDe_FEB26,
+		debt: USDe_ADDRESS,
+		owner: "0x089fa9741628c1A4576F5BA47E02D1180b581e36"
+	},
 ]
