@@ -67,7 +67,7 @@ export function getBalanceStorageSlot(token: address): `0x${string}` {
 		}
 	}
 
-	console.warn("using default storage slot for balance0x6011ef8ab201e2fab1f8a08cc98ee8ac9f35e18f8e1e90fb93e1a70ff037480d")
+	console.log("using default storage slot for balance 0x6011ef8ab201e2fab1f8a08cc98ee8ac9f35e18f8e1e90fb93e1a70ff037480d")
 	return "0x6011ef8ab201e2fab1f8a08cc98ee8ac9f35e18f8e1e90fb93e1a70ff037480d"
 }
 
@@ -78,7 +78,7 @@ function getAllowanceStorageSlot(token: address): `0x${string}` | undefined {
 		}
 	}
 
-	console.warn("using default storage slot for allowance 0x0fafcce95fdb13f3372abd7f8bb2f110896a3f84a8c991c01ca7d7711c812472")
+	console.log("using default storage slot for allowance 0x0fafcce95fdb13f3372abd7f8bb2f110896a3f84a8c991c01ca7d7711c812472")
 	return "0x0fafcce95fdb13f3372abd7f8bb2f110896a3f84a8c991c01ca7d7711c812472"
 }
 
