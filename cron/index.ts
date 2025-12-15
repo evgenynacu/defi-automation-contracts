@@ -6,6 +6,7 @@ import {PT_sUSDe_FEB26, sUSDe_ADDRESS, USDe_ADDRESS} from "../common/addresses"
 import {updateJobs} from "../context/db/update-jobs"
 import {Pool} from "pg";
 import {SyncService} from "../context/service/sync-service";
+import {sleep} from "../common/sleep";
 
 dotenv.config()
 
@@ -242,6 +243,8 @@ async function syncAllPTs(syncService: SyncService) {
 		console.error("error syncing PT-cusd JAN / USDC", e)
 	}
 
+	await sleep(5000)
+
 	try {
 		await syncService.syncData({
 			type: "aave-withdraw",
@@ -256,6 +259,7 @@ async function syncAllPTs(syncService: SyncService) {
 		console.error("error syncing PT-cusd JAN / USDC", e)
 	}
 
+	await sleep(5000)
 
 	try {
 		await syncService.syncData({
@@ -267,6 +271,8 @@ async function syncAllPTs(syncService: SyncService) {
 	} catch (e) {
 		console.error("error syncing PT-srUSDe JAN / USDT", e)
 	}
+
+	await sleep(5000)
 
 	try {
 		await syncService.syncData({
