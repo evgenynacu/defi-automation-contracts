@@ -283,23 +283,27 @@ async function syncAllPTs(syncService: SyncService) {
 }
 
 async function refreshViews(connectionPool: Pool) {
-	const start = Date.now()
+	let start = Date.now()
 	try {
 		await connectionPool.query("REFRESH MATERIALIZED VIEW main_data_week")
 	} catch (e) {
 		console.error(e)
 	}
+	console.log("Refreshed main_data_week in", (Date.now() - start), "ms")
+	start = Date.now()
 	try {
 		await connectionPool.query("REFRESH MATERIALIZED VIEW main_data_day")
 	} catch (e) {
 		console.error(e)
 	}
+	console.log("Refreshed main_data_day in", (Date.now() - start), "ms")
+	start = Date.now()
 	try {
 		await connectionPool.query("REFRESH MATERIALIZED VIEW position_values_ext_mat")
 	} catch (e) {
 		console.error(e)
 	}
-	console.log("Refreshed views in", (Date.now() - start), "ms")
+	console.log("Refreshed position_values_ext_mat in", (Date.now() - start), "ms")
 }
 
 runJobs().then()
