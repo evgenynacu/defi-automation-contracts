@@ -5,9 +5,9 @@ import {
 	sUSDe_ADDRESS,
 	SYRUP_USDC,
 	USDC,
-	USDe_ADDRESS,
+	USDe_ADDRESS, USDT_ADDRESS,
 	WEETH_ADDRESS,
-	WETH_ADDRESS,
+	WETH_ADDRESS, wsrUSD,
 	WSTETH_ADDRESS
 } from "./addresses"
 import { describe, it } from "mocha"
@@ -78,4 +78,8 @@ describe("Test Swap", () => {
 		console.log("value is", out)
 	})
 
+	it("should try and swap wsrUSD -> USDT", async () => {
+		const out = await testSwap(wsrUSD, 100000000000000000000n, USDT_ADDRESS)
+		console.log("value is", out)
+	})
 })

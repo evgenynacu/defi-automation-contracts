@@ -72,7 +72,7 @@ async function deployInfinifiSwap(hre: HardhatRuntimeEnvironment) {
 		log: true
 	});
 
-	console.log("ReservoirWsrUsdZap deployed at:", swap.address);
+	console.log("InfinifiSwap deployed at:", swap.address);
 	return swap.address;
 
 }

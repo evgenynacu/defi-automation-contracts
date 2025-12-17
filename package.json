@@ -15,7 +15,7 @@
     "deploy:tag": "TS_NODE_PROJECT=./tsconfig.server.json npx hardhat deploy --network mainnet_universal --tags",
     "deploy:arb:tag": "TS_NODE_PROJECT=./tsconfig.server.json npx hardhat deploy --network arbitrum --tags",
     "test-deploy": "TS_NODE_PROJECT=./tsconfig.server.json hardhat test deploy-test/*.test.ts --network mainnet_universal",
-    "verify": "TS_NODE_PROJECT=./tsconfig.server.json hardhat --network mainnet_universal verify 0x56434586831762B4571362d6Cfc1515dcb52B30e 0xDBDC1Ef57537E34680B898E1FEBD3D68c7389bCB 0x48f9e38f3070ad8945dfeae3fa70987722e3d89c 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 0xd04b37f673c42baa46923fe74a830bae721fb41f",
+    "verify": "TS_NODE_PROJECT=./tsconfig.server.json hardhat --network mainnet_universal verify 0xbba59d46Bb857dC16E06c22a59a8f250F23A8f7C 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 0x09D4214C03D01F49544C0448DBE3A27f768F2b34 0xd3fD63209FA2D55B07A0f6db36C2f43900be3094 0x4809010926aec940b550D34a46A52739f996D75D 0x04716DB62C085D9e08050fcF6F7D775A03d07720",
     "migrate": "node-pg-migrate",
     "test:mocha": "TS_NODE_PROJECT=./tsconfig.server.json mocha '**/*.test.ts' --timeout 10000",
     "test:mocha:integration": "TS_NODE_PROJECT=./tsconfig.server.json mocha '**/*.integration.test.ts' --timeout 180000",
