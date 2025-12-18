@@ -58,4 +58,11 @@ export const eulerPositions: EulerPositions[] = [
 		debt: "USDT",
 		owner: "0x089fa9741628c1A4576F5BA47E02D1180b581e36"
 	},
+	{
+		collateralVault: "0xdB6165bd1F90cb507F30AbDb42c4596CE4D894f4",
+		debtVault: "0xba98fC35C9dfd69178AD5dcE9FA29c64554783b5",
+		collateral: "sUSDe",
+		debt: "PYUSD",
+		owner: "0x089fa9741628c1A4576F5BA47E02D1180b581e36"
+	}
 ]
