@@ -2,8 +2,7 @@ import {ISwapProvider} from "./ISwapProvider"
 import {ProviderConfig, SwapParams, SwapResult} from "./types"
 import {address} from "../../types"
 import {MAX_SLIPPAGE_BPS} from "./config"
-import {HttpsProxyAgent} from "https-proxy-agent"
-import fetch from "node-fetch";
+import { fetch, ProxyAgent } from "undici";
 
 //export const ENABLED_AGGREGATORS = ["paraswap"].join(",")
 export const ENABLED_AGGREGATORS = ["kyberswap", "odos", "okx", "paraswap"].join(",")
@@ -21,7 +20,7 @@ export class PendleProvider implements ISwapProvider {
 		if (market) {
 			console.log("Found active Pendle Market. using it: " + market)
 			const url = `https://api-v2.pendle.finance/core/v2/sdk/${params.chainId}/markets/${market}/swap?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&aggregators=${ENABLED_AGGREGATORS}&tokenIn=${params.fromToken}&tokenOut=${params.toToken}&amountIn=${params.swapAmount.toString()}`
-			const res = await fetch(url, { agent: getProxyAgent() })
+			const res = await fetch(url, { dispatcher: getProxyAgent() })
 			if (res.status !== 200) {
 				const text = await res.text()
 				if (process.env.DEBUG_PENDLE) {
@@ -43,7 +42,7 @@ export class PendleProvider implements ISwapProvider {
 		if (inactiveMarket) {
 			console.log("Found inactive Pendle Market. using it: " + inactiveMarket)
 			const exitUrl = `https://api-v2.pendle.finance/core/v2/sdk/1/markets/${inactiveMarket}/exit-positions?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&aggregators=${ENABLED_AGGREGATORS}&ptAmount=${params.swapAmount.toString()}&ytAmount=0&lpAmount=0&tokenOut=${params.toToken}`
-			const res = await fetch(exitUrl, { agent: getProxyAgent() })
+			const res = await fetch(exitUrl, { dispatcher: getProxyAgent() })
 
 			if (res.status !== 200) {
 				const text = await res.text()
@@ -81,11 +80,11 @@ function getProxyAgent() {
 		const proxies = process.env.PENDLE_PROXIES.split(",")
 		const randomIndex = Math.floor(Math.random() * (proxies.length + 1))
 		if (randomIndex >= proxies.length) {
-			console.log("Do not using proxy for this request")
+			console.log("not using proxy for this request")
 			return undefined
 		}
-		console.log("Using proxy for this request", proxies[randomIndex])
-		return new HttpsProxyAgent(proxies[randomIndex])
+		console.log("using proxy for this request", proxies[randomIndex])
+		return new ProxyAgent(proxies[randomIndex])
 	}
 	return undefined
 }
