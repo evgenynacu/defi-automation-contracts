@@ -2,6 +2,8 @@ import {ISwapProvider} from "./ISwapProvider"
 import {ProviderConfig, SwapParams, SwapResult} from "./types"
 import {address} from "../../types"
 import {MAX_SLIPPAGE_BPS} from "./config"
+import {HttpsProxyAgent} from "https-proxy-agent"
+import fetch from "node-fetch";
 
 //export const ENABLED_AGGREGATORS = ["paraswap"].join(",")
 export const ENABLED_AGGREGATORS = ["kyberswap", "odos", "okx", "paraswap"].join(",")
@@ -19,7 +21,7 @@ export class PendleProvider implements ISwapProvider {
 		if (market) {
 			console.log("Found active Pendle Market. using it: " + market)
 			const url = `https://api-v2.pendle.finance/core/v2/sdk/${params.chainId}/markets/${market}/swap?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&aggregators=${ENABLED_AGGREGATORS}&tokenIn=${params.fromToken}&tokenOut=${params.toToken}&amountIn=${params.swapAmount.toString()}`
-			const res = await fetch(url)
+			const res = await fetch(url, { agent: getProxyAgent() })
 			if (res.status !== 200) {
 				const text = await res.text()
 				if (process.env.DEBUG_PENDLE) {
@@ -28,7 +30,7 @@ export class PendleProvider implements ISwapProvider {
 				throw new Error("Failed to fetch quote " + text)
 			}
 
-			const quote: QuoteResponse = await res.json()
+			const quote = await res.json() as QuoteResponse
 			const data = quote.tx.data
 			return {
 				to: quote.tx.to,
@@ -41,7 +43,7 @@ export class PendleProvider implements ISwapProvider {
 		if (inactiveMarket) {
 			console.log("Found inactive Pendle Market. using it: " + inactiveMarket)
 			const exitUrl = `https://api-v2.pendle.finance/core/v2/sdk/1/markets/${inactiveMarket}/exit-positions?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&aggregators=${ENABLED_AGGREGATORS}&ptAmount=${params.swapAmount.toString()}&ytAmount=0&lpAmount=0&tokenOut=${params.toToken}`
-			const res = await fetch(exitUrl)
+			const res = await fetch(exitUrl, { agent: getProxyAgent() })
 
 			if (res.status !== 200) {
 				const text = await res.text()
@@ -51,7 +53,7 @@ export class PendleProvider implements ISwapProvider {
 				throw new Error("Failed to fetch quote " + text)
 			}
 
-			const quote: QuoteResponse = await res.json()
+			const quote = await res.json() as QuoteResponse
 
 			return {
 				to: quote.tx.to,
@@ -72,6 +74,20 @@ export class PendleProvider implements ISwapProvider {
 		return inactiveMarket !== undefined;
 	}
 
+}
+
+function getProxyAgent() {
+	if (process.env.PENDLE_PROXIES) {
+		const proxies = process.env.PENDLE_PROXIES.split(",")
+		const randomIndex = Math.floor(Math.random() * (proxies.length + 1))
+		if (randomIndex >= proxies.length) {
+			console.log("Do not using proxy for this request")
+			return undefined
+		}
+		console.log("Using proxy for this request", proxies[randomIndex])
+		return new HttpsProxyAgent(proxies[randomIndex])
+	}
+	return undefined
 }
 
 async function findActiveMarket(tokenIn: string, tokenOut: string): Promise<string | undefined> {
@@ -115,7 +131,7 @@ async function getMarketsByUrl(url: string) {
 		}
 		throw new Error("Failed to fetch markets " + text)
 	}
-	const markets: Markets = await res.json()
+	const markets = await res.json() as Markets
 	cache[url] = {
 		ts: Date.now(),
 		markets,

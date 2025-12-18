@@ -4,7 +4,7 @@ import { ethers } from "ethers"
 import {
 	cUSD,
 	DAI_ADDRESS, PT_cUSD_JAN_26, PT_srUSDe_JAN_26, PT_stcUSD_JAN_26, PT_sUSDe_FEB26,
-	PT_sUSDe_SEP,
+	PT_sUSDe_SEP, PYUSD,
 	rUSD,
 	SDAI_ADDRESS, siUSD, stcUSD,
 	sUSDe_ADDRESS, sUSDS,
@@ -106,6 +106,7 @@ const SLOTS: Record<address, `0x${string}`> = {
 	[PT_srUSDe_JAN_26]: "0xcbce38d2a396df10bbdba0503c72fc20ab34efc98f9cda900b01217a4dfee62d",
 	[PT_sUSDe_FEB26]: "0xcbce38d2a396df10bbdba0503c72fc20ab34efc98f9cda900b01217a4dfee62d",
 	[sUSDS]: "0x6011ef8ab201e2fab1f8a08cc98ee8ac9f35e18f8e1e90fb93e1a70ff037480d",
+	[PYUSD]: "0x04f57dd85ec5e81f7372eb95c7ed0161bd7e95fa724be8f8aeee3a93b24598cf",
 }
 
 const ALLOWANCE_SLOTS: Record<address, `0x${string}`> = {
@@ -120,4 +121,5 @@ const ALLOWANCE_SLOTS: Record<address, `0x${string}`> = {
 	[PT_srUSDe_JAN_26]: "0x0fafcce95fdb13f3372abd7f8bb2f110896a3f84a8c991c01ca7d7711c812472",
 	[PT_sUSDe_FEB26]: "0x0fafcce95fdb13f3372abd7f8bb2f110896a3f84a8c991c01ca7d7711c812472",
 	[sUSDS]: "0x62fbb6bc62844b18e29b0c6750eb1e243f3dce9428157b74814e1fa1939abd5f",
+	[PYUSD]: "0x62fbb6bc62844b18e29b0c6750eb1e243f3dce9428157b74814e1fa1939abd5f",
 }
