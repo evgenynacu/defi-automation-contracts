@@ -22,16 +22,17 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const morphoStrategy = await deployStrategy(hre, "MorphoStrategy", [config.morphoBlue])
 	const genericAaveStrategy = await deployStrategy(hre, "GenericAaveStrategy", [config.aavePoolAddressProvider])
 	const morphoReadStrategy = await deployStrategy(hre, "MorphoReadStrategy", [config.morphoBlue])
-	const pendleSwapStrategy = await deployStrategy(hre, "PendleSwapStrategy", ["0x888888888889758F76e7103c6CbF23ABbF58F946"])
-	const odosSwapStrategy = await deployStrategy(hre, "OdosSwapStrategy", ["0xCf5540fFFCdC3d510B18bFcA6d2b9987b0772559"])
-	const kyberSwapStrategy = await deployStrategy(hre, "KyberSwapStrategy", ["0x6131B5fae19EA4f9D964eAc0408E4408b66337b5"])
+	// const pendleSwapStrategy = await deployStrategy(hre, "PendleSwapStrategy", ["0x888888888889758F76e7103c6CbF23ABbF58F946"])
+	// const odosSwapStrategy = await deployStrategy(hre, "OdosSwapStrategy", ["0xCf5540fFFCdC3d510B18bFcA6d2b9987b0772559"])
+	// const kyberSwapStrategy = await deployStrategy(hre, "KyberSwapStrategy", ["0x6131B5fae19EA4f9D964eAc0408E4408b66337b5"])
 	const eulerStrategy = await deployStrategy(hre, "EulerV2Strategy", [config.evc])
 	const merklStrategy = await deployStrategy(hre, "MerklStrategy", [config.merkl])
 	const ethenaS4Strategy = await deployStrategy(hre, "EthenaS4Strategy", [config.ethenaS4Distributor])
 	const swapStrategy = await deployStrategy(hre, "SwapStrategy")
+	const resetApprovalStrategy = await deployStrategy(hre, "ResetApprovalStrategy")
 
-	const strataSwapAddress = await deployStrataSwap(hre)
-	const strataSwapStrategy = await deployStrategy(hre, "StrataSwapStrategy", [strataSwapAddress])
+	// const strataSwapAddress = await deployStrataSwap(hre)
+	// const strataSwapStrategy = await deployStrategy(hre, "StrataSwapStrategy", [strataSwapAddress])
 	await deployInfinifiSwap(hre)
 	await deployReservoirWsrUsdZap(hre)
 
@@ -44,14 +45,15 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 		morphoStrategy.address,           //5
 		genericAaveStrategy.address,      //6
 		morphoReadStrategy.address,       //7
-		pendleSwapStrategy.address,       //8
-		odosSwapStrategy.address,         //9
-		kyberSwapStrategy.address,        //10
+		ZERO_ADDRESS,                     //8
+		ZERO_ADDRESS,                     //9
+		ZERO_ADDRESS,                     //10
 		eulerStrategy.address,            //11
 		merklStrategy.address,            //12
-		strataSwapStrategy.address,       //13
+		ZERO_ADDRESS,                     //13
 		ethenaS4Strategy.address,         //14
 		swapStrategy.address,             //15
+		resetApprovalStrategy.address,    //16
 	]
 }
 

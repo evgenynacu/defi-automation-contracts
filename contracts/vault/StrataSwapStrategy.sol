@@ -46,6 +46,7 @@ contract StrataSwapStrategy {
 
             revert SwapFailed(strataSwap, errorMessage);
         }
+        token0.approve(strataSwap, 0);
 
         // 4. Get final balance and calculate output
         uint amountAfter = token1.balanceOf(address(this));

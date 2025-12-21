@@ -45,6 +45,7 @@ contract OdosSwapStrategy {
 
             revert SwapFailed(swapRouter, errorMessage);
         }
+        token0.approve(swapRouter, 0);
 
         // 3. Get final value and calculate output
         uint amountAfter = token1.balanceOf(address(this));

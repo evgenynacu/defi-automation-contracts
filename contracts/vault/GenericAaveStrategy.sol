@@ -37,6 +37,7 @@ contract GenericAaveStrategy {
         require(supplyAmount > 0, "Amount must be greater than 0");
         _approveIfNeeded(address(collateralToken), address(AAVE_POOL), supplyAmount);
         AAVE_POOL.supply(address(collateralToken), supplyAmount, address(this), 0);
+        collateralToken.approve(address(AAVE_POOL), 0);
     }
 
     function withdrawCollateral(IERC20 collateralToken, uint256 amount) external {
@@ -62,6 +63,7 @@ contract GenericAaveStrategy {
 
         _approveIfNeeded(token, address(AAVE_POOL), repayAmount);
         AAVE_POOL.repay(token, repayAmount, 2, address(this)); // Variable rate = 2
+        IERC20(token).approve(address(AAVE_POOL), 0);
     }
     // ----- aave related functions ----- //
 

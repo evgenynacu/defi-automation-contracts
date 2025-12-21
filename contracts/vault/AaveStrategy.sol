@@ -39,6 +39,7 @@ contract AaveStrategy {
         require(supplyAmount > 0, "Amount must be greater than 0");
         _approveIfNeeded(address(COLLATERAL_TOKEN), address(AAVE_POOL), supplyAmount);
         _depositCollateral(supplyAmount);
+        COLLATERAL_TOKEN.approve(address(AAVE_POOL), 0);
     }
 
     function withdrawCollateral(uint256 amount) external {
@@ -64,6 +65,7 @@ contract AaveStrategy {
 
         _approveIfNeeded(token, address(AAVE_POOL), repayAmount);
         _repay(token, repayAmount);
+        IERC20(token).approve(address(AAVE_POOL), 0);
     }
     // ----- aave related functions ----- //
 

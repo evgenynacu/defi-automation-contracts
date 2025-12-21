@@ -9,7 +9,7 @@ import {
 	GenericAaveStrategy__factory, MerklStrategy__factory,
 	MorphoFlashLoanStrategy__factory,
 	MorphoReadStrategy__factory,
-	MorphoStrategy__factory,
+	MorphoStrategy__factory, ResetApprovalStrategy__factory,
 	SwapStrategy__factory
 } from "../typechain-types"
 import { getDecimals } from "./decimals"
@@ -21,14 +21,21 @@ export const COMPOUND_V3_STRATEGY_INDEX = 4
 export const MORPHO_STRATEGY_INDEX = 5
 export const AAVE_STRATEGY_INDEX = 6
 export const MORPHO_READ_STRATEGY_INDEX = 7
-export const PENDLE_STRATEGY_INDEX = 8
-export const ODOS_STRATEGY_INDEX = 9
-export const KYBER_STRATEGY_INDEX = 10
+// export const PENDLE_STRATEGY_INDEX = 8
+// export const ODOS_STRATEGY_INDEX = 9
+// export const KYBER_STRATEGY_INDEX = 10
 export const EULER_STRATEGY_INDEX = 11
 export const MERKL_STRATEGY_INDEX = 12
-export const STRATA_STRATEGY_INDEX = 13
+// export const STRATA_STRATEGY_INDEX = 13
 export const ETHENA_S4_STRATEGY_INDEX = 14
 export const GENERIC_SWAP_STRATEGY_INDEX = 15
+export const RESET_APPROVAL_STRATEGY_INDEX = 16
+
+export type ResetApprovalOperation = {
+	type: 'reset-approval'
+	token: address
+	spender: address
+}
 
 export type MerklStrategyOperation = {
 	type: 'merkl'
@@ -236,6 +243,7 @@ export type InnerStrategyOperation =
 
 export type StrategyOperation =
 	| MerklStrategyOperation
+	| ResetApprovalOperation
 	| EthenaS4StrategyOperation
 	| InnerStrategyOperation
 	| MorphoFlashLoanOperation
@@ -266,6 +274,13 @@ async function serializeOperation(runner: ContractRunner, vault: address, op: St
 			return [{
 				position: MERKL_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("getRewards", [op.data])
+			}]
+		}
+		case "reset-approval": {
+			const impl = ResetApprovalStrategy__factory.createInterface()
+			return [{
+				position: RESET_APPROVAL_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("resetApproval", [op.token, op.spender])
 			}]
 		}
 		case "ethenaS4": {
@@ -454,13 +469,7 @@ async function serializeOperation(runner: ContractRunner, vault: address, op: St
 }
 
 function getSwapStrategyPosition(provider: string) {
-	switch (provider) {
-		case "pendle": return PENDLE_STRATEGY_INDEX
-		case "odos-v2": return ODOS_STRATEGY_INDEX
-		case "kyberswap-api": return KYBER_STRATEGY_INDEX
-		case "strata-swap": return STRATA_STRATEGY_INDEX
-		default: return GENERIC_SWAP_STRATEGY_INDEX
-	}
+	return GENERIC_SWAP_STRATEGY_INDEX
 }
 
 async function fetchAllQuotes(runner: ContractRunner, vaultAddress: address, op: SwapOperation) {
