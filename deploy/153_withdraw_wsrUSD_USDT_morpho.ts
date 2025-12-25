@@ -8,7 +8,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`withdrawing on network ${hre.network.name}`)
 
 	const morpho = new Morpho("0xa9f70093360419b4544f17a4553ac5847d896be23f020295bd95c24af4df700e")
-	await sendOrEstimate(hre, ex => withdraw({ex, lending: morpho, collateralShare: 1, debtShare: 1}))
+	await sendOrEstimate(hre, ex => withdraw({ex, lending: morpho, collateralShare: 0.1, debtShare: 0.1}))
 }
 // noinspection JSUnusedGlobalSymbols
 export default func

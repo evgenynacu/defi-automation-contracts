@@ -171,20 +171,11 @@ async function syncAllNonPTs(syncService: SyncService) {
 			from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
 			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 			marketId: "0xa9f70093360419b4544f17a4553ac5847d896be23f020295bd95c24af4df700e",
+			debtShare: 0.1,
+			collateralShare: 0.1,
 		})
 	} catch (e) {
 		console.error("Error syncing wsrUSD/USDT", e)
-	}
-
-	try {
-		await syncService.syncData({
-			type: "morpho-withdraw",
-			from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
-			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-			marketId: "0x32e253d33f1594a67fc6ef51bf7a39cc4bf2d14904998dee769706fcde489ed9",
-		})
-	} catch (e) {
-		console.error("Error syncing wsrUSD/USDC", e)
 	}
 
 	try {
