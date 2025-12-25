@@ -1,7 +1,17 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
 import { DeployFunction } from 'hardhat-deploy/types'
 import { withdrawFromCompound } from "../common/withdraw-from-compound"
-import {COMET_WETH_ADDRESS, EZETH_ADDRESS, PYUSD, siUSD, stcUSD, sUSDe_ADDRESS, USDC, wsrUSD} from "../common/addresses"
+import {
+	COMET_WETH_ADDRESS,
+	EZETH_ADDRESS,
+	PYUSD,
+	siUSD,
+	srUSD,
+	stcUSD,
+	sUSDe_ADDRESS,
+	USDC, WETH_ADDRESS,
+	wsrUSD
+} from "../common/addresses"
 import { sendOrEstimate } from "./send-or-estimate"
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -10,24 +20,24 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	await sendOrEstimate(hre, ex => ex.execute([
 		{
 			type: "reset-approval",
-			token: siUSD,
-			spender: "0x04857184e30A1AD4B03F79379CCEf339A9E15b1F",
+			token: srUSD,
+			spender: "0x78F92Fe8a0672279BB8da3C433730067D8Cf59f9",
 		},
 		{
 			type: "reset-approval",
-			token: USDC,
-			spender: "0xfB9fc1Faf53b794472CebbC0A04aa390aFb642de",
-		},
-		{
-			type: "reset-approval",
-			token: wsrUSD,
-			spender: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+			token: srUSD,
+			spender: "0x5475611Dffb8ef4d697Ae39df9395513b6E947d7",
 		},
 		{
 			type: "reset-approval",
 			token: USDC,
 			spender: "0x3f04b65Ddbd87f9CE0A2e7Eb24d80e7fb87625b5",
 		},
+		{
+			type: "reset-approval",
+			token: WETH_ADDRESS,
+			spender: "0xA17581A9E3356d9A858b789D68B4d866e593aE94",
+		}
 	]))
 }
 

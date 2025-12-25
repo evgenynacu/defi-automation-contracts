@@ -61,7 +61,7 @@ contract EulerV2Strategy {
 
         // Deposit to vault, crediting shares to positionOwner (not to this contract)
         IEVault(collateralVault).deposit(supplyAmount, positionOwner);
-        IERC20(collateralAsset).approve(collateralVault, 0);
+        IERC20(collateralAsset).forceApprove(collateralVault, 0);
     }
 
     // Withdraw collateral that belongs to positionOwner.
@@ -120,7 +120,7 @@ contract EulerV2Strategy {
 
         _approveIfNeeded(borrowAsset, borrowVault, repayAmount);
         IEVault(borrowVault).repay(repayAmount, positionOwner);
-        IERC20(borrowAsset).approve(borrowVault, 0);
+        IERC20(borrowAsset).forceApprove(borrowVault, 0);
     }
 
     /**

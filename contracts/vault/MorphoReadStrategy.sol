@@ -27,7 +27,7 @@ contract MorphoReadStrategy {
         _approveIfNeeded(params.loanToken, address(MORPHO), balance);
         (, uint shares) = MORPHO.supply(params, balance, 0, address(this), "");
         MORPHO.withdraw(params, 0, shares, address(this), address(this));
-        IERC20(params.loanToken).approve(address(MORPHO), 0);
+        IERC20(params.loanToken).forceApprove(address(MORPHO), 0);
         MorphoBlue.Market memory market = MORPHO.market(marketId);
         return market.totalBorrowAssets;
     }

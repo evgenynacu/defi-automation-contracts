@@ -40,7 +40,7 @@ contract MorphoStrategy {
 
         // Supply the token as collateral
         MORPHO.supplyCollateral(params, supplyAmount, to, "");
-        IERC20(params.collateralToken).approve(address(MORPHO), 0);
+        IERC20(params.collateralToken).forceApprove(address(MORPHO), 0);
     }
 
     function withdrawCollateral(bytes32 marketId, address from, uint amount) external {
@@ -59,7 +59,7 @@ contract MorphoStrategy {
 
         _approveIfNeeded(params.loanToken, address(MORPHO), type(uint128).max);
         MORPHO.repay(params, assets, shares, to, "");
-        IERC20(params.loanToken).approve(address(MORPHO), 0);
+        IERC20(params.loanToken).forceApprove(address(MORPHO), 0);
     }
 
     /**
