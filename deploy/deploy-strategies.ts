@@ -124,6 +124,7 @@ async function deployStrataSwap(hre: HardhatRuntimeEnvironment) {
 async function deployStrategy(hre: HardhatRuntimeEnvironment, strategyName: string, args: any[] = []) {
 	const { deploy } = hre.deployments;
 	const { deployer } = await hre.getNamedAccounts();
+	console.log("deploying Strategy", strategyName);
 
 	return deploy(strategyName, {
 		from: deployer,

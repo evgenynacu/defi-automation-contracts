@@ -19,7 +19,14 @@ const config: Record<string, Config> = {
 		morphoBlue: MORPHO_BLUE_ARB,
 		aavePoolAddressProvider: AAVE_POOL_ADDRESS_PROVIDER_ARB,
 		evc: EVC_ARB,
-		merkl: "0x0000000000000000000000000000000000000000", //todo identify on arbitrum
+		merkl: "0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae",
+		ethenaS4Distributor: "0x0000000000000000000000000000000000000000",
+	},
+	"arbitrum_universal": {
+		morphoBlue: MORPHO_BLUE_ARB,
+		aavePoolAddressProvider: AAVE_POOL_ADDRESS_PROVIDER_ARB,
+		evc: EVC_ARB,
+		merkl: "0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae",
 		ethenaS4Distributor: "0x0000000000000000000000000000000000000000",
 	},
 	"default": {

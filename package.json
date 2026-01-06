@@ -13,7 +13,7 @@
     "clean": "TS_NODE_PROJECT=./tsconfig.server.json hardhat clean && rimraf ./dist",
     "test": "TS_NODE_PROJECT=./tsconfig.server.json hardhat test",
     "deploy:tag": "TS_NODE_PROJECT=./tsconfig.server.json npx hardhat deploy --network mainnet_universal --tags",
-    "deploy:arb:tag": "TS_NODE_PROJECT=./tsconfig.server.json npx hardhat deploy --network arbitrum --tags",
+    "deploy:arb:tag": "TS_NODE_PROJECT=./tsconfig.server.json npx hardhat deploy --network arbitrum_universal --tags",
     "test-deploy": "TS_NODE_PROJECT=./tsconfig.server.json hardhat test deploy-test/*.test.ts --network mainnet_universal",
     "verify": "TS_NODE_PROJECT=./tsconfig.server.json hardhat --network mainnet_universal verify 0xbba59d46Bb857dC16E06c22a59a8f250F23A8f7C 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 0x09D4214C03D01F49544C0448DBE3A27f768F2b34 0xd3fD63209FA2D55B07A0f6db36C2f43900be3094 0x4809010926aec940b550D34a46A52739f996D75D 0x04716DB62C085D9e08050fcF6F7D775A03d07720",
     "migrate": "node-pg-migrate",

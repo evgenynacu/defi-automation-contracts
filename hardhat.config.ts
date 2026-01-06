@@ -13,9 +13,14 @@ const networks: NetworksUserConfig = {
 		chainId: 1,
 		timeout: 60000,
 	},
+	arbitrum_universal: {
+		url: "http://localhost:4000/rpc/code-123",
+		chainId: 42161,
+		timeout: 60000,
+	},
 	hardhat: {
 		allowBlocksWithSameTimestamp: true,
-	}
+	},
 }
 
 if (process.env.ADMIN_PRIVATE_KEY) {

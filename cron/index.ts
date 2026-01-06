@@ -213,19 +213,6 @@ async function syncAllNonPTs(syncService: SyncService) {
 		console.error("Error syncing RLP/USDC", e)
 	}
 
-	try {
-		await syncService.syncData({
-			type: "euler-withdraw",
-			accountId: 10,
-			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-			collateralVault: "0xdB6165bd1F90cb507F30AbDb42c4596CE4D894f4",
-			debtVault: "0xba98fC35C9dfd69178AD5dcE9FA29c64554783b5",
-		})
-	} catch (e) {
-		console.error("Error syncing RLP/USDC", e)
-	}
-
 	console.log("non-PTs synchronized in", (Date.now() - start), "ms")
 }
 
