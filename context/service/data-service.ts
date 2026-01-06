@@ -37,10 +37,21 @@ export class DataService {
 				result: await getPendleImpliedRate(this.ethRunner, request),
 			}
 		} else {
-			const executor = createCalculateExecutor(this.ethRunner, request.vault, request.from)
+			const runner = this.getRunnerByVault(request.vault)
+			const executor = createCalculateExecutor(runner, request.vault, request.from)
 			return getData(executor, request)
 		}
 	}
+
+	getRunnerByVault(vault: address) {
+		switch (vault) {
+			case "0x85ca192a8AE32CaEB3bd14dbF0186B59023E2024":
+				return this.arbRunner
+			default:
+				return this.ethRunner
+		}
+	}
+
 
 	async getCompoundHF(request: CompoundHealthFactorRequest) {
 		const {hf} = await getCompoundHealthFactor(this.arbRunner.provider!, request.comet, request.from, request.collateral)

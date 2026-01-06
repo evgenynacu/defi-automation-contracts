@@ -12,6 +12,7 @@ export async function deposit<T>(
 	const vaultAddress = await ex.getVaultAddress()
 	const from = await ex.getFrom()
 
+	console.log("deposit1", amount, leverage)
 	const { debt, collateral, getSupplyOperation, getBorrowOperation } = await lending.initDeposit(ex)
 
 	await verifyAllowance(ex.runner, debt, amount, vaultAddress)

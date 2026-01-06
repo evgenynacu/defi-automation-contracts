@@ -15,10 +15,11 @@ export async function calculateResult(
 	operations: StrategyOperation[],
 	stateDiff: StateDiff = {}
 ): Promise<CalculateResult> {
+	const { chainId } = await runner.provider!.getNetwork()
 	const possibleOperations = await serializeOperations(runner, vaultAddress, operations)
 	const vault = AutomatedVault__factory.connect(vaultAddress, runner)
 
-	const results = await Promise.all(possibleOperations.map(ops => callAndGetOut(runner, from, vault, ops, stateDiff)))
+	const results = await Promise.all(possibleOperations.map(ops => callAndGetOut(runner, Number(chainId), from, vault, ops, stateDiff)))
 	const faults = results.filter(it => !it.ok).map(it => it.info)
 	const sorted = results
 		.filter(it => it.ok)
@@ -28,7 +29,7 @@ export async function calculateResult(
 	if (sorted.length > 0) {
 		const best = sorted[0]
 		if (process.env.DEBUG_CALLDATA === "best" && best.info) {
-			const url = `https://dashboard.tenderly.co/${process.env.TENDERLY_USER}/project/simulator/new?stateOverrides=&from=${from}&rawFunctionInput=${best.calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`
+			const url = `https://dashboard.tenderly.co/${process.env.TENDERLY_USER}/project/simulator/new?stateOverrides=&from=${from}&rawFunctionInput=${best.calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=${chainId}&headerBlockNumber=&headerTimestamp=`
 			console.log(best.info, "best testing url: \"" + url + "\" ")
 		}
 		return {
@@ -48,6 +49,7 @@ export async function calculateResult(
 
 async function callAndGetOut(
 	runner: ContractRunner,
+	chainId: number,
 	from: string,
 	vault: AutomatedVault,
 	ops: OperationWithInfo[],
@@ -59,7 +61,7 @@ async function callAndGetOut(
 	const calldata = vault.interface.encodeFunctionData("rebalance", [ops])
 	const vaultAddress = await vault.getAddress()
 	if ((process.env.DEBUG_CALLDATA && info === process.env.DEBUG_CALLDATA) || process.env.DEBUG_CALLDATA === "all") {
-		const url = `https://dashboard.tenderly.co/${process.env.TENDERLY_USER}/project/simulator/new?stateOverrides=&from=${from}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`
+		const url = `https://dashboard.tenderly.co/${process.env.TENDERLY_USER}/project/simulator/new?stateOverrides=&from=${from}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=${chainId}&headerBlockNumber=&headerTimestamp=`
 		console.log(info, "testing url: \"" + url + "\" ")
 		console.log("state diff", stateDiff)
 		// console.log("calldata", calldata)

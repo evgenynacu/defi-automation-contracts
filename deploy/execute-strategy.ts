@@ -18,9 +18,10 @@ export async function executeStrategy(vaultAddress: address, operations: Strateg
 	const { result, info, ops, faults, calldata, working } = await calculateResult(ethers.provider, vaultAddress, signer.address as address, operations)
 
 	const vault = await ethers.getContractAt("AutomatedVault", vaultAddress)
+	const { chainId } = await ethers.provider.getNetwork()
 
 	if (process.env.DEBUG_TENDERLY === 'true') {
-		const url = `https://dashboard.tenderly.co/${process.env.TENDERLY_USER}/project/simulator/new?stateOverrides=&from=${signer.address}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`
+		const url = `https://dashboard.tenderly.co/${process.env.TENDERLY_USER}/project/simulator/new?stateOverrides=&from=${signer.address}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${vaultAddress}&contractFunction=&functionInputs=&network=${chainId}&headerBlockNumber=&headerTimestamp=`
 		console.log("simulate: \"" + url + "\"")
 	}
 	console.log("swap faults: " + faults, "best: " + info + " with out " + result, "working: " + working)

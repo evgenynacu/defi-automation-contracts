@@ -1,10 +1,10 @@
 import { testSwap } from "./test-swap"
 import {
-	DAI_ADDRESS,
+	DAI_ADDRESS, PT_thBILL_19FEB2026,
 	SDAI_ADDRESS,
 	sUSDe_ADDRESS,
 	SYRUP_USDC,
-	USDC,
+	USDC, USDC_ARB,
 	USDe_ADDRESS, USDT_ADDRESS,
 	WEETH_ADDRESS,
 	WETH_ADDRESS, wsrUSD,
@@ -80,6 +80,11 @@ describe("Test Swap", () => {
 
 	it("should try and swap wsrUSD -> USDT", async () => {
 		const out = await testSwap(wsrUSD, 100000000000000000000n, USDT_ADDRESS)
+		console.log("value is", out)
+	})
+
+	it("should try and swap USDC -> PT-thBILL on Arbitrum", async () => {
+		const out = await testSwap(USDC_ARB, 100000000000n, PT_thBILL_19FEB2026, 42161)
 		console.log("value is", out)
 	})
 })

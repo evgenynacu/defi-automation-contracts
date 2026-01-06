@@ -48,6 +48,7 @@ export const wsrUSD = "0xd3fD63209FA2D55B07A0f6db36C2f43900be3094"
 // export const thBILL = "0x5FA487BCa6158c64046B2813623e20755091DA0b"
 export const PT_srUSDe_JAN_26 = "0x1Fb3C5c35D95F48e48FFC8e36bCCe5CB5f29F57c"
 export const sUSDS = "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD"
+export const PT_thBILL_19FEB2026 = "0x9b3924f9652cabf3Db48B7B4C92E474c571B3Ab4"
 // export const mF_ONE = "0x238a700eD6165261Cf8b2e544ba797BC11e466Ba"
 
 export const rUSD: address = toAddress("0x09D4214C03D01F49544C0448DBE3A27f768F2b34".toLowerCase())
@@ -56,6 +57,7 @@ export const reservoirSavingModule: address = toAddress("0x5475611Dffb8ef4d697Ae
 export const reservoirPsm: address = toAddress("0x4809010926aec940b550D34a46A52739f996D75D")
 export const reservoirCreditEnforcer: address = toAddress("0x04716DB62C085D9e08050fcF6F7D775A03d07720")
 export const USDC: address = toAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48".toLowerCase())
+export const USDC_ARB = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
 export const sENA: address = toAddress("0x8bE3460A480c80728a8C4D7a5D5303c85ba7B3b9")
 
 export const PENDLE_ROUTER = "0x888888888889758F76e7103c6CbF23ABbF58F946"

@@ -6,16 +6,18 @@ import {testSwap} from "./test-swap";
  * @param fromToken
  * @param amount
  * @param toToken
+ * @param chainId
  * @return share of returned amount (so we can calculate deposit/withdraw losses)
  */
 export async function testSwapAndBack(
 	fromToken: address,
 	amount: bigint,
 	toToken: address,
+	chainId: number = 1,
 ): Promise<number> {
 	console.log("Trying to swap fromToken to toToken", amount)
-	const toTokenAmount = await testSwap(fromToken, amount, toToken)
+	const toTokenAmount = await testSwap(fromToken, amount, toToken, chainId)
 	console.log("Trying to swap toToken to fromToken", toTokenAmount)
-	const fromTokenAmount = await testSwap(toToken, toTokenAmount, fromToken)
+	const fromTokenAmount = await testSwap(toToken, toTokenAmount, fromToken, chainId)
 	return 1 - Number(1000000000n * fromTokenAmount / amount) / 1000000000
 }

@@ -3,7 +3,7 @@ import {
 	DAI_ADDRESS,
 	PT_eUSDe_AUG, PT_sUSDe_FEB26,
 	PT_sUSDe_JUL,
-	PT_sUSDe_SEP,
+	PT_sUSDe_SEP, PT_thBILL_19FEB2026,
 	PT_USDe_NOV,
 	PT_USDe_SEP, PYUSD,
 	SDAI_ADDRESS,
@@ -55,6 +55,7 @@ export const tokens: Record<address, string> = {
 	[wsrUSD]: "wsrUSD",
 	[stcUSD]: "stcUSD",
 	[PT_sUSDe_FEB26]: "PT_sUSDe_FEB26",
+	[PT_thBILL_19FEB2026]: "PT-thBILL-19FEB2026",
 }
 
 export function findToken(address: address): string | undefined {

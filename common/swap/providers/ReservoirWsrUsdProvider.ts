@@ -57,7 +57,7 @@ export class ReservoirWsrUsdProvider implements ISwapProvider {
 				expectedUsdcIn = params.swapAmount;
 			}
 
-			const expectedSharesOut = await calculateWsrUsdOut(params.runner.provider as JsonRpcProvider, expectedUsdcIn);
+			const expectedSharesOut = await calculateWsrUsdOut(params.runner.provider as JsonRpcProvider, params.chainId, expectedUsdcIn);
 			const minShares = getMinAmount(expectedSharesOut);
 
 			const calldata = zapInterface.encodeFunctionData("swapToWsrUSD", [
@@ -81,7 +81,7 @@ export class ReservoirWsrUsdProvider implements ISwapProvider {
 			let swapData = "0x";
 
 			// First, estimate USDC out from wsrUSD shares via eth_call (wsrUSD->USDC leg).
-			const expectedUsdcOut = await calculateUsdcOut(params.runner.provider as JsonRpcProvider, params.swapAmount);
+			const expectedUsdcOut = await calculateUsdcOut(params.runner.provider as JsonRpcProvider, params.chainId, params.swapAmount);
 			if (process.env.DEBUG_RESERVOIR)
 				console.log("expectedUsdcOut is", expectedUsdcOut);
 
@@ -140,7 +140,7 @@ function getMinAmount(amount: bigint) {
 
 // ----------------- helpers -----------------
 
-async function calculateWsrUsdOut(provider: JsonRpcProvider, usdcAmount: bigint): Promise<bigint> {
+async function calculateWsrUsdOut(provider: JsonRpcProvider, chainId: number, usdcAmount: bigint): Promise<bigint> {
 	const zapInterface = ReservoirWsrUsdZap__factory.createInterface();
 
 	// Simulate USDC -> wsrUSD inside the zap (no extra swap leg).
@@ -153,7 +153,7 @@ async function calculateWsrUsdOut(provider: JsonRpcProvider, usdcAmount: bigint)
 	]);
 
 	if (process.env.DEBUG_RESERVOIR) {
-		const url = `https://dashboard.tenderly.co/${process.env.TENDERLY_USER}/project/simulator/new?stateOverrides=&from=${FROM}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${ZAP}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`;
+		const url = `https://dashboard.tenderly.co/${process.env.TENDERLY_USER}/project/simulator/new?stateOverrides=&from=${FROM}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${ZAP}&contractFunction=&functionInputs=&network=${chainId}&headerBlockNumber=&headerTimestamp=`;
 		console.log('reservoir wsrUSD testing url (USDC->wsrUSD): "' + url + '" ');
 	}
 
@@ -183,7 +183,7 @@ async function calculateWsrUsdOut(provider: JsonRpcProvider, usdcAmount: bigint)
 	return parsed[0] as bigint;
 }
 
-async function calculateUsdcOut(provider: JsonRpcProvider, shares: bigint): Promise<bigint> {
+async function calculateUsdcOut(provider: JsonRpcProvider, chainId: number, shares: bigint): Promise<bigint> {
 	const zapInterface = ReservoirWsrUsdZap__factory.createInterface();
 
 	// Simulate wsrUSD -> USDC inside the zap (no extra swap leg).
@@ -196,7 +196,7 @@ async function calculateUsdcOut(provider: JsonRpcProvider, shares: bigint): Prom
 	]);
 
 	if (process.env.DEBUG_RESERVOIR) {
-		const url = `https://dashboard.tenderly.co/${process.env.TENDERLY_USER}/project/simulator/new?stateOverrides=&from=${FROM}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${ZAP}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`;
+		const url = `https://dashboard.tenderly.co/${process.env.TENDERLY_USER}/project/simulator/new?stateOverrides=&from=${FROM}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${ZAP}&contractFunction=&functionInputs=&network=${chainId}&headerBlockNumber=&headerTimestamp=`;
 		console.log('reservoir wsrUSD testing url (wsrUSD->USDC): "' + url + '" ');
 	}
 

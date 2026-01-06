@@ -5,27 +5,30 @@ import {
 	cUSD,
 	DAI_ADDRESS, PT_cUSD_JAN_26, PT_reUSD_25JUN2026,
 	PT_sNUSD_5MAR2026, PT_srUSDe_JAN_26, PT_stcUSD_JAN_26, PT_sUSDe_FEB26,
-	PT_sUSDe_SEP, PYUSD,
+	PT_sUSDe_SEP, PT_thBILL_19FEB2026, PYUSD,
 	rUSD,
 	SDAI_ADDRESS, siUSD, stcUSD,
 	sUSDe_ADDRESS, sUSDS,
 	SYRUP_USDC,
-	USDC,
+	USDC, USDC_ARB,
 	USDe_ADDRESS, USDS,
 	USDT_ADDRESS,
 	WEETH_ADDRESS,
 	WETH_ADDRESS, wsrUSD,
 	WSTETH_ADDRESS
 } from "./addresses"
+import {getRpcUrl} from "./get-rpc-url";
+import {getDefaultVault} from "./get-default-vault";
 
 export async function testSwap(
 	fromToken: address,
 	amount: bigint,
 	toToken: address,
+	chainId: number = 1,
 ) {
-	const runner = new ethers.JsonRpcProvider(process.env.ETHEREUM_RPC_URL || "https://eth.llamarpc.com")
+	const runner = new ethers.JsonRpcProvider(getRpcUrl(chainId))
 	const tokenStateDiff = getTokenStateDiff(fromToken)
-	const ex = createCalculateExecutor(runner, "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240", "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E", {
+	const ex = createCalculateExecutor(runner, getDefaultVault(chainId), "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E", {
 		[fromToken]: {
 			stateDiff: tokenStateDiff
 		}
@@ -108,6 +111,8 @@ const SLOTS: Record<address, `0x${string}`> = {
 	[PYUSD]: "0x04f57dd85ec5e81f7372eb95c7ed0161bd7e95fa724be8f8aeee3a93b24598cf",
 	[PT_reUSD_25JUN2026]: "0xcbce38d2a396df10bbdba0503c72fc20ab34efc98f9cda900b01217a4dfee62d",
 	[PT_sNUSD_5MAR2026]: "0xcbce38d2a396df10bbdba0503c72fc20ab34efc98f9cda900b01217a4dfee62d",
+	[USDC_ARB]: "0x6e2324c72188c90dab855a9ae77483acaec3da153b2cdf4069dcba2ea4716549",
+	[PT_thBILL_19FEB2026]: "0xcbce38d2a396df10bbdba0503c72fc20ab34efc98f9cda900b01217a4dfee62d",
 }
 
 const ALLOWANCE_SLOTS: Record<address, `0x${string}`> = {
@@ -125,4 +130,6 @@ const ALLOWANCE_SLOTS: Record<address, `0x${string}`> = {
 	[PYUSD]: "0x62fbb6bc62844b18e29b0c6750eb1e243f3dce9428157b74814e1fa1939abd5f",
 	[PT_reUSD_25JUN2026]: "0x0fafcce95fdb13f3372abd7f8bb2f110896a3f84a8c991c01ca7d7711c812472",
 	[PT_sNUSD_5MAR2026]: "0x0fafcce95fdb13f3372abd7f8bb2f110896a3f84a8c991c01ca7d7711c812472",
+	[USDC_ARB]: "0xb4ab00750c7981707661aa6a09ba2a96c4615ab66ca2ba01a2021edeeac4b015",
+	[PT_thBILL_19FEB2026]: "0x048c57dbf5da5717c34afe6b5b335c83e998fdbe92ffb078bfefc67a0a4604dd",
 }

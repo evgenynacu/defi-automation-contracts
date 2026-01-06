@@ -272,6 +272,17 @@ async function syncAllPTs(syncService: SyncService) {
 		console.error("error syncing PT-stcUSD JAN / USDC", e)
 	}
 
+	try {
+		await syncService.syncData({
+			type: "morpho-withdraw",
+			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+			vault: "0x85ca192a8AE32CaEB3bd14dbF0186B59023E2024",
+			marketId: "0x6c831dcc45a7c0af00b751da651bd874b96653c587615d11aafade7b357c4b43"
+		})
+	} catch (e) {
+		console.error("error syncing PT-stcUSD JAN / USDC", e)
+	}
+
 	console.log("PTs synchronized in", (Date.now() - start), "ms")
 }
 

@@ -69,7 +69,7 @@ async function calculateUsdcOut(params: SwapParams) {
 	const calldata = swapInterface.encodeFunctionData("unstakeAndRedeemToUsdc", [params.swapAmount, 0n])
 	const from = "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E"
 	if (process.env.DEBUG_INFINIFI) {
-		const url = `https://dashboard.tenderly.co/${process.env.TENDERLY_USER}/project/simulator/new?stateOverrides=&from=${from}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${SWAP}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`
+		const url = `https://dashboard.tenderly.co/${process.env.TENDERLY_USER}/project/simulator/new?stateOverrides=&from=${from}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${SWAP}&contractFunction=&functionInputs=&network=${params.chainId}&headerBlockNumber=&headerTimestamp=`
 		console.log("infinifi testing url: \"" + url + "\" ")
 	}
 
@@ -94,7 +94,7 @@ async function calculateStakedOut(params: SwapParams) {
 	const calldata = swapInterface.encodeFunctionData("mintFromUsdcAndStake", [params.swapAmount])
 	const from = "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E"
 	if (process.env.DEBUG_INFINIFI) {
-		const url = `https://dashboard.tenderly.co/${process.env.TENDERLY_USER}/project/simulator/new?stateOverrides=&from=${from}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${SWAP}&contractFunction=&functionInputs=&network=1&headerBlockNumber=&headerTimestamp=`
+		const url = `https://dashboard.tenderly.co/${process.env.TENDERLY_USER}/project/simulator/new?stateOverrides=&from=${from}&rawFunctionInput=${calldata}&simulationId=&value=0&contractAddress=${SWAP}&contractFunction=&functionInputs=&network=${params.chainId}&headerBlockNumber=&headerTimestamp=`
 		console.log("infinifi testing url: \"" + url + "\" ")
 	}
 

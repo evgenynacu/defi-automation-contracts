@@ -1,9 +1,9 @@
-import { MORPHO_BLUE } from "./addresses"
 import { MorphoBlue, MorphoBlue__factory } from "../typechain-types"
 import { StrategyExecutor } from "./calculate-result"
 import { address } from "./types"
 import { deposit } from "./deposit"
 import { Morpho } from "./lending/morpho"
+import {getMorphoBlue} from "./get-morpho-blue";
 
 export async function depositToMorpho<T>(
 	ex: StrategyExecutor<T>,
@@ -12,7 +12,8 @@ export async function depositToMorpho<T>(
 	leverage: number
 ): Promise<T> {
 	const vaultAddress = await ex.getVaultAddress()
-	const morpho = MorphoBlue__factory.connect(MORPHO_BLUE, ex.runner)
+	const { chainId } = await ex.runner.provider!.getNetwork()
+	const morpho = MorphoBlue__factory.connect(getMorphoBlue(chainId), ex.runner)
 
 	await verifyVaultAuthorized(await ex.getFrom(), morpho, vaultAddress)
 

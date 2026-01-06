@@ -16,7 +16,7 @@ export class PendleProvider implements ISwapProvider {
 	}
 
 	async getQuote(params: SwapParams): Promise<SwapResult> {
-		const market = await findActiveMarket(params.fromToken, params.toToken)
+		const market = await findActiveMarket(params.chainId, params.fromToken, params.toToken)
 		if (market) {
 			console.log("Found active Pendle Market. using it: " + market)
 			const url = `https://api-v2.pendle.finance/core/v2/sdk/${params.chainId}/markets/${market}/swap?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&aggregators=${ENABLED_AGGREGATORS}&tokenIn=${params.fromToken}&tokenOut=${params.toToken}&amountIn=${params.swapAmount.toString()}`
@@ -38,7 +38,7 @@ export class PendleProvider implements ISwapProvider {
 			}
 		}
 
-		const inactiveMarket = await findInactiveMarket(params.fromToken, params.toToken)
+		const inactiveMarket = await findInactiveMarket(params.chainId, params.fromToken, params.toToken)
 		if (inactiveMarket) {
 			console.log("Found inactive Pendle Market. using it: " + inactiveMarket)
 			const exitUrl = `https://api-v2.pendle.finance/core/v2/sdk/1/markets/${inactiveMarket}/exit-positions?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&aggregators=${ENABLED_AGGREGATORS}&ptAmount=${params.swapAmount.toString()}&ytAmount=0&lpAmount=0&tokenOut=${params.toToken}`
@@ -65,11 +65,11 @@ export class PendleProvider implements ISwapProvider {
 	}
 
 	async isUniqueFor(params: SwapParams): Promise<boolean> {
-		const active = await findActiveMarket(params.fromToken, params.toToken)
+		const active = await findActiveMarket(params.chainId, params.fromToken, params.toToken)
 		if (active !== undefined) {
 			return true
 		}
-		const inactiveMarket = await findInactiveMarket(params.fromToken, params.toToken)
+		const inactiveMarket = await findInactiveMarket(params.chainId, params.fromToken, params.toToken)
 		return inactiveMarket !== undefined;
 	}
 
@@ -89,12 +89,12 @@ function getProxyAgent() {
 	return undefined
 }
 
-async function findActiveMarket(tokenIn: string, tokenOut: string): Promise<string | undefined> {
-	return findMarketByUrl("https://api-v2.pendle.finance/core/v1/1/markets/active", tokenIn, tokenOut)
+async function findActiveMarket(chainId: number, tokenIn: string, tokenOut: string): Promise<string | undefined> {
+	return findMarketByUrl(`https://api-v2.pendle.finance/core/v1/${chainId}/markets/active`, tokenIn, tokenOut)
 }
 
-async function findInactiveMarket(tokenIn: string, tokenOut: string): Promise<string | undefined> {
-	return findMarketByUrl("https://api-v2.pendle.finance/core/v1/1/markets/inactive", tokenIn, tokenOut, true)
+async function findInactiveMarket(chainId: number, tokenIn: string, tokenOut: string): Promise<string | undefined> {
+	return findMarketByUrl(`https://api-v2.pendle.finance/core/v1/${chainId}/markets/inactive`, tokenIn, tokenOut, true)
 }
 
 async function findMarketByUrl(url: string, tokenIn: string, tokenOut: string, onlyExit = false): Promise<string | undefined> {

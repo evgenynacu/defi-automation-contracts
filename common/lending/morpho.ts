@@ -4,6 +4,7 @@ import {createCalculateExecutor, StrategyExecutor} from "../calculate-result"
 import {MORPHO_BLUE} from "../addresses"
 import {address, toAddress} from "../types"
 import {getTokenStateDiff} from "../test-swap"
+import {getMorphoBlue} from "../get-morpho-blue";
 
 export class Morpho implements Lending {
 	private morpho: MorphoBlue | undefined
@@ -15,7 +16,8 @@ export class Morpho implements Lending {
 	}
 
 	async initDeposit(ex: StrategyExecutor<any>): Promise<Deposit> {
-		this.morpho = MorphoBlue__factory.connect(MORPHO_BLUE, ex.runner)
+		const { chainId } = await ex.runner.provider!.getNetwork()
+		this.morpho = MorphoBlue__factory.connect(getMorphoBlue(chainId), ex.runner)
 		const onBehalfOf = this.onBehalfOf || await ex.getFrom()
 		const [debt, collateral] = await this.morpho.idToMarketParams(this.marketId)
 		return {
@@ -38,7 +40,8 @@ export class Morpho implements Lending {
 
 	async initWithdraw(ex: StrategyExecutor<any>, debtShare: number, collateralShare: number): Promise<Withdraw> {
 		const onBehalfOf = this.onBehalfOf || await ex.getFrom()
-		const morpho = MorphoBlue__factory.connect(MORPHO_BLUE, ex.runner)
+		const { chainId } = await ex.runner.provider!.getNetwork()
+		const morpho = MorphoBlue__factory.connect(getMorphoBlue(chainId), ex.runner)
 		const params = await morpho.idToMarketParams(this.marketId)
 		const market = await morpho.market(this.marketId)
 		const pos = await morpho.position(this.marketId, onBehalfOf)
@@ -84,8 +87,8 @@ export class Morpho implements Lending {
 }
 
 async function getTotalBorrowAssets(ex: StrategyExecutor<any>, marketId: string, loanToken: address) {
+	const vault = await ex.getVaultAddress()
 	const from = "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E"
-	const vault = "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240"
 	const calc = createCalculateExecutor(ex.runner, vault, from, {
 		[loanToken]: {
 			stateDiff: getTokenStateDiff(loanToken),
