@@ -253,17 +253,6 @@ async function syncAllPTs(syncService: SyncService) {
 
 	await sleep(5000)
 
-	try {
-		await syncService.syncData({
-			type: "morpho-withdraw",
-			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-			marketId: "0x79b4e55cef9e7c214b5cc965e1984229ada26a66051e35366a75c4d92b776735",
-		})
-	} catch (e) {
-		console.error("error syncing PT-srUSDe JAN / USDT", e)
-	}
-
 	await sleep(5000)
 
 	try {

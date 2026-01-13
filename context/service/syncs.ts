@@ -1,10 +1,7 @@
 import {DuneSyncService} from "./dune-sync-service";
 import {DuneService} from "./dune-service";
-import dotenv from "dotenv";
 import {Pool} from "pg";
-import {sleep} from "../../common/sleep";
 
-dotenv.config()
 
 async function syncUSDe() {
 	const connectionString = process.env.DATABASE_URL || "postgresql://postgres:mysecretpassword@localhost:5432/postgres"
