@@ -2,7 +2,7 @@ import dotenv from "dotenv"
 import {createContext} from "../context"
 import {runMigrations} from "../context/db/run-migrations"
 import {logAsync} from "../common/log-async"
-import {PT_sUSDe_FEB26, sUSDe_ADDRESS, sUSDS, USDe_ADDRESS, USDT_ADDRESS} from "../common/addresses"
+import {PT_sUSDe_FEB26, sUSDe_ADDRESS, sUSDS, USDe_ADDRESS, USDS, USDT_ADDRESS} from "../common/addresses"
 import {updateJobs} from "../context/db/update-jobs"
 import {Pool} from "pg";
 import {SyncService} from "../context/service/sync-service";
@@ -119,19 +119,19 @@ async function runJobs() {
 			syncService.syncData({
 				type: "swap-rate",
 				fromToken: USDT_ADDRESS,
-				toToken: sUSDS,
+				toToken: USDS,
 				amount: 100000000000n,
 			}),
-			"checking USDT-sUSDS rate"
+			"checking USDT-USDS rate"
 		)
 		logAsync(
 			syncService.syncData({
 				type: "swap-rate",
-				fromToken: sUSDS,
+				fromToken: USDS,
 				toToken: USDT_ADDRESS,
 				amount: 100000000000000000000000n,
 			}),
-			"checking USDT-sUSDS rate"
+			"checking USDS-USDT rate"
 		)
 
 		// logAsync(
