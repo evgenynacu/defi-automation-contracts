@@ -9,7 +9,7 @@ import {
 	SDAI_ADDRESS,
 	siUSD,
 	stcUSD,
-	sUSDe_ADDRESS,
+	sUSDe_ADDRESS, sUSDS,
 	USDC,
 	USDe_ADDRESS,
 	USDS,
@@ -56,6 +56,7 @@ export const tokens: Record<address, string> = {
 	[stcUSD]: "stcUSD",
 	[PT_sUSDe_FEB26]: "PT_sUSDe_FEB26",
 	[PT_thBILL_19FEB2026]: "PT-thBILL-19FEB2026",
+	[sUSDS]: "sUSDS",
 }
 
 export function findToken(address: address): string | undefined {
