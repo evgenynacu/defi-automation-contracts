@@ -18,6 +18,11 @@ const networks: NetworksUserConfig = {
 		chainId: 42161,
 		timeout: 60000,
 	},
+	plasma: {
+		url: "http://localhost:4000/rpc/code-123",
+		chainId: 9745,
+		timeout: 60000,
+	},
 	hardhat: {
 		allowBlocksWithSameTimestamp: true,
 	},

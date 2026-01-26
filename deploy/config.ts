@@ -1,9 +1,9 @@
 import {address} from "../common/types";
 import {
 	AAVE_POOL_ADDRESS_PROVIDER,
-	AAVE_POOL_ADDRESS_PROVIDER_ARB, EVC, EVC_ARB,
+	AAVE_POOL_ADDRESS_PROVIDER_ARB, AAVE_POOL_ADDRESS_PROVIDER_PLASMA, EVC, EVC_ARB, EVC_PLASMA,
 	MORPHO_BLUE,
-	MORPHO_BLUE_ARB
+	MORPHO_BLUE_ARB, ZERO_ADDRESS
 } from "../common/addresses";
 
 export type Config = {
@@ -20,14 +20,21 @@ const config: Record<string, Config> = {
 		aavePoolAddressProvider: AAVE_POOL_ADDRESS_PROVIDER_ARB,
 		evc: EVC_ARB,
 		merkl: "0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae",
-		ethenaS4Distributor: "0x0000000000000000000000000000000000000000",
+		ethenaS4Distributor: ZERO_ADDRESS,
 	},
 	"arbitrum_universal": {
 		morphoBlue: MORPHO_BLUE_ARB,
 		aavePoolAddressProvider: AAVE_POOL_ADDRESS_PROVIDER_ARB,
 		evc: EVC_ARB,
 		merkl: "0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae",
-		ethenaS4Distributor: "0x0000000000000000000000000000000000000000",
+		ethenaS4Distributor: ZERO_ADDRESS,
+	},
+	"plasma": {
+		morphoBlue: ZERO_ADDRESS,
+		aavePoolAddressProvider: AAVE_POOL_ADDRESS_PROVIDER_PLASMA,
+		evc: EVC_PLASMA,
+		merkl: "0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae",
+		ethenaS4Distributor: ZERO_ADDRESS,
 	},
 	"default": {
 		morphoBlue: MORPHO_BLUE,

@@ -58,6 +58,7 @@ export class KyberSwapProvider implements ISwapProvider {
 const chainIdMapping: Record<number, string> = {
 	1: "ethereum",
 	42161: "arbitrum",
+	9745: "plasma",
 }
 
 type RouteResponse = {

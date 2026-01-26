@@ -111,6 +111,7 @@ export class ZeroexProvider extends IcarusProvider {
 const chainIdMapping: Record<number, string> = {
   1: "mainnet",
   42161: "arbitrum",
+  9745: "plasma",
 }
 
 function formatAmount(amount: bigint, decimals: number | bigint): string {

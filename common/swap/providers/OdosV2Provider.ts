@@ -32,6 +32,9 @@ export class OdosV2Provider implements ISwapProvider {
     }
 
     const response = await res.json() as AssembleResponse
+    if (process.env.DEBUG_ODOS) {
+      console.log("odos response", JSON.stringify(response, null, 2))
+    }
     return {
       outAmount: BigInt(response.outputTokens[0].amount),
       to: response.transaction.to,
@@ -41,25 +44,29 @@ export class OdosV2Provider implements ISwapProvider {
 
   private async getPathId(params: SwapParams): Promise<string> {
     const quoteBody = {
-      "chainId": params.chainId,
+	    "chainId": params.chainId,
 	    "compact": false,
-      "inputTokens": [
-        {
-          "amount": params.swapAmount.toString(),
-          "tokenAddress": params.fromToken,
-        }
-      ],
-      "outputTokens": [
-        {
-          "proportion": 1,
-          "tokenAddress": params.toToken,
-        }
-      ],
-      "slippageLimitPercent": MAX_SLIPPAGE_BPS / 100,
-      "sourceBlacklist": [],
-      "sourceWhitelist": [],
-      "userAddr": params.vault
+	    "inputTokens": [
+		    {
+			    "amount": params.swapAmount.toString(),
+			    "tokenAddress": params.fromToken,
+		    }
+	    ],
+	    "outputTokens": [
+		    {
+			    "proportion": 1,
+			    "tokenAddress": params.toToken,
+		    }
+	    ],
+	    "slippageLimitPercent": MAX_SLIPPAGE_BPS / 100,
+	    "sourceBlacklist": [],
+	    "sourceWhitelist": [],
+	    "userAddr": params.vault
     }
+
+	if (process.env.DEBUG_ODOS) {
+		console.log("odos quote body", JSON.stringify(quoteBody, null, 2))
+	}
 
     const res = await fetch("https://api.odos.xyz/sor/quote/v2", {
       method: "POST",
@@ -78,6 +85,9 @@ export class OdosV2Provider implements ISwapProvider {
       throw new Error("Not found pathId in odos response")
     }
 
+	if (process.env.DEBUG_ODOS) {
+		console.log("odos path response", JSON.stringify(quote, null, 2))
+	}
     return quote.pathId
   }
 

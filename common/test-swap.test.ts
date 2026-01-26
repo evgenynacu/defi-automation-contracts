@@ -3,7 +3,7 @@ import {
 	DAI_ADDRESS, PT_thBILL_19FEB2026,
 	SDAI_ADDRESS,
 	sUSDe_ADDRESS,
-	SYRUP_USDC,
+	SYRUP_USDC, SYRUP_USDT,
 	USDC, USDC_ARB,
 	USDe_ADDRESS, USDT_ADDRESS,
 	WEETH_ADDRESS,
@@ -30,6 +30,11 @@ describe("Test Swap", () => {
 
 	it("should try and swap USDe->sUSDe", async () => {
 		const out = await testSwap(USDe_ADDRESS, 100000000000000000000000n, sUSDe_ADDRESS)
+		console.log("value is", out)
+	})
+
+	it("should try and swap USDe->sUSDe 22", async () => {
+		const out = await testSwap(USDe_ADDRESS, 109929421872202560569n, sUSDe_ADDRESS)
 		console.log("value is", out)
 	})
 
@@ -73,8 +78,18 @@ describe("Test Swap", () => {
 		console.log("value is", out)
 	})
 
+	it("should try and swap usdc->syrupUSDT", async () => {
+		const out = await testSwap(USDC, 100000000000n, SYRUP_USDT)
+		console.log("value is", out)
+	})
+
 	it("should try and swap syrupUSDC -> usdc", async () => {
 		const out = await testSwap(SYRUP_USDC, 100000000000n, USDC)
+		console.log("value is", out)
+	})
+
+	it("should try and swap syrupUSDT -> usdc", async () => {
+		const out = await testSwap(SYRUP_USDT, 100000000000n, USDC)
 		console.log("value is", out)
 	})
 

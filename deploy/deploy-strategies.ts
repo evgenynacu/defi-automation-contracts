@@ -16,10 +16,10 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 
 	const erc20TransferStrategy = await deployStrategy(hre, "Erc20TransferStrategy")
 	//const swapStrategy = await deployStrategy(hre, "SwapStrategy")
-	const morphoFlashLoanStrategy = await deployStrategy(hre, "MorphoFlashLoanStrategy", [config.morphoBlue])
+	const morphoFlashLoanStrategy = config.morphoBlue === ZERO_ADDRESS ? ZERO_ADDRESS : (await deployStrategy(hre, "MorphoFlashLoanStrategy", [config.morphoBlue])).address
 	const aaveFlashLoanStrategy = await deployStrategy(hre, "AaveFlashLoanStrategy", [config.aavePoolAddressProvider])
 	const compoundV3Strategy = await deployStrategy(hre, "CompoundV3Strategy")
-	const morphoStrategy = await deployStrategy(hre, "MorphoStrategy", [config.morphoBlue])
+	const morphoStrategy = config.morphoBlue === ZERO_ADDRESS ? ZERO_ADDRESS : (await deployStrategy(hre, "MorphoStrategy", [config.morphoBlue])).address
 	const genericAaveStrategy = await deployStrategy(hre, "GenericAaveStrategy", [config.aavePoolAddressProvider])
 	const morphoReadStrategy = await deployStrategy(hre, "MorphoReadStrategy", [config.morphoBlue])
 	// const pendleSwapStrategy = await deployStrategy(hre, "PendleSwapStrategy", ["0x888888888889758F76e7103c6CbF23ABbF58F946"])
@@ -39,10 +39,10 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	return [
 		erc20TransferStrategy.address,    //0
 		ZERO_ADDRESS,                     //1
-		morphoFlashLoanStrategy.address,  //2
+		morphoFlashLoanStrategy,          //2
 		aaveFlashLoanStrategy.address,    //3
 		compoundV3Strategy.address,       //4
-		morphoStrategy.address,           //5
+		morphoStrategy,                   //5
 		genericAaveStrategy.address,      //6
 		morphoReadStrategy.address,       //7
 		ZERO_ADDRESS,                     //8
