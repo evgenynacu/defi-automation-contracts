@@ -9,7 +9,7 @@ import {
 	SDAI_ADDRESS,
 	siUSD,
 	stcUSD,
-	sUSDe_ADDRESS, sUSDS,
+	sUSDe_ADDRESS, sUSDS, SYRUP_USDC, SYRUP_USDT,
 	USDC,
 	USDe_ADDRESS,
 	USDS,
@@ -39,7 +39,6 @@ export const tokens: Record<address, string> = {
 	[USDS]: "USDS",
 	[siUSD]: "siUSD",
 	"0xCcE7D12f683c6dAe700154f0BAdf779C0bA1F89A": "PT-syrupUSDC-AUG25",
-	"0x80ac24aa929eaf5013f6436cda2a7ba190f5cc0b": "syrupUSDC",
 	"0xB10DA2F9147f9cf2B8826877Cd0c95c18A0f42dc": "PT-cUSDO-20NOV2025",
 	"0x61da65F0534C6A4F4c9757f2979A923c08d6D2aa": "PT-mMEV-30OCT2025",
 	"0xb6ac3d5da138918ac4e84441e924a20daa60dbdd": "PT-sUSDe-27NOV2025",
@@ -56,7 +55,9 @@ export const tokens: Record<address, string> = {
 	[stcUSD]: "stcUSD",
 	[PT_sUSDe_FEB26]: "PT_sUSDe_FEB26",
 	[PT_thBILL_19FEB2026]: "PT-thBILL-19FEB2026",
-	[sUSDS]: "sUSDS"
+	[sUSDS]: "sUSDS",
+	[SYRUP_USDT]: "syrupUSDT",
+	[SYRUP_USDC]: "syrupUSDC",
 }
 
 export function findToken(address: address): string | undefined {
