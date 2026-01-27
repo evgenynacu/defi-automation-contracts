@@ -3,7 +3,7 @@ import { address, AddressStateDiff } from "./types"
 import { ethers } from "ethers"
 import {
 	cUSD,
-	DAI_ADDRESS, PT_cUSD_JAN_26, PT_reUSD_25JUN2026,
+	DAI_ADDRESS, GHO, PT_cUSD_JAN_26, PT_reUSD_25JUN2026,
 	PT_sNUSD_5MAR2026, PT_srUSDe_JAN_26, PT_stcUSD_JAN_26, PT_sUSDe_FEB26,
 	PT_sUSDe_SEP, PT_thBILL_19FEB2026, PYUSD,
 	rUSD,
@@ -114,6 +114,7 @@ const SLOTS: Record<address, `0x${string}`> = {
 	[PT_sNUSD_5MAR2026]: "0xcbce38d2a396df10bbdba0503c72fc20ab34efc98f9cda900b01217a4dfee62d",
 	[USDC_ARB]: "0x6e2324c72188c90dab855a9ae77483acaec3da153b2cdf4069dcba2ea4716549",
 	[PT_thBILL_19FEB2026]: "0xcbce38d2a396df10bbdba0503c72fc20ab34efc98f9cda900b01217a4dfee62d",
+	[GHO]: "0xfd5f8c061cfecd096dabc8fd13b51ab68a4f601f87b140bce0bc3e7d5838b3a7",
 }
 
 const ALLOWANCE_SLOTS: Record<address, `0x${string}`> = {
@@ -133,4 +134,6 @@ const ALLOWANCE_SLOTS: Record<address, `0x${string}`> = {
 	[PT_sNUSD_5MAR2026]: "0x0fafcce95fdb13f3372abd7f8bb2f110896a3f84a8c991c01ca7d7711c812472",
 	[USDC_ARB]: "0xb4ab00750c7981707661aa6a09ba2a96c4615ab66ca2ba01a2021edeeac4b015",
 	[PT_thBILL_19FEB2026]: "0x048c57dbf5da5717c34afe6b5b335c83e998fdbe92ffb078bfefc67a0a4604dd",
+	[SYRUP_USDT]: "0xaf5afcc2baa4bcdf8d0cab8c38b63df065af72cde9c674b929139bdd9651ebed",
+	[GHO]: "0xaf5afcc2baa4bcdf8d0cab8c38b63df065af72cde9c674b929139bdd9651ebed",
 }

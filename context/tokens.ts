@@ -1,6 +1,6 @@
 import {address} from "../common/types"
 import {
-	DAI_ADDRESS,
+	DAI_ADDRESS, GHO,
 	PT_eUSDe_AUG, PT_sUSDe_FEB26,
 	PT_sUSDe_JUL,
 	PT_sUSDe_SEP, PT_thBILL_19FEB2026,
@@ -58,6 +58,7 @@ export const tokens: Record<address, string> = {
 	[sUSDS]: "sUSDS",
 	[SYRUP_USDT]: "syrupUSDT",
 	[SYRUP_USDC]: "syrupUSDC",
+	[GHO]: "GHO",
 }
 
 export function findToken(address: address): string | undefined {

@@ -1,6 +1,6 @@
 import { testSwap } from "./test-swap"
 import {
-	DAI_ADDRESS, PT_thBILL_19FEB2026,
+	DAI_ADDRESS, GHO, PT_thBILL_19FEB2026,
 	SDAI_ADDRESS,
 	sUSDe_ADDRESS,
 	SYRUP_USDC, SYRUP_USDT,
@@ -83,6 +83,11 @@ describe("Test Swap", () => {
 		console.log("value is", out)
 	})
 
+	it("should try and swap gho->syrupUSDT", async () => {
+		const out = await testSwap(GHO, 100000000000000000000000n, SYRUP_USDT)
+		console.log("value is", out)
+	})
+
 	it("should try and swap syrupUSDC -> usdc", async () => {
 		const out = await testSwap(SYRUP_USDC, 100000000000n, USDC)
 		console.log("value is", out)
@@ -90,6 +95,11 @@ describe("Test Swap", () => {
 
 	it("should try and swap syrupUSDT -> usdc", async () => {
 		const out = await testSwap(SYRUP_USDT, 100000000000n, USDC)
+		console.log("value is", out)
+	})
+
+	it("should try and swap syrupUSDT -> gho", async () => {
+		const out = await testSwap(SYRUP_USDT, 100000000000n, GHO)
 		console.log("value is", out)
 	})
 

@@ -3,6 +3,7 @@ import {createContext} from "../context"
 import {runMigrations} from "../context/db/run-migrations"
 import {logAsync} from "../common/log-async"
 import {
+	GHO,
 	PT_sUSDe_FEB26,
 	sUSDe_ADDRESS,
 	sUSDS,
@@ -150,6 +151,15 @@ async function runJobs() {
 				amount: 100000000000n,
 			}),
 			"checking USDC-syrupUSDT rate"
+		)
+		logAsync(
+			syncService.syncData({
+				type: "swap-rate",
+				fromToken: GHO,
+				toToken: SYRUP_USDT,
+				amount: 100000000000000000000000n,
+			}),
+			"checking GHO-syrupUSDT rate"
 		)
 
 		// logAsync(
