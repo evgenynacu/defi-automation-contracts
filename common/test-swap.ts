@@ -7,7 +7,7 @@ import {
 	PT_sNUSD_5MAR2026, PT_srUSDe_JAN_26, PT_stcUSD_JAN_26, PT_sUSDe_FEB26,
 	PT_sUSDe_SEP, PT_thBILL_19FEB2026, PYUSD,
 	rUSD,
-	SDAI_ADDRESS, siUSD, stcUSD,
+	SDAI_ADDRESS, siUSD, stcUSD, sUSDD,
 	sUSDe_ADDRESS, sUSDS,
 	SYRUP_USDC, SYRUP_USDT,
 	USDC, USDC_ARB,
@@ -115,6 +115,7 @@ const SLOTS: Record<address, `0x${string}`> = {
 	[USDC_ARB]: "0x6e2324c72188c90dab855a9ae77483acaec3da153b2cdf4069dcba2ea4716549",
 	[PT_thBILL_19FEB2026]: "0xcbce38d2a396df10bbdba0503c72fc20ab34efc98f9cda900b01217a4dfee62d",
 	[GHO]: "0xfd5f8c061cfecd096dabc8fd13b51ab68a4f601f87b140bce0bc3e7d5838b3a7",
+	[sUSDD]: "0x04f57dd85ec5e81f7372eb95c7ed0161bd7e95fa724be8f8aeee3a93b24598cf",
 }
 
 const ALLOWANCE_SLOTS: Record<address, `0x${string}`> = {
@@ -136,4 +137,5 @@ const ALLOWANCE_SLOTS: Record<address, `0x${string}`> = {
 	[PT_thBILL_19FEB2026]: "0x048c57dbf5da5717c34afe6b5b335c83e998fdbe92ffb078bfefc67a0a4604dd",
 	[SYRUP_USDT]: "0xaf5afcc2baa4bcdf8d0cab8c38b63df065af72cde9c674b929139bdd9651ebed",
 	[GHO]: "0xaf5afcc2baa4bcdf8d0cab8c38b63df065af72cde9c674b929139bdd9651ebed",
+	[sUSDD]: "0xb2ae0ab68ec836b1f2299db55eb1e25b4b0ae28e5ff26e9bab378345ef7edc7f",
 }

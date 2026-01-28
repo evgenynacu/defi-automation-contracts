@@ -1,6 +1,6 @@
 import {testSwapAndBack} from "./test-swap-and-back";
 import {
-	cUSD,
+	cUSD, GHO,
 	PT_cUSD_JAN_26,
 	PT_reUSD_25JUN2026,
 	PT_srUSDe_JAN_26,
@@ -9,9 +9,9 @@ import {
 	PT_thBILL_19FEB2026,
 	PYUSD,
 	siUSD,
-	stcUSD,
+	stcUSD, sUSDD,
 	sUSDe_ADDRESS,
-	sUSDS,
+	sUSDS, SYRUP_USDT,
 	USDC,
 	USDC_ARB,
 	USDe_ADDRESS,
@@ -79,6 +79,18 @@ describe("testSwapAndBack", () => {
 
 	it("should swap PT-thBILL to USDC and back on Arbitrum", async () => {
 		console.log(await testSwapAndBack(USDC_ARB, 100000000000n, PT_thBILL_19FEB2026, 42161)) // 0.1%
+	})
+
+	it("should swap GHO to syrupUSDT and back", async () => {
+		console.log(await testSwapAndBack(GHO, 100000000000000000000000n, SYRUP_USDT)) // 0.14378%
+	})
+
+	it("should swap USDT to syrupUSDT and back", async () => {
+		console.log(await testSwapAndBack(USDT_ADDRESS, 100000000000n, SYRUP_USDT)) // 0.139959%
+	})
+
+	it("should swap USDT to sUSDD and back", async () => {
+		console.log(await testSwapAndBack(USDT_ADDRESS, 100000000000n, sUSDD)) // 0%!!!!
 	})
 
 	// reUSD: too low liqudity

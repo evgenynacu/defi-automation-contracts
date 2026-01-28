@@ -8,7 +8,7 @@ import {
 	PT_USDe_SEP, PYUSD,
 	SDAI_ADDRESS,
 	siUSD,
-	stcUSD,
+	stcUSD, sUSDD,
 	sUSDe_ADDRESS, sUSDS, SYRUP_USDC, SYRUP_USDT,
 	USDC,
 	USDe_ADDRESS,
@@ -59,6 +59,7 @@ export const tokens: Record<address, string> = {
 	[SYRUP_USDT]: "syrupUSDT",
 	[SYRUP_USDC]: "syrupUSDC",
 	[GHO]: "GHO",
+	[sUSDD]: "sUSDD",
 }
 
 export function findToken(address: address): string | undefined {
