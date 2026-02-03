@@ -214,19 +214,6 @@ async function syncAllNonPTs(syncService: SyncService) {
 	try {
 		await syncService.syncData({
 			type: "morpho-withdraw",
-			from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
-			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-			marketId: "0xa9f70093360419b4544f17a4553ac5847d896be23f020295bd95c24af4df700e",
-			debtShare: 0.1,
-			collateralShare: 0.1,
-		})
-	} catch (e) {
-		console.error("Error syncing wsrUSD/USDT", e)
-	}
-
-	try {
-		await syncService.syncData({
-			type: "morpho-withdraw",
 			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 			marketId: "0x3274643db77a064abd3bc851de77556a4ad2e2f502f4f0c80845fa8f909ecf0b"
@@ -265,19 +252,6 @@ async function syncAllPTs(syncService: SyncService) {
 
 	try {
 		await syncService.syncData({
-			type: "morpho-withdraw",
-			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-			marketId: "0x802ec6e878dc9fe6905b8a0a18962dcca10440a87fa2242fbf4a0461c7b0c789"
-		})
-	} catch (e) {
-		console.error("error syncing PT-cusd JAN / USDC", e)
-	}
-
-	await sleep(5000)
-
-	try {
-		await syncService.syncData({
 			type: "aave-withdraw",
 			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 			vault: "0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502",
@@ -288,21 +262,6 @@ async function syncAllPTs(syncService: SyncService) {
 		})
 	} catch (e) {
 		console.error("error syncing PT-cusd JAN / USDC", e)
-	}
-
-	await sleep(5000)
-
-	await sleep(5000)
-
-	try {
-		await syncService.syncData({
-			type: "morpho-withdraw",
-			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-			marketId: "0x03f715ef1ae508ab3e1faf4dffdbf2a077d1f0ad10c5aad42cf4438d5e3328af"
-		})
-	} catch (e) {
-		console.error("error syncing PT-stcUSD JAN / USDC", e)
 	}
 
 	console.log("PTs synchronized in", (Date.now() - start), "ms")
