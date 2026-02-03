@@ -32,6 +32,7 @@ export const marketIds: Record<string, string> = {
 	"0xeb17955ea422baeddbfb0b8d8c9086c5be7a9cfdefb292119a102e981a30062e": "stcUSD/USDC",
 	"0x6c831dcc45a7c0af00b751da651bd874b96653c587615d11aafade7b357c4b43": "PT-thBILL-19FEB2026/USDC",
 	"0x29ae8cad946d861464d5e829877245a863a18157c0cde2c3524434dafa34e476": "sUSDD/USDT",
+	"0xa5beccdffd156dfe8c0871f143648c512f0a34f37c8a4ae2ff31ebfe944641d1": "sUSDS/PYUSD",
 }
 
 export const marketMaturityDates: Record<string, Date> = {

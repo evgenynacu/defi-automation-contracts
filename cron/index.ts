@@ -246,6 +246,17 @@ async function syncAllNonPTs(syncService: SyncService) {
 		console.error("Error syncing sUSDD/USDT", e)
 	}
 
+	try {
+		await syncService.syncData({
+			type: "morpho-withdraw",
+			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+			marketId: "0xa5beccdffd156dfe8c0871f143648c512f0a34f37c8a4ae2ff31ebfe944641d1"
+		})
+	} catch (e) {
+		console.error("Error syncing sUSDS/PYUSD", e)
+	}
+
 	console.log("non-PTs synchronized in", (Date.now() - start), "ms")
 }
 

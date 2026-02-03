@@ -2,7 +2,7 @@ import {testSwapAndBack} from "./test-swap-and-back";
 import {
 	cUSD, GHO,
 	PT_cUSD_JAN_26,
-	PT_reUSD_25JUN2026,
+	PT_reUSD_25JUN2026, PT_sNUSD_5MAR2026,
 	PT_srUSDe_JAN_26,
 	PT_stcUSD_JAN_26,
 	PT_sUSDe_FEB26,
@@ -69,12 +69,17 @@ describe("testSwapAndBack", () => {
 		console.log(await testSwapAndBack(PYUSD, 100000000000n, USDC)) // 0.015% !!!
 	})
 
+	it("should swap PYUSD to sUSDS and back", async () => {
+		console.log(await testSwapAndBack(PYUSD, 100000000000n, sUSDS)) // TODO
+	})
+
 	it("should swap PT-reUSD-25JUN2026 to USDC and back", async () => {
 		console.log(await testSwapAndBack(USDC, 100000000000n, PT_reUSD_25JUN2026)) // 0.43% too much
 	})
 
 	it("should swap PT-sNUSD-5MAR2026 to USDC and back", async () => {
-		// console.log(await testSwapAndBack(USDC, 100000000000n, PT_sNUSD_5MAR2026)) // sNUSD is not possible to convert from
+		//todo recheck
+		console.log(await testSwapAndBack(USDC, 100000000000n, PT_sNUSD_5MAR2026)) // sNUSD is not possible to convert from
 	})
 
 	it("should swap PT-thBILL to USDC and back on Arbitrum", async () => {
