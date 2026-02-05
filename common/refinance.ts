@@ -44,10 +44,6 @@ export async function refinance<T>(
 						amount: collateralToWithdraw,
 						txOrigin: txOrigin,
 					},
-					{
-						type: "aave-init",
-						category: 2,
-					},
 					getSupplyOperation(MaxUint256),
 					getBorrowOperation(debtToRepay),
 				]

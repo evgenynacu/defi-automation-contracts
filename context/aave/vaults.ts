@@ -89,4 +89,10 @@ export const aaveVaults: AaveVault[] = [
 		debt: USDe_ADDRESS,
 		owner: "0x089fa9741628c1A4576F5BA47E02D1180b581e36"
 	},
+	{
+		vault: toAddress("0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502"),
+		collateral: sUSDe_ADDRESS,
+		debt: USDe_ADDRESS,
+		owner: "0x089fa9741628c1A4576F5BA47E02D1180b581e36"
+	},
 ]

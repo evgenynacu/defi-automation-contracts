@@ -244,18 +244,12 @@ async function syncAllNonPTs(syncService: SyncService) {
 		console.error("Error syncing sUSDS/PYUSD", e)
 	}
 
-	console.log("non-PTs synchronized in", (Date.now() - start), "ms")
-}
-
-async function syncAllPTs(syncService: SyncService) {
-	const start = Date.now()
-
 	try {
 		await syncService.syncData({
 			type: "aave-withdraw",
 			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 			vault: "0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502",
-			collateralToken: PT_sUSDe_FEB26,
+			collateralToken: sUSDe_ADDRESS,
 			debtToken: USDe_ADDRESS,
 			debtShare: 0.1,
 			collateralShare: 0.1,
@@ -263,6 +257,12 @@ async function syncAllPTs(syncService: SyncService) {
 	} catch (e) {
 		console.error("error syncing PT-cusd JAN / USDC", e)
 	}
+
+	console.log("non-PTs synchronized in", (Date.now() - start), "ms")
+}
+
+async function syncAllPTs(syncService: SyncService) {
+	const start = Date.now()
 
 	console.log("PTs synchronized in", (Date.now() - start), "ms")
 }
