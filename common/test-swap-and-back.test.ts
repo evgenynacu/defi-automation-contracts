@@ -98,6 +98,10 @@ describe("testSwapAndBack", () => {
 		console.log(await testSwapAndBack(USDT_ADDRESS, 100000000000n, sUSDD)) // 0%!!!!
 	})
 
+	it("should swap USDC to USDe and back", async () => {
+		console.log(await testSwapAndBack(USDC, 1000000000000n, USDe_ADDRESS)) // 0%!!!!
+	})
+
 	// reUSD: too low liqudity
 	// F-ONE: requires KYC + losses ~ 1%
 	// thBILL: too low liquidity

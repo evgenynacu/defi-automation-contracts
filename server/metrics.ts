@@ -50,6 +50,18 @@ export const aaveFreeSupplyGauge = new Gauge({
 	labelNames: ['token'],
 })
 
+export const aaveReserveCapGauge = new Gauge({
+	name: 'aave_reserve_cap',
+	help: 'Aave reserve cap',
+	labelNames: ['token'],
+})
+
+export const aaveTotalSuppliedGauge = new Gauge({
+	name: 'aave_total_supplied',
+	help: 'Aave Total supplied',
+	labelNames: ['token'],
+})
+
 export const pendleImpliedRateGauge = new Gauge({
 	name: 'pendle_implied_rate',
 	help: 'Implied rate of pendle PT',
@@ -65,3 +77,5 @@ register.registerMetric(openPositionSizeGauge)
 register.registerMetric(ltvGauge)
 register.registerMetric(hfGauge)
 register.registerMetric(aaveFreeSupplyGauge)
+register.registerMetric(aaveReserveCapGauge)
+register.registerMetric(aaveTotalSuppliedGauge)

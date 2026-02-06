@@ -57,6 +57,7 @@ export const PT_srUSDe_JAN_26 = "0x1Fb3C5c35D95F48e48FFC8e36bCCe5CB5f29F57c"
 export const sUSDS = "0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD"
 export const PT_thBILL_19FEB2026 = "0x9b3924f9652cabf3Db48B7B4C92E474c571B3Ab4"
 // export const mF_ONE = "0x238a700eD6165261Cf8b2e544ba797BC11e466Ba"
+export const PT_srUSDE_2APR2026 = "0x9bf45ab47747f4b4dd09b3c2c73953484b4eb375"
 
 export const rUSD: address = toAddress("0x09D4214C03D01F49544C0448DBE3A27f768F2b34".toLowerCase())
 export const srUSD: address = toAddress("0x738d1115b90efa71ae468f1287fc864775e23a31".toLowerCase())

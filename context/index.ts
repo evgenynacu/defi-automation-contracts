@@ -1,10 +1,10 @@
-import { Pool } from "pg"
-import { DataService } from "./service/data-service"
-import { ethers } from "ethers"
-import { SyncService } from "./service/sync-service"
-import { DuneService } from "./service/dune-service"
-import { DuneSyncService } from "./service/dune-sync-service"
-import { StrategyService } from './service/strategy-service'
+import {Pool} from "pg"
+import {DataService} from "./service/data-service"
+import {ContractRunner, ethers} from "ethers"
+import {SyncService} from "./service/sync-service"
+import {DuneService} from "./service/dune-service"
+import {DuneSyncService} from "./service/dune-sync-service"
+import {StrategyService} from './service/strategy-service'
 
 export type Context = {
 	connectionPool: Pool
@@ -13,6 +13,8 @@ export type Context = {
 	duneService: DuneService
 	duneSyncService: DuneSyncService
 	strategyService: StrategyService
+	ethRunner: ContractRunner
+	arbRunner: ContractRunner
 }
 
 export async function createContext(): Promise<Context> {
@@ -36,5 +38,7 @@ export async function createContext(): Promise<Context> {
 		duneService,
 		duneSyncService,
 		strategyService,
+		ethRunner,
+		arbRunner,
 	}
 }

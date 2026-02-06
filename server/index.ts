@@ -5,6 +5,7 @@ import { createContext } from "../context"
 import { register } from './metrics'
 import { exportLatestData } from "./exporter"
 import { registerStrategiesEndpoints } from "./strategies"
+import {exportAaveMetrics} from "./aave-exporter";
 
 dotenv.config()
 
@@ -18,7 +19,7 @@ app.use(cors({
 }))
 
 createContext().then(async (context) => {
-	const { connectionPool, duneSyncService } = context
+	const { connectionPool, duneSyncService, ethRunner, arbRunner } = context
 
 	app.get("/", (_, res) => {
 		res.status(200).json({ status: "OK" })
@@ -83,4 +84,8 @@ createContext().then(async (context) => {
 	setInterval(() => {
 		exportLatestData(connectionPool).then()
 	}, 5000)
+
+	setInterval(() => {
+		exportAaveMetrics(ethRunner)
+	}, 10000)
 })
