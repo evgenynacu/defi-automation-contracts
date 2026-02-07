@@ -7,7 +7,7 @@ import {sendOrEstimate} from "./send-or-estimate"
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	console.log(`withdrawing on network ${hre.network.name}`)
 
-	await sendOrEstimate(hre, ex => withdrawFromAave(ex, sUSDe_ADDRESS, USDe_ADDRESS, 0.1, 0.1), "AaveUsdcVaultProxy")
+	await sendOrEstimate(hre, ex => withdrawFromAave(ex, sUSDe_ADDRESS, USDe_ADDRESS, 0.5, 1), "AaveUsdcVaultProxy")
 }
 
 // noinspection JSUnusedGlobalSymbols
