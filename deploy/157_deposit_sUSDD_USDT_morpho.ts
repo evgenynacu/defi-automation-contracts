@@ -9,7 +9,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	await sendOrEstimate(
 		hre,
 		ex =>
-			depositToMorpho(ex, "0x29ae8cad946d861464d5e829877245a863a18157c0cde2c3524434dafa34e476", 50000000000n, 10)
+			depositToMorpho(ex, "0x29ae8cad946d861464d5e829877245a863a18157c0cde2c3524434dafa34e476", 10000000n, 11.75)
 	)
 }
 
