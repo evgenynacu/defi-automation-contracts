@@ -4,9 +4,7 @@ import {runMigrations} from "../context/db/run-migrations"
 import {logAsync} from "../common/log-async"
 import {
 	GHO, PT_srUSDE_2APR2026,
-	PT_sUSDe_FEB26,
 	sUSDe_ADDRESS,
-	sUSDS,
 	SYRUP_USDT,
 	USDC,
 	USDe_ADDRESS,
@@ -244,20 +242,6 @@ async function syncAllNonPTs(syncService: SyncService) {
 		console.error("Error syncing sUSDS/PYUSD", e)
 	}
 
-	try {
-		await syncService.syncData({
-			type: "aave-withdraw",
-			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-			vault: "0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502",
-			collateralToken: sUSDe_ADDRESS,
-			debtToken: USDe_ADDRESS,
-			debtShare: 0.5,
-			collateralShare: 1,
-		})
-	} catch (e) {
-		console.error("error syncing sUSDe / USDe aave", e)
-	}
-
 	console.log("non-PTs synchronized in", (Date.now() - start), "ms")
 }
 
@@ -271,7 +255,7 @@ async function syncAllPTs(syncService: SyncService) {
 			vault: "0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502",
 			collateralToken: PT_srUSDE_2APR2026,
 			debtToken: USDe_ADDRESS,
-			debtShare: 0.5,
+			debtShare: 1,
 			collateralShare: 1,
 		})
 	} catch (e) {
