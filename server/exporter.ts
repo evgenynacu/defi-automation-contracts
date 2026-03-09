@@ -139,28 +139,22 @@ function parseJobId(jobId: string): ParsedJobId | undefined {
 	}
 	if (jobId.startsWith("aave-withdraw")) {
 		const parts = jobId.split("-")
-		const vault = parts[2] as address
 		const collateral = parts[3] as address
-		const desc = aaveVaults.find(it => it.vault === vault)
-		if (desc !== undefined) {
-			return {
-				type: "position",
-				wallet: wallets[desc.owner] || desc.owner,
-				positionId: tokens[collateral] || collateral,
-			}
+		const debt = parts[4] as address
+		return {
+			type: "position",
+			wallet: "NONE",
+			positionId: (tokens[collateral] || collateral) + "/" + (tokens[debt] || debt),
 		}
 	}
 	if (jobId.startsWith("aaveob-withdraw")) {
 		const parts = jobId.split("-")
-		const vault = parts[2] as address
 		const collateral = parts[3] as address
-		const desc = aaveVaults.find(it => it.vault === vault)
-		if (desc !== undefined) {
-			return {
-				type: "position",
-				wallet: "OB-" + wallets[desc.owner] || desc.owner,
-				positionId: (tokens[collateral] || collateral),
-			}
+		const debt = parts[4] as address
+		return {
+			type: "position",
+			wallet: "Vault",
+			positionId: (tokens[collateral] || collateral) + "/" + (tokens[debt] || debt),
 		}
 	}
 	if (jobId.startsWith("euler-withdraw")) {
