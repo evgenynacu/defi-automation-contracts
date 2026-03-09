@@ -123,6 +123,26 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
         return true;
     }
 
+    // Multi-token flash loan callback (used by Instadapp Flash Aggregator)
+    function executeOperation(
+        address[] calldata assets,
+        uint256[] calldata amounts,
+        uint256[] calldata premiums,
+        address initiator,
+        bytes calldata params
+    ) external returns (bool) {
+        require(rebalancing, "!NotRebalancing");
+        require(initiator == address(this));
+        require(assets.length == 1, "Single token only");
+
+        Operation[] memory operations = abi.decode(params, (Operation[]));
+        uint out = executeOperations(operations);
+        StorageUtil.setUintSlot(FLASH_LOAN_OUT_SLOT, out);
+
+        IERC20(assets[0]).safeTransfer(msg.sender, amounts[0] + premiums[0]);
+        return true;
+    }
+
     function _getMorphoAddress() internal view returns (address) {
         return MORPHO_ADDRESS;
     }

@@ -42,6 +42,16 @@ if (process.env.ADMIN_PRIVATE_KEY) {
 const config: HardhatUserConfig = {
 	etherscan: {
 		apiKey: process.env.ETHERSCAN_API_KEY,
+		customChains: [
+			{
+				network: "plasma",
+				chainId: 9745,
+				urls: {
+					apiURL: "https://api.plasmascan.to/api",
+					browserURL: "https://plasmascan.to"
+				}
+			}
+		]
 	},
 	solidity: {
 		version: "0.8.24",

@@ -5,7 +5,7 @@ import {MAX_SLIPPAGE_BPS} from "./config"
 import { fetch, ProxyAgent } from "undici";
 
 //export const ENABLED_AGGREGATORS = ["paraswap"].join(",")
-export const ENABLED_AGGREGATORS = ["kyberswap", "odos", "okx", "paraswap"].join(",")
+export const ENABLED_AGGREGATORS = ["kyberswap", "odos", "okx", "paraswap"]
 
 export class PendleProvider implements ISwapProvider {
 	getConfig(): ProviderConfig {
@@ -19,7 +19,7 @@ export class PendleProvider implements ISwapProvider {
 		const market = await findActiveMarket(params.chainId, params.fromToken, params.toToken)
 		if (market) {
 			console.log("Found active Pendle Market. using it: " + market)
-			const url = `https://api-v2.pendle.finance/core/v2/sdk/${params.chainId}/markets/${market}/swap?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&aggregators=${ENABLED_AGGREGATORS}&tokenIn=${params.fromToken}&tokenOut=${params.toToken}&amountIn=${params.swapAmount.toString()}`
+			const url = `https://api-v2.pendle.finance/core/v2/sdk/${params.chainId}/markets/${market}/swap?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&aggregators=${filterAggregators(params.chainId)}&tokenIn=${params.fromToken}&tokenOut=${params.toToken}&amountIn=${params.swapAmount.toString()}`
 			const res = await fetch(url, { dispatcher: getProxyAgent() })
 			if (res.status !== 200) {
 				const text = await res.text()
@@ -41,7 +41,7 @@ export class PendleProvider implements ISwapProvider {
 		const inactiveMarket = await findInactiveMarket(params.chainId, params.fromToken, params.toToken)
 		if (inactiveMarket) {
 			console.log("Found inactive Pendle Market. using it: " + inactiveMarket)
-			const exitUrl = `https://api-v2.pendle.finance/core/v2/sdk/1/markets/${inactiveMarket}/exit-positions?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&aggregators=${ENABLED_AGGREGATORS}&ptAmount=${params.swapAmount.toString()}&ytAmount=0&lpAmount=0&tokenOut=${params.toToken}`
+			const exitUrl = `https://api-v2.pendle.finance/core/v2/sdk/1/markets/${inactiveMarket}/exit-positions?receiver=${params.vault}&slippage=${MAX_SLIPPAGE_BPS/10000}&enableAggregator=true&aggregators=${filterAggregators(params.chainId)}&ptAmount=${params.swapAmount.toString()}&ytAmount=0&lpAmount=0&tokenOut=${params.toToken}`
 			const res = await fetch(exitUrl, { dispatcher: getProxyAgent() })
 
 			if (res.status !== 200) {
@@ -153,4 +153,11 @@ type QuoteResponse = {
 	data: {
 		amountOut: string
 	}
+}
+
+function filterAggregators(chainId: number) {
+	if (chainId === 9745) {
+		return ENABLED_AGGREGATORS.filter(it => it !== "odos" && it !== "paraswap").join(",")
+	}
+	return ENABLED_AGGREGATORS.join(",")
 }

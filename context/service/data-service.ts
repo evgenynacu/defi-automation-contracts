@@ -15,7 +15,7 @@ import {PendleMarket__factory} from "../../typechain-types";
 import {withdrawFromAaveOnBehalf} from "../../common/withdraw-from-aave-ob";
 
 export class DataService {
-	constructor(private readonly ethRunner: ContractRunner, private readonly arbRunner: ContractRunner) {
+	constructor(private readonly ethRunner: ContractRunner, private readonly arbRunner: ContractRunner, private readonly plasmaRunner: ContractRunner) {
 	}
 
 	async getData(request: DataRequest): Promise<DataResult> {
@@ -48,6 +48,8 @@ export class DataService {
 		switch (vault) {
 			case "0x85ca192a8AE32CaEB3bd14dbF0186B59023E2024":
 				return this.arbRunner
+			case "0xAbF51D0049cdd58F54Ffc38D4Ea370340e79855D":
+				return this.plasmaRunner
 			default:
 				return this.ethRunner
 		}

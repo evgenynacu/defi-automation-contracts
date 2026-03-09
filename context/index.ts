@@ -24,8 +24,9 @@ export async function createContext(): Promise<Context> {
 
 	const ethRunner = new ethers.JsonRpcProvider(process.env.ETHEREUM_RPC_URL || "https://eth.llamarpc.com")
 	const arbRunner = new ethers.JsonRpcProvider(process.env.ARBITRUM_RPC_URL || "https://arb1.arbitrum.io/rpc")
+	const plasmaRunner = new ethers.JsonRpcProvider(process.env.PLASMA_RPC_URL || "https://rpc.plasma.to")
 
-	const dataService = new DataService(ethRunner, arbRunner)
+	const dataService = new DataService(ethRunner, arbRunner, plasmaRunner)
 	const syncService = new SyncService(connectionPool, dataService)
 	const duneService = new DuneService()
 	const duneSyncService = new DuneSyncService(connectionPool, duneService)

@@ -36,7 +36,7 @@ export async function withdraw<T>({ex, lending, debtShare, collateralShare, reci
 
 	const result = await ex.execute([
 		{
-			type: "morpho-flash-loan",
+			type: "insta-flash-loan",
 			token: debt,
 			amount: debtToRepay,
 			innerOperations: [

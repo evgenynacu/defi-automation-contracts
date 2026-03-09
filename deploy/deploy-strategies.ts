@@ -21,7 +21,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const compoundV3Strategy = await deployStrategy(hre, "CompoundV3Strategy")
 	const morphoStrategy = config.morphoBlue === ZERO_ADDRESS ? ZERO_ADDRESS : (await deployStrategy(hre, "MorphoStrategy", [config.morphoBlue])).address
 	const genericAaveStrategy = await deployStrategy(hre, "GenericAaveStrategy", [config.aavePoolAddressProvider])
-	const morphoReadStrategy = await deployStrategy(hre, "MorphoReadStrategy", [config.morphoBlue])
+	const morphoReadStrategy = config.morphoBlue === ZERO_ADDRESS ? ZERO_ADDRESS : (await deployStrategy(hre, "MorphoReadStrategy", [config.morphoBlue])).address
 	// const pendleSwapStrategy = await deployStrategy(hre, "PendleSwapStrategy", ["0x888888888889758F76e7103c6CbF23ABbF58F946"])
 	// const odosSwapStrategy = await deployStrategy(hre, "OdosSwapStrategy", ["0xCf5540fFFCdC3d510B18bFcA6d2b9987b0772559"])
 	// const kyberSwapStrategy = await deployStrategy(hre, "KyberSwapStrategy", ["0x6131B5fae19EA4f9D964eAc0408E4408b66337b5"])
@@ -31,6 +31,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const swapStrategy = await deployStrategy(hre, "SwapStrategy")
 	const resetApprovalStrategy = await deployStrategy(hre, "ResetApprovalStrategy")
 	const aaveOnBehalfStrategy = await deployStrategy(hre, "AaveOnBehalfStrategy", [config.aavePoolAddressProvider])
+	const instaFlashLoanStrategy = config.instaFlash === ZERO_ADDRESS ? ZERO_ADDRESS : (await deployStrategy(hre, "InstaFlashLoanStrategy", [config.instaFlash])).address
 
 	// const strataSwapAddress = await deployStrataSwap(hre)
 	// const strataSwapStrategy = await deployStrategy(hre, "StrataSwapStrategy", [strataSwapAddress])
@@ -45,7 +46,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 		compoundV3Strategy.address,       //4
 		morphoStrategy,                   //5
 		genericAaveStrategy.address,      //6
-		morphoReadStrategy.address,       //7
+		morphoReadStrategy,               //7
 		ZERO_ADDRESS,                     //8
 		ZERO_ADDRESS,                     //9
 		ZERO_ADDRESS,                     //10
@@ -56,6 +57,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 		swapStrategy.address,             //15
 		resetApprovalStrategy.address,    //16
 		aaveOnBehalfStrategy.address,     //17
+		instaFlashLoanStrategy,           //18
 	]
 }
 

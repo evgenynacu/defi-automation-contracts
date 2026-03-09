@@ -16,7 +16,7 @@
     "deploy:arb:tag": "TS_NODE_PROJECT=./tsconfig.server.json npx hardhat deploy --network arbitrum_universal --tags",
     "deploy:plasma:tag": "TS_NODE_PROJECT=./tsconfig.server.json npx hardhat deploy --network plasma --tags",
     "test-deploy": "TS_NODE_PROJECT=./tsconfig.server.json hardhat test deploy-test/*.test.ts --network mainnet_universal",
-    "verify": "TS_NODE_PROJECT=./tsconfig.server.json hardhat --network mainnet_universal verify 0xD7F9c867237fC783F45221c151FD2011b6e3bfA7 0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e",
+    "verify": "TS_NODE_PROJECT=./tsconfig.server.json hardhat --network plasma verify 0x1E7FE4F8F05b2FEb305785BBCCA7aD71C55498ce 0x0000000000000000000000000000000000000000 0x061D8e131F26512348ee5FA42e2DF1bA9d6505E9",
     "migrate": "node-pg-migrate",
     "test:mocha": "TS_NODE_PROJECT=./tsconfig.server.json mocha '**/*.test.ts' --timeout 10000",
     "test:mocha:integration": "TS_NODE_PROJECT=./tsconfig.server.json mocha '**/*.integration.test.ts' --timeout 180000",
@@ -28,7 +28,7 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-network-helpers": "^1.0.11",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "@nomicfoundation/hardhat-verify": "^2.0.14",
+    "@nomicfoundation/hardhat-verify": "^2.1.3",
     "@testcontainers/postgresql": "^11.0.3",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",

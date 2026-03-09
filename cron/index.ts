@@ -3,7 +3,7 @@ import {createContext} from "../context"
 import {runMigrations} from "../context/db/run-migrations"
 import {logAsync} from "../common/log-async"
 import {
-	GHO, PT_srUSDE_2APR2026,
+	GHO, PT_srUSDE_2APR2026, PT_sUSDe_9APR2026,
 	sUSDe_ADDRESS,
 	SYRUP_USDT,
 	USDC,
@@ -274,6 +274,20 @@ async function syncAllPTs(syncService: SyncService) {
 		})
 	} catch (e) {
 		console.error("error syncing PT-srUSDe APR 26 / USDe [OB]", e)
+	}
+
+	try {
+		await syncService.syncData({
+			type: "aave-ob-withdraw",
+			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+			vault: "0xAbF51D0049cdd58F54Ffc38D4Ea370340e79855D",
+			collateralToken: PT_sUSDe_9APR2026,
+			debtToken: USDe_ADDRESS,
+			debtShare: 1,
+			collateralShare: 1,
+		})
+	} catch (e) {
+		console.error("error syncing Plasma PT-sUSDe APR 26 / USDe [OB]", e)
 	}
 
 	console.log("PTs synchronized in", (Date.now() - start), "ms")

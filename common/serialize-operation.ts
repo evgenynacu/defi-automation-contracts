@@ -6,7 +6,7 @@ import {
 	AaveFlashLoanStrategy__factory,
 	CompoundV3Strategy__factory,
 	Erc20TransferStrategy__factory, EthenaS4Strategy__factory, EulerV2Strategy__factory,
-	GenericAaveStrategy__factory, AaveOnBehalfStrategy__factory, MerklStrategy__factory,
+	GenericAaveStrategy__factory, AaveOnBehalfStrategy__factory, InstaFlashLoanStrategy__factory, MerklStrategy__factory,
 	MorphoFlashLoanStrategy__factory,
 	MorphoReadStrategy__factory,
 	MorphoStrategy__factory, ResetApprovalStrategy__factory,
@@ -31,6 +31,7 @@ export const ETHENA_S4_STRATEGY_INDEX = 14
 export const GENERIC_SWAP_STRATEGY_INDEX = 15
 export const RESET_APPROVAL_STRATEGY_INDEX = 16
 export const AAVE_ON_BEHALF_STRATEGY_INDEX = 17
+export const INSTA_FLASH_LOAN_STRATEGY_INDEX = 18
 
 export type ResetApprovalOperation = {
 	type: 'reset-approval'
@@ -265,6 +266,13 @@ export type AaveFlashLoanOperation = {
 	innerOperations: InnerStrategyOperation[]
 }
 
+export type InstaFlashLoanOperation = {
+	type: 'insta-flash-loan'
+	token: string
+	amount: bigint
+	innerOperations: InnerStrategyOperation[]
+}
+
 export type InnerStrategyOperation =
 	| TransferErc20FromCallerOperation
 	| TransferErc20ToCallerOperation
@@ -283,6 +291,7 @@ export type StrategyOperation =
 	| InnerStrategyOperation
 	| MorphoFlashLoanOperation
 	| AaveFlashLoanOperation
+	| InstaFlashLoanOperation
 
 export async function serializeOperations(runner: ContractRunner, vault: address, ops: StrategyOperation[]): Promise<OperationWithInfo[][]> {
 	const serializedOps = await Promise.all(ops.map(op => serializeOperation(runner, vault, op)))
@@ -497,6 +506,18 @@ async function serializeOperation(runner: ContractRunner, vault: address, op: St
 			const crossJoined = crossJoin(innerOperations)
 			return crossJoined.map(ops => ({
 				position: AAVE_FLASH_LOAN_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("executeFlashLoan", [op.token, op.amount, ops]),
+				info: ops.map(it => it.info).join(""),
+				in: ops.map(it => it.in).find(it => it !== undefined),
+				out: ops.map(it => it.out).find(it => it !== undefined),
+			}))
+		}
+		case "insta-flash-loan": {
+			const impl = InstaFlashLoanStrategy__factory.createInterface()
+			const innerOperations = await Promise.all(op.innerOperations.map(it => serializeOperation(runner, vault, it)))
+			const crossJoined = crossJoin(innerOperations)
+			return crossJoined.map(ops => ({
+				position: INSTA_FLASH_LOAN_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("executeFlashLoan", [op.token, op.amount, ops]),
 				info: ops.map(it => it.info).join(""),
 				in: ops.map(it => it.in).find(it => it !== undefined),

@@ -1,6 +1,6 @@
 import { ethers, Signer } from "ethers"
 import { address } from "./types"
-import { AAVE_DATA_PROVIDER } from "./addresses"
+import { getAaveDataProvider } from "./get-aave-addresses"
 import { IPoolDataProvider__factory, IERC20__factory } from "../typechain-types"
 
 const CREDIT_DELEGATION_ABI = [
@@ -29,7 +29,8 @@ export async function approveAaveOnBehalf(
 	collaterals: address[],
 	debts: address[],
 ) {
-	const dataProvider = IPoolDataProvider__factory.connect(AAVE_DATA_PROVIDER, signer)
+	const { chainId } = await signer.provider!.getNetwork()
+	const dataProvider = IPoolDataProvider__factory.connect(getAaveDataProvider(chainId), signer)
 	const signerAddress = await signer.getAddress()
 
 	let approvalsSent = 0

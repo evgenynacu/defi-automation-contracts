@@ -2,7 +2,7 @@ import { Deposit, Lending, Withdraw } from "../lending"
 import { address } from "../types"
 import { StrategyExecutor } from "../calculate-result"
 import { IPoolDataProvider__factory } from "../../typechain-types"
-import { AAVE_DATA_PROVIDER } from "../addresses"
+import { getAaveDataProvider } from "../get-aave-addresses"
 import { getAaveHealthFactor } from "../get-aave-health-factor"
 
 export class AaveOnBehalf implements Lending {
@@ -35,8 +35,12 @@ export class AaveOnBehalf implements Lending {
 
 	async initWithdraw(ex: StrategyExecutor<any>, debtShare: number, collateralShare: number): Promise<Withdraw> {
 		const onBehalfOf = this.onBehalfOf || await ex.getFrom()
-		const data = IPoolDataProvider__factory.connect(AAVE_DATA_PROVIDER, ex.runner)
+		const { chainId } = await ex.runner.provider!.getNetwork()
+		const data = IPoolDataProvider__factory.connect(getAaveDataProvider(chainId), ex.runner)
 
+		if (process.env.DEBUG) {
+			console.log("data is", await data.getAddress())
+		}
 		const [, , totalDebt] = await data.getUserReserveData(this.debt, onBehalfOf)
 		const [totalCollateral] = await data.getUserReserveData(this.collateral, onBehalfOf)
 		const debtToRepay = totalDebt * BigInt(Math.floor(debtShare * multiplier + 1)) / BigInt(multiplier)

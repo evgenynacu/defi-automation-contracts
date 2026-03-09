@@ -8,8 +8,9 @@ describe('DataService', () => {
 	before(() => {
 		const ethRunner = new ethers.JsonRpcProvider(process.env.ETHEREUM_RPC_URL || "https://eth.llamarpc.com")
 		const arbRunner = new ethers.JsonRpcProvider(process.env.ARBITRUM_RPC_URL || "https://arb1.arbitrum.io/rpc")
+		const plasmaRunner = new ethers.JsonRpcProvider(process.env.PLASMA_RPC_URL || "https://rpc.plasma.to")
 
-		dataService = new DataService(ethRunner, arbRunner)
+		dataService = new DataService(ethRunner, arbRunner, plasmaRunner)
 	})
 
 	it("should load implied rate", async () => {
