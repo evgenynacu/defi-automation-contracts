@@ -158,8 +158,8 @@ function parseJobId(jobId: string): ParsedJobId | undefined {
 		if (desc !== undefined) {
 			return {
 				type: "position",
-				wallet: wallets[desc.owner] || desc.owner,
-				positionId: (tokens[collateral] || collateral) + "-OB",
+				wallet: "OB-" + wallets[desc.owner] || desc.owner,
+				positionId: (tokens[collateral] || collateral),
 			}
 		}
 	}
