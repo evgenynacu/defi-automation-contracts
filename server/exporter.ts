@@ -30,6 +30,7 @@ export async function exportLatestData(pool: Pool) {
 	)
 	res.rows.forEach(row => {
 		const parsedId = parseJobId(row.job_id)
+		console.log("parsed", parsedId, "processing...")
 		if (parsedId !== undefined && parsedId.type === "position") {
 			openPositionSizeGauge.set(
 				{
