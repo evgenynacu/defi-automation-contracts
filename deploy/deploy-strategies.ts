@@ -30,6 +30,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const ethenaS4Strategy = await deployStrategy(hre, "EthenaS4Strategy", [config.ethenaS4Distributor])
 	const swapStrategy = await deployStrategy(hre, "SwapStrategy")
 	const resetApprovalStrategy = await deployStrategy(hre, "ResetApprovalStrategy")
+	const aaveOnBehalfStrategy = await deployStrategy(hre, "AaveOnBehalfStrategy", [config.aavePoolAddressProvider])
 
 	// const strataSwapAddress = await deployStrataSwap(hre)
 	// const strataSwapStrategy = await deployStrategy(hre, "StrataSwapStrategy", [strataSwapAddress])
@@ -54,6 +55,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 		ethenaS4Strategy.address,         //14
 		swapStrategy.address,             //15
 		resetApprovalStrategy.address,    //16
+		aaveOnBehalfStrategy.address,     //17
 	]
 }
 

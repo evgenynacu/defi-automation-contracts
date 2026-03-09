@@ -6,7 +6,7 @@ import {
 	AaveFlashLoanStrategy__factory,
 	CompoundV3Strategy__factory,
 	Erc20TransferStrategy__factory, EthenaS4Strategy__factory, EulerV2Strategy__factory,
-	GenericAaveStrategy__factory, MerklStrategy__factory,
+	GenericAaveStrategy__factory, AaveOnBehalfStrategy__factory, MerklStrategy__factory,
 	MorphoFlashLoanStrategy__factory,
 	MorphoReadStrategy__factory,
 	MorphoStrategy__factory, ResetApprovalStrategy__factory,
@@ -30,6 +30,7 @@ export const MERKL_STRATEGY_INDEX = 12
 export const ETHENA_S4_STRATEGY_INDEX = 14
 export const GENERIC_SWAP_STRATEGY_INDEX = 15
 export const RESET_APPROVAL_STRATEGY_INDEX = 16
+export const AAVE_ON_BEHALF_STRATEGY_INDEX = 17
 
 export type ResetApprovalOperation = {
 	type: 'reset-approval'
@@ -211,6 +212,39 @@ type AaveOperation =
 	| AaveRepayOperation
   | AaveInitOperation
 
+export type AaveObSupplyOperation = {
+	type: 'aave-ob-supply'
+	token: string
+	amount: bigint
+	onBehalfOf: string
+}
+
+export type AaveObWithdrawOperation = {
+	type: 'aave-ob-withdraw'
+	token: string
+	amount: bigint
+	onBehalfOf: string
+}
+
+export type AaveObBorrowOperation = {
+	type: 'aave-ob-borrow'
+	token: string
+	amount: bigint
+	onBehalfOf: string
+}
+
+export type AaveObRepayOperation = {
+	type: 'aave-ob-repay'
+	token: string
+	amount: bigint
+	onBehalfOf: string
+}
+
+type AaveObOperation =
+	| AaveObSupplyOperation
+	| AaveObWithdrawOperation
+	| AaveObBorrowOperation
+	| AaveObRepayOperation
 
 export type MorphoFlashLoanOperation = {
 	type: 'morpho-flash-loan'
@@ -239,6 +273,7 @@ export type InnerStrategyOperation =
 	| MorphoOperation
 	| EulerOperation
 	| AaveOperation
+	| AaveObOperation
 	| MorphoReadTotalBorrowAssetsOperation
 
 export type StrategyOperation =
@@ -330,6 +365,34 @@ async function serializeOperation(runner: ContractRunner, vault: address, op: St
 			return [{
 				position: AAVE_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("repayDebt", [op.token, op.amount]),
+			}]
+		}
+		case "aave-ob-supply": {
+			const impl = AaveOnBehalfStrategy__factory.createInterface()
+			return [{
+				position: AAVE_ON_BEHALF_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("supplyCollateral", [op.token, op.amount, op.onBehalfOf]),
+			}]
+		}
+		case "aave-ob-withdraw": {
+			const impl = AaveOnBehalfStrategy__factory.createInterface()
+			return [{
+				position: AAVE_ON_BEHALF_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("withdrawCollateral", [op.token, op.amount, op.onBehalfOf]),
+			}]
+		}
+		case "aave-ob-borrow": {
+			const impl = AaveOnBehalfStrategy__factory.createInterface()
+			return [{
+				position: AAVE_ON_BEHALF_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("borrowDebt", [op.token, op.amount, op.onBehalfOf]),
+			}]
+		}
+		case "aave-ob-repay": {
+			const impl = AaveOnBehalfStrategy__factory.createInterface()
+			return [{
+				position: AAVE_ON_BEHALF_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("repayDebt", [op.token, op.amount, op.onBehalfOf]),
 			}]
 		}
 		case "morpho-supply": {

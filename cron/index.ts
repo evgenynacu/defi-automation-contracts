@@ -262,6 +262,20 @@ async function syncAllPTs(syncService: SyncService) {
 		console.error("error syncing PT-srUSDe APR 26 / USDe", e)
 	}
 
+	try {
+		await syncService.syncData({
+			type: "aave-withdraw",
+			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+			vault: "0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502",
+			collateralToken: PT_srUSDE_2APR2026,
+			debtToken: USDe_ADDRESS,
+			debtShare: 1,
+			collateralShare: 1,
+		})
+	} catch (e) {
+		console.error("error syncing PT-srUSDe APR 26 / USDe", e)
+	}
+
 	console.log("PTs synchronized in", (Date.now() - start), "ms")
 }
 

@@ -149,6 +149,19 @@ function parseJobId(jobId: string): ParsedJobId | undefined {
 			}
 		}
 	}
+	if (jobId.startsWith("aaveob-withdraw")) {
+		const parts = jobId.split("-")
+		const vault = parts[2] as address
+		const collateral = parts[3] as address
+		const desc = aaveVaults.find(it => it.vault === vault)
+		if (desc !== undefined) {
+			return {
+				type: "position",
+				wallet: wallets[desc.owner] || desc.owner,
+				positionId: (tokens[collateral] || collateral) + "-OB",
+			}
+		}
+	}
 	if (jobId.startsWith("euler-withdraw")) {
 		const parts = jobId.split("-")
 		const wallet = parts[2] as address

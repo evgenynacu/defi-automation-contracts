@@ -12,6 +12,7 @@ import {getCompoundHealthFactor} from "../../common/get-compound-health-factor"
 import {withdraw} from "../../common/withdraw";
 import {Euler} from "../../common/lending/euler";
 import {PendleMarket__factory} from "../../typechain-types";
+import {withdrawFromAaveOnBehalf} from "../../common/withdraw-from-aave-ob";
 
 export class DataService {
 	constructor(private readonly ethRunner: ContractRunner, private readonly arbRunner: ContractRunner) {
@@ -92,6 +93,12 @@ async function getData(executor: StrategyExecutor<CalculateResult>, request: Dat
 				await withdrawFromAave(executor, request.collateralToken, request.debtToken, request.debtShare, request.collateralShare)
 			)
 		}
+		case "aave-ob-withdraw": {
+			return toDataResult(
+				`aaveob-withdraw-${request.vault}-${request.collateralToken}-${request.debtToken}`,
+				await withdrawFromAaveOnBehalf(executor, request.collateralToken, request.debtToken, request.debtShare, request.collateralShare)
+			)
+		}
 		case "compound-withdraw": {
 			return toDataResult(
 				`compound-withdraw-${request.from}-${request.comet}-${request.collateralToken}`,
@@ -142,7 +149,7 @@ export type DataRequest =
 	| CompoundHealthFactorRequest
 	|
 	(CommonPart &
-		(MorphoWithdrawDataRequest | AaveWithdrawDataRequest | CompoundWithdrawDataRequest | EulerWithdrawDataRequest))
+		(MorphoWithdrawDataRequest | AaveWithdrawDataRequest | AaveOnBehalfWithdrawDataRequest | CompoundWithdrawDataRequest | EulerWithdrawDataRequest))
 
 export type AaveHealthFactorRequest = {
 	type: "aave-health-factor"
@@ -194,6 +201,17 @@ export type EulerWithdrawDataRequest = {
 	collateralVault: `0x${string}`
 	debtVault: `0x${string}`
 }
+
+export type AaveOnBehalfWithdrawDataRequest = {
+	type: "aave-ob-withdraw"
+	vault: address
+	from: address
+	collateralToken: address
+	debtToken: address
+	debtShare?: number
+	collateralShare?: number
+}
+
 
 export type AaveWithdrawDataRequest = {
 	type: "aave-withdraw"
