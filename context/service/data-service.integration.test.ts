@@ -1,6 +1,7 @@
 import {DataService} from "./data-service";
 import {before} from "mocha";
 import {ethers} from "ethers";
+import {PT_sUSDe_9APR2026, USDe_ADDRESS, USDe_PLASMA} from "../../common/addresses";
 
 describe('DataService', () => {
 	let dataService: DataService
@@ -17,6 +18,19 @@ describe('DataService', () => {
 		const data = await dataService.getData({
 			type: "pendle-implied-rate",
 			market: "0x4eaa571eafcd96f51728756bd7f396459bb9b869"
+		})
+		console.log(data)
+	})
+
+	it("should load plasma positions", async () => {
+		const data = await dataService.getData({
+			type: "aave-ob-withdraw",
+			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+			vault: "0xAbF51D0049cdd58F54Ffc38D4Ea370340e79855D",
+			collateralToken: PT_sUSDe_9APR2026,
+			debtToken: USDe_PLASMA,
+			debtShare: 1,
+			collateralShare: 1,
 		})
 		console.log(data)
 	})

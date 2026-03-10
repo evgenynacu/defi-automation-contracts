@@ -7,7 +7,7 @@ import {
 	sUSDe_ADDRESS,
 	SYRUP_USDT,
 	USDC,
-	USDe_ADDRESS,
+	USDe_ADDRESS, USDe_PLASMA,
 	USDS,
 	USDT_ADDRESS
 } from "../common/addresses"
@@ -282,7 +282,7 @@ async function syncAllPTs(syncService: SyncService) {
 			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 			vault: "0xAbF51D0049cdd58F54Ffc38D4Ea370340e79855D",
 			collateralToken: PT_sUSDe_9APR2026,
-			debtToken: USDe_ADDRESS,
+			debtToken: USDe_PLASMA,
 			debtShare: 1,
 			collateralShare: 1,
 		})
