@@ -31,7 +31,7 @@ describe('DataService', () => {
 			debtToken: USDe_PLASMA,
 			debtShare: 1,
 			collateralShare: 1,
-			flashLoanProvider: "insta"
+			flashLoanProvider: "insta",
 		})
 		console.log(data)
 	})

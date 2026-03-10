@@ -289,6 +289,7 @@ async function syncAllPTs(syncService: SyncService) {
 			debtToken: USDe_PLASMA,
 			debtShare: 1,
 			collateralShare: 1,
+			flashLoanProvider: "insta",
 		})
 	} catch (e) {
 		console.error("error syncing Plasma PT-sUSDe APR 26 / USDe [OB]", e)
