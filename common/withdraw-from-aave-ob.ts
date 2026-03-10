@@ -9,11 +9,13 @@ export async function withdrawFromAaveOnBehalf<T>(
 	debtToken: string,
 	debtShare: number = 1,
 	collateralShare?: number,
+	flashLoanProvider?: "insta" | "morpho",
 ): Promise<T> {
 	return withdraw({
 		ex,
 		lending: new AaveOnBehalf(toAddress(collateralToken), toAddress(debtToken)),
 		debtShare: debtShare,
 		collateralShare: collateralShare,
+		flashLoanProvider: flashLoanProvider,
 	})
 }

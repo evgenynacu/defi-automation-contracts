@@ -12,11 +12,13 @@ export type WitdrawRequest<T> = {
 	collateralShare?: number,
 	recipient?: address,
 	amount?: bigint,
+	flashLoanProvider?: "insta" | "morpho",
 }
 
-export async function withdraw<T>({ex, lending, debtShare, collateralShare, recipient, amount}: WitdrawRequest<T>): Promise<T> {
+export async function withdraw<T>({ex, lending, debtShare, collateralShare, recipient, amount, flashLoanProvider}: WitdrawRequest<T>): Promise<T> {
 
 	const from = await ex.getFrom()
+	const realFlashLoanProvider: "morpho-flash-loan" | "insta-flash-loan" = flashLoanProvider ? `${flashLoanProvider}-flash-loan` : "morpho-flash-loan"
 
 	const {
 		debt,
@@ -36,7 +38,7 @@ export async function withdraw<T>({ex, lending, debtShare, collateralShare, reci
 
 	const result = await ex.execute([
 		{
-			type: "insta-flash-loan",
+			type: realFlashLoanProvider,
 			token: debt,
 			amount: debtToRepay,
 			innerOperations: [

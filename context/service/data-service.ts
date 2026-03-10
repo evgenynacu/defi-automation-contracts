@@ -98,7 +98,7 @@ async function getData(executor: StrategyExecutor<CalculateResult>, request: Dat
 		case "aave-ob-withdraw": {
 			return toDataResult(
 				`aaveob-withdraw-${request.vault}-${request.collateralToken}-${request.debtToken}`,
-				await withdrawFromAaveOnBehalf(executor, request.collateralToken, request.debtToken, request.debtShare, request.collateralShare)
+				await withdrawFromAaveOnBehalf(executor, request.collateralToken, request.debtToken, request.debtShare, request.collateralShare, request.flashLoanProvider)
 			)
 		}
 		case "compound-withdraw": {
@@ -188,6 +188,7 @@ export type SwapRateRequest = {
 type CommonPart = {
 	vault: address
 	from: address
+	flashLoanProvider?: "morpho" | "insta"
 }
 
 export type MorphoWithdrawDataRequest = {
