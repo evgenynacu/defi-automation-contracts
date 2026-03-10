@@ -262,6 +262,8 @@ async function syncAllPTs(syncService: SyncService) {
 		console.error("error syncing PT-srUSDe APR 26 / USDe", e)
 	}
 
+	await sleep(10000)
+
 	try {
 		await syncService.syncData({
 			type: "aave-ob-withdraw",
@@ -275,6 +277,8 @@ async function syncAllPTs(syncService: SyncService) {
 	} catch (e) {
 		console.error("error syncing PT-srUSDe APR 26 / USDe [OB]", e)
 	}
+
+	await sleep(10000)
 
 	try {
 		await syncService.syncData({
