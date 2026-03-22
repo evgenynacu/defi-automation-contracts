@@ -256,23 +256,6 @@ async function syncAllPTs(syncService: SyncService) {
 		console.error("error syncing PT-srUSDe APR 26 / USDe [OB]", e)
 	}
 
-	await sleep(10000)
-
-	try {
-		await syncService.syncData({
-			type: "aave-ob-withdraw",
-			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-			vault: "0xAbF51D0049cdd58F54Ffc38D4Ea370340e79855D",
-			collateralToken: PT_sUSDe_9APR2026,
-			debtToken: USDe_PLASMA,
-			debtShare: 1,
-			collateralShare: 1,
-			flashLoanProvider: "insta",
-		})
-	} catch (e) {
-		console.error("error syncing Plasma PT-sUSDe APR 26 / USDe [OB]", e)
-	}
-
 	console.log("PTs synchronized in", (Date.now() - start), "ms")
 }
 

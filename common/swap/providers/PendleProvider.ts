@@ -157,7 +157,7 @@ type QuoteResponse = {
 
 function filterAggregators(chainId: number) {
 	if (chainId === 9745) {
-		return ENABLED_AGGREGATORS.filter(it => it !== "odos" && it !== "paraswap").join(",")
+		return ENABLED_AGGREGATORS.filter(it => it !== "odos" && it !== "paraswap" && it !== "kyberswap").join(",")
 	}
 	return ENABLED_AGGREGATORS.join(",")
 }
