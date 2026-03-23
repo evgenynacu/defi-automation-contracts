@@ -220,6 +220,17 @@ async function syncAllNonPTs(syncService: SyncService) {
 		console.error("Error syncing sUSDS/USDT", e)
 	}
 
+	try {
+		await syncService.syncData({
+			type: "morpho-withdraw",
+			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+			marketId: "0x1590cb22d797e226df92ebc6e0153427e207299916e7e4e53461389ad68272fb"
+		})
+	} catch (e) {
+		console.error("Error syncing wsrUSD/USDC", e)
+	}
+
 	console.log("non-PTs synchronized in", (Date.now() - start), "ms")
 }
 
