@@ -63,6 +63,7 @@ export const tokens: Record<address, string> = {
 	[PT_srUSDE_2APR2026]: "PT-srUSDE-2APR2026",
 	[PT_sUSDe_9APR2026]: "PT-sUSDE-9APR2026",
 	[USDe_PLASMA]: "USDe",
+	[PT_sUSDe_7MAY2026]: "PT-sUSDe_7MAY2026",
 }
 
 export function findToken(address: address): string | undefined {

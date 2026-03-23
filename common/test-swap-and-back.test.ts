@@ -58,7 +58,7 @@ describe("testSwapAndBack", () => {
 	})
 
 	it("should swap sUSDS to USDT and back", async () => {
-		console.log(await testSwapAndBack(USDT_ADDRESS, k100_6, sUSDS)) // 0.000381 %
+		console.log(await testSwapAndBack(USDT_ADDRESS, 10n * k100_6, sUSDS)) // 0.000381 %
 	})
 
 	it("should swap USDe to PT-sUSDe-FEB25 and back", async () => {
