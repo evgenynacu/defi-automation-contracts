@@ -276,8 +276,8 @@ async function syncAllPTs(syncService: SyncService) {
 			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 			collateralToken: PT_sUSDe_7MAY2026,
 			debtToken: USDe_ADDRESS,
-			debtShare: 1,
-			collateralShare: 1,
+			debtShare: 0.1,
+			collateralShare: 0.1,
 		})
 	} catch (e) {
 		console.error("error syncing PT-rUSDe MAY 26 / USDe [OB]", e)

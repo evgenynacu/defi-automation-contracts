@@ -14,7 +14,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	const aave = new AaveOnBehalf(PT_sUSDe_7MAY2026, USDe_ADDRESS)
 	const [signer] = await hre.ethers.getSigners()
 	await approveAaveOnBehalf(signer, await getVaultAddress(hre), [PT_sUSDe_7MAY2026], [USDe_ADDRESS])
-	await sendOrEstimate(hre, ex => withdraw({ex, lending: aave, collateralShare: 1, debtShare: 1}))
+	await sendOrEstimate(hre, ex => withdraw({ex, lending: aave, collateralShare: 0.5, debtShare: 0.5}))
 }
 
 // noinspection JSUnusedGlobalSymbols
