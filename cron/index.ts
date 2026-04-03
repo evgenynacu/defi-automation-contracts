@@ -3,11 +3,11 @@ import {createContext} from "../context"
 import {runMigrations} from "../context/db/run-migrations"
 import {logAsync} from "../common/log-async"
 import {
-	GHO, PT_srUSDE_2APR2026, PT_sUSDe_7MAY2026, PT_sUSDe_9APR2026,
+	GHO, PT_srUSDE_2APR2026, PT_sUSDe_7MAY2026,
 	sUSDe_ADDRESS,
 	SYRUP_USDT,
 	USDC,
-	USDe_ADDRESS, USDe_PLASMA,
+	USDe_ADDRESS,
 	USDS,
 	USDT_ADDRESS
 } from "../common/addresses"
@@ -21,7 +21,7 @@ dotenv.config()
 async function runJobs() {
 	console.log("Starting cron jobs")
 
-	const {connectionPool, syncService, duneSyncService, duneService} = await createContext()
+	const {connectionPool, syncService } = await createContext()
 	await runMigrations(connectionPool)
 
 	console.log("Updating jobs")

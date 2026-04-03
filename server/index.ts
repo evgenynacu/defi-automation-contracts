@@ -84,8 +84,4 @@ createContext().then(async (context) => {
 	setInterval(() => {
 		exportLatestData(connectionPool).then()
 	}, 5000)
-
-	setInterval(() => {
-		exportAaveMetrics(ethRunner)
-	}, 10000)
 })
