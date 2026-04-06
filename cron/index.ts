@@ -239,38 +239,6 @@ async function syncAllPTs(syncService: SyncService) {
 
 	try {
 		await syncService.syncData({
-			type: "aave-withdraw",
-			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-			vault: "0x7286fb0a79BEF605c5BF63B65Ce9607CBB26d502",
-			collateralToken: PT_srUSDE_2APR2026,
-			debtToken: USDe_ADDRESS,
-			debtShare: 1,
-			collateralShare: 1,
-		})
-	} catch (e) {
-		console.error("error syncing PT-srUSDe APR 26 / USDe", e)
-	}
-
-	await sleep(10000)
-
-	try {
-		await syncService.syncData({
-			type: "aave-ob-withdraw",
-			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-			collateralToken: PT_srUSDE_2APR2026,
-			debtToken: USDe_ADDRESS,
-			debtShare: 1,
-			collateralShare: 1,
-		})
-	} catch (e) {
-		console.error("error syncing PT-srUSDe APR 26 / USDe [OB]", e)
-	}
-
-	await sleep(10000)
-
-	try {
-		await syncService.syncData({
 			type: "aave-ob-withdraw",
 			from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
 			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
