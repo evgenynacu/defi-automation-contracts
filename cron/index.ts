@@ -141,24 +141,6 @@ async function runJobs() {
 			}),
 			"checking USDS-USDT rate"
 		)
-		logAsync(
-			syncService.syncData({
-				type: "swap-rate",
-				fromToken: USDC,
-				toToken: SYRUP_USDT,
-				amount: 100000000000n,
-			}),
-			"checking USDC-syrupUSDT rate"
-		)
-		logAsync(
-			syncService.syncData({
-				type: "swap-rate",
-				fromToken: GHO,
-				toToken: SYRUP_USDT,
-				amount: 100000000000000000000000n,
-			}),
-			"checking GHO-syrupUSDT rate"
-		)
 
 		// logAsync(
 		// 	syncService.syncData({
@@ -220,36 +202,11 @@ async function syncAllNonPTs(syncService: SyncService) {
 		console.error("Error syncing sUSDS/USDT", e)
 	}
 
-	try {
-		await syncService.syncData({
-			type: "morpho-withdraw",
-			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-			marketId: "0x1590cb22d797e226df92ebc6e0153427e207299916e7e4e53461389ad68272fb"
-		})
-	} catch (e) {
-		console.error("Error syncing wsrUSD/USDC", e)
-	}
-
 	console.log("non-PTs synchronized in", (Date.now() - start), "ms")
 }
 
 async function syncAllPTs(syncService: SyncService) {
 	const start = Date.now()
-
-	try {
-		await syncService.syncData({
-			type: "aave-ob-withdraw",
-			from: "0xEbca6F665A80466f410B3c2FD5a1696eDB664A42",
-			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-			collateralToken: PT_sUSDe_7MAY2026,
-			debtToken: USDe_ADDRESS,
-			debtShare: 0.1,
-			collateralShare: 0.1,
-		})
-	} catch (e) {
-		console.error("error syncing PT-rUSDe MAY 26 / USDe [OB]", e)
-	}
 
 	console.log("PTs synchronized in", (Date.now() - start), "ms")
 }
