@@ -13,7 +13,7 @@ import {
 	USDC,
 	USDe_ADDRESS, USDe_PLASMA,
 	USDS,
-	USDT_ADDRESS,
+	USDT_ADDRESS, USDtb,
 	WEETH_ADDRESS,
 	WETH_ADDRESS,
 	wsrUSD,
@@ -64,6 +64,7 @@ export const tokens: Record<address, string> = {
 	[PT_sUSDe_9APR2026]: "PT-sUSDE-9APR2026",
 	[USDe_PLASMA]: "USDe",
 	[PT_sUSDe_7MAY2026]: "PT-sUSDe_7MAY2026",
+	[USDtb]: "USDtb",
 }
 
 export function findToken(address: address): string | undefined {

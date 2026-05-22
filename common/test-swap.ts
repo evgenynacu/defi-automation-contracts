@@ -12,7 +12,7 @@ import {
 	SYRUP_USDC, SYRUP_USDT,
 	USDC, USDC_ARB,
 	USDe_ADDRESS, USDS,
-	USDT_ADDRESS,
+	USDT_ADDRESS, USDtb,
 	WEETH_ADDRESS,
 	WETH_ADDRESS, wsrUSD,
 	WSTETH_ADDRESS
@@ -117,6 +117,7 @@ const SLOTS: Record<address, `0x${string}`> = {
 	[PT_thBILL_19FEB2026]: "0xcbce38d2a396df10bbdba0503c72fc20ab34efc98f9cda900b01217a4dfee62d",
 	[GHO]: "0xfd5f8c061cfecd096dabc8fd13b51ab68a4f601f87b140bce0bc3e7d5838b3a7",
 	[sUSDD]: "0x04f57dd85ec5e81f7372eb95c7ed0161bd7e95fa724be8f8aeee3a93b24598cf",
+	[USDtb]: "0x8c40545ae130cc7e6652dec854c4056365cdb3dd5d12cdd2a06e94babbcdfc93",
 }
 
 const ALLOWANCE_SLOTS: Record<address, `0x${string}`> = {
@@ -140,4 +141,5 @@ const ALLOWANCE_SLOTS: Record<address, `0x${string}`> = {
 	[SYRUP_USDT]: "0xaf5afcc2baa4bcdf8d0cab8c38b63df065af72cde9c674b929139bdd9651ebed",
 	[GHO]: "0xaf5afcc2baa4bcdf8d0cab8c38b63df065af72cde9c674b929139bdd9651ebed",
 	[sUSDD]: "0xb2ae0ab68ec836b1f2299db55eb1e25b4b0ae28e5ff26e9bab378345ef7edc7f",
+	[USDtb]: "0xa020f9b4a4f55c89da4ccd259e1b02690b427b83ac95d7b6b9249455b2a2b66a",
 }

@@ -15,12 +15,13 @@ import {
 	USDC,
 	USDC_ARB,
 	USDe_ADDRESS,
-	USDT_ADDRESS,
+	USDT_ADDRESS, USDtb,
 	wsrUSD
 } from "./addresses";
 
 const k100_18 = 100000000000000000000000n;
 const k100_6 = 100000000000n;
+const m1_18 = 1000000000000000000000000n;
 const m1_6 = 1000000000000n;
 
 describe("testSwapAndBack", () => {
@@ -110,6 +111,9 @@ describe("testSwapAndBack", () => {
 		console.log(await testSwapAndBack(USDC, m1_6, USDe_ADDRESS)) // 0%!!!!
 	})
 
+	it("should swap USDtb to sUSDe and back", async () => {
+		console.log(await testSwapAndBack(USDtb, m1_18, sUSDe_ADDRESS)) // 100k = 0.037%!!!! 1m = 0.078%
+	})
 
 
 	// reUSD: too low liqudity
