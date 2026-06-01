@@ -163,15 +163,15 @@ async function runJobs() {
 		// 	"checking sUSDe-USDC rate"
 		// )
 
-		// logAsync(
-		// 	syncService.syncData({
-		// 		type: "compound-health-factor",
-		// 		from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
-		// 		comet: "0xd98Be00b5D27fc98112BdE293e487f8D4cA57d07",
-		// 		collateral: "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f"
-		// 	}),
-		// 	"syncing BTC HF"
-		// )
+		logAsync(
+			syncService.syncData({
+				type: "compound-health-factor",
+				from: "0x21F1359b6DD3392d3DC567d005d83B6d017CC60D",
+				comet: "0xd98Be00b5D27fc98112BdE293e487f8D4cA57d07",
+				collateral: "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f"
+			}),
+			"syncing BTC HF"
+		)
 		//
 		logAsync(
 			syncAllNonPTs(syncService),
