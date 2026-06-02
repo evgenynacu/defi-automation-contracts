@@ -215,19 +215,25 @@ async function syncAllPTs(syncService: SyncService) {
 
 async function refreshViews(connectionPool: Pool) {
 	let start = Date.now()
-	try {
-		await connectionPool.query("REFRESH MATERIALIZED VIEW main_data_week")
-	} catch (e) {
-		console.error(e)
-	}
-	console.log("Refreshed main_data_week in", (Date.now() - start), "ms")
-	start = Date.now()
+	let dayRefreshed = false
 	try {
 		await connectionPool.query("REFRESH MATERIALIZED VIEW main_data_day")
+		dayRefreshed = true
 	} catch (e) {
 		console.error(e)
 	}
 	console.log("Refreshed main_data_day in", (Date.now() - start), "ms")
+	if (dayRefreshed) {
+		start = Date.now()
+		try {
+			await connectionPool.query("REFRESH MATERIALIZED VIEW main_data_week")
+		} catch (e) {
+			console.error(e)
+		}
+		console.log("Refreshed main_data_week in", (Date.now() - start), "ms")
+	} else {
+		console.warn("Skipping main_data_week refresh because main_data_day failed")
+	}
 	start = Date.now()
 	try {
 		await connectionPool.query("REFRESH MATERIALIZED VIEW position_values_ext_mat")
