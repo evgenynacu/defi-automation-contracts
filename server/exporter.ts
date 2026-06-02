@@ -18,15 +18,10 @@ import {eulerPositions} from "../context/euler";
 
 export async function exportLatestData(pool: Pool) {
 	const res = await pool.query<DataResultRow>(
-		`with raw_data as (SELECT job_id,
-                                  updated_at,
-                                  data,
-                                  row_number() over (partition by job_id order by updated_at desc) as rn
-                           FROM data
-                           where updated_at > current_timestamp - interval '2 minute')
-        select *
-        from raw_data
-        where rn = 1`
+		`SELECT DISTINCT ON (job_id) job_id, updated_at, data
+		   FROM data
+		  WHERE updated_at > current_timestamp - interval '2 minute'
+		  ORDER BY job_id, updated_at DESC`
 	)
 	res.rows.forEach(row => {
 		const parsedId = parseJobId(row.job_id)
