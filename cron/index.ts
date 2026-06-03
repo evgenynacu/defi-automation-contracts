@@ -57,7 +57,7 @@ async function runJobs() {
 		})
 	*/
 
-	cron.schedule('0 * * * *', () => {
+	cron.schedule('0 3 * * *', () => {
 		console.log("Updating views")
 
 		logAsync(
