@@ -6,6 +6,7 @@ import { register } from './metrics'
 import { exportLatestData } from "./exporter"
 import { registerStrategiesEndpoints } from "./strategies"
 import {exportAaveMetrics} from "./aave-exporter";
+import {refreshViews} from "../context/service/refresh-views-service";
 
 dotenv.config()
 
@@ -64,6 +65,46 @@ createContext().then(async (context) => {
 			console.error("Error syncing data", error)
 		}
 		res.status(200).json({ status: "OK", ...r })
+	})
+
+	const refreshToken = process.env.REFRESH_VIEWS_TOKEN || "secret-refresh-token"
+	if (!refreshToken) {
+		console.warn("REFRESH_VIEWS_TOKEN is not set — POST /admin/refresh-views is disabled")
+	}
+	app.post("/admin/refresh-views", async (req, res) => {
+		if (!refreshToken) {
+			res.status(503).json({ status: "DISABLED", error: "REFRESH_VIEWS_TOKEN is not configured" })
+			return
+		}
+		const provided = req.header("x-refresh-token") ?? req.header("authorization")?.replace(/^Bearer\s+/i, "")
+		if (provided !== refreshToken) {
+			res.status(401).json({ status: "UNAUTHORIZED" })
+			return
+		}
+		const start = Date.now()
+		try {
+			const results = await refreshViews(connectionPool)
+			const contended = results.length === 1 && results[0].view === "*" && results[0].skipped === true
+			if (contended) {
+				res.status(409).json({
+					status: "ALREADY_IN_PROGRESS",
+					durationMs: Date.now() - start,
+					results,
+				})
+				return
+			}
+			const failed = results.filter(r => !r.ok && !r.skipped)
+			const status = failed.length === 0 ? 200 : 500
+			res.status(status).json({
+				status: failed.length === 0 ? "OK" : "PARTIAL_FAILURE",
+				durationMs: Date.now() - start,
+				results,
+			})
+		} catch (e) {
+			const msg = e instanceof Error ? e.message : String(e)
+			console.error("Failed to refresh views:", e)
+			res.status(500).json({ status: "ERROR", error: msg })
+		}
 	})
 
 	app.get("/data/leveraged-strategies-details", async (req, res) => {

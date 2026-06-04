@@ -12,9 +12,9 @@ import {
 	USDT_ADDRESS
 } from "../common/addresses"
 import {updateJobs} from "../context/db/update-jobs"
-import {Pool} from "pg";
 import {SyncService} from "../context/service/sync-service";
 import {sleep} from "../common/sleep";
+import {refreshViews} from "../context/service/refresh-views-service";
 
 dotenv.config()
 
@@ -211,36 +211,6 @@ async function syncAllPTs(syncService: SyncService) {
 	const start = Date.now()
 
 	console.log("PTs synchronized in", (Date.now() - start), "ms")
-}
-
-async function refreshViews(connectionPool: Pool) {
-	let start = Date.now()
-	let dayRefreshed = false
-	try {
-		await connectionPool.query("REFRESH MATERIALIZED VIEW main_data_day")
-		dayRefreshed = true
-	} catch (e) {
-		console.error(e)
-	}
-	console.log("Refreshed main_data_day in", (Date.now() - start), "ms")
-	if (dayRefreshed) {
-		start = Date.now()
-		try {
-			await connectionPool.query("REFRESH MATERIALIZED VIEW main_data_week")
-		} catch (e) {
-			console.error(e)
-		}
-		console.log("Refreshed main_data_week in", (Date.now() - start), "ms")
-	} else {
-		console.warn("Skipping main_data_week refresh because main_data_day failed")
-	}
-	start = Date.now()
-	try {
-		await connectionPool.query("REFRESH MATERIALIZED VIEW position_values_ext_mat")
-	} catch (e) {
-		console.error(e)
-	}
-	console.log("Refreshed position_values_ext_mat in", (Date.now() - start), "ms")
 }
 
 runJobs().then()
