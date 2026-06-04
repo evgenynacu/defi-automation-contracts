@@ -16,6 +16,8 @@ async function refreshOne(pool: Pool, view: string): Promise<RefreshOutcome> {
 		await client.query("SET LOCAL work_mem = '8MB'")
 		await client.query("SET LOCAL hash_mem_multiplier = 1.0")
 		await client.query("SET LOCAL max_parallel_workers_per_gather = 0")
+		await client.query("SET LOCAL maintenance_work_mem = '64MB'")
+		await client.query("SET LOCAL max_parallel_maintenance_workers = 0")
 		await client.query(`REFRESH MATERIALIZED VIEW ${view}`)
 		await client.query("COMMIT")
 		return { view, ok: true, durationMs: Date.now() - start }
