@@ -20,7 +20,7 @@ app.use(cors({
 }))
 
 createContext().then(async (context) => {
-	const { connectionPool, duneSyncService, ethRunner, arbRunner } = context
+	const { connectionString, connectionPool, duneSyncService, ethRunner, arbRunner } = context
 
 	app.get("/", (_, res) => {
 		res.status(200).json({ status: "OK" })
@@ -83,7 +83,7 @@ createContext().then(async (context) => {
 		}
 		const start = Date.now()
 		try {
-			const results = await refreshViews(connectionPool)
+			const results = await refreshViews(connectionString)
 			const contended = results.length === 1 && results[0].view === "*" && results[0].skipped === true
 			if (contended) {
 				res.status(409).json({

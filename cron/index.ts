@@ -21,7 +21,7 @@ dotenv.config()
 async function runJobs() {
 	console.log("Starting cron jobs")
 
-	const {connectionPool, syncService } = await createContext()
+	const {connectionString, connectionPool, syncService } = await createContext()
 	await runMigrations(connectionPool)
 
 	console.log("Updating jobs")
@@ -61,7 +61,7 @@ async function runJobs() {
 		console.log("Updating views")
 
 		logAsync(
-			refreshViews(connectionPool),
+			refreshViews(connectionString),
 			"refreshing views"
 		)
 	})

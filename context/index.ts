@@ -7,6 +7,7 @@ import {DuneSyncService} from "./service/dune-sync-service"
 import {StrategyService} from './service/strategy-service'
 
 export type Context = {
+	connectionString: string
 	connectionPool: Pool
 	dataService: DataService
 	syncService: SyncService
@@ -33,6 +34,7 @@ export async function createContext(): Promise<Context> {
 	const strategyService = new StrategyService(connectionPool)
 
 	return {
+		connectionString,
 		connectionPool,
 		dataService,
 		syncService,
