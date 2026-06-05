@@ -22,7 +22,7 @@ async function runJobs() {
 	console.log("Starting cron jobs")
 
 	const {connectionString, connectionPool, syncService } = await createContext()
-	await runMigrations(connectionPool)
+	await runMigrations(connectionString)
 
 	console.log("Updating jobs")
 	await updateJobs(connectionPool)

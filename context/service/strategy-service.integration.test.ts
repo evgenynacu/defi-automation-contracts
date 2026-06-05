@@ -43,7 +43,7 @@ describe('StrategyService Integration Tests with TestContainers', function () {
     // Run migrations to set up the database schema using the standard runMigrations function
     console.log('Running database migrations...')
     try {
-      await runMigrations(pool)
+      await runMigrations(`postgresql://${container.getUsername()}:${container.getPassword()}@${container.getHost()}:${container.getMappedPort(5432)}/${container.getDatabase()}`)
       console.log('✓ Migrations completed successfully')
     } catch (error) {
       console.error('Migration failed:', error)
