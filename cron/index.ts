@@ -15,6 +15,8 @@ import {updateJobs} from "../context/db/update-jobs"
 import {SyncService} from "../context/service/sync-service";
 import {sleep} from "../common/sleep";
 import {refreshViews} from "../context/service/refresh-views-service";
+import express from "express";
+import {register} from "../context/metrics/registry";
 
 dotenv.config()
 
@@ -26,6 +28,17 @@ async function runJobs() {
 
 	console.log("Updating jobs")
 	await updateJobs(connectionPool)
+
+	const metricsApp = express()
+	metricsApp.get("/metrics", async (_req, res) => {
+		res.set("Content-Type", register.contentType)
+		res.end(await register.metrics())
+	})
+	metricsApp.get("/", (_req, res) => {
+		res.status(200).json({status: "OK"})
+	})
+	const METRICS_PORT = Number(process.env.METRICS_PORT ?? 8080)
+	metricsApp.listen(METRICS_PORT, () => console.log(`Metrics endpoint listening on ${METRICS_PORT}`))
 
 	const cron = await import("node-cron")
 

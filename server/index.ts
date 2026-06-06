@@ -2,8 +2,6 @@ import dotenv from "dotenv"
 import express, { Application } from "express"
 import cors from "cors"
 import { createContext } from "../context"
-import { register } from './metrics'
-import { exportLatestData } from "./exporter"
 import { registerStrategiesEndpoints } from "./strategies"
 import {exportAaveMetrics} from "./aave-exporter";
 import {refreshViews} from "../context/service/refresh-views-service";
@@ -24,11 +22,6 @@ createContext().then(async (context) => {
 
 	app.get("/", (_, res) => {
 		res.status(200).json({ status: "OK" })
-	})
-
-	app.get('/metrics', async (_req, res) => {
-		res.set('Content-Type', register.contentType)
-		res.end(await register.metrics())
 	})
 
 	registerStrategiesEndpoints(app, context)
@@ -122,7 +115,4 @@ createContext().then(async (context) => {
 		res.status(200).json({ status: "OK", ...r })
 	})
 
-	setInterval(() => {
-		exportLatestData(connectionPool).then()
-	}, 5000)
 })

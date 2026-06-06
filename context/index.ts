@@ -5,6 +5,7 @@ import {SyncService} from "./service/sync-service"
 import {DuneService} from "./service/dune-service"
 import {DuneSyncService} from "./service/dune-sync-service"
 import {StrategyService} from './service/strategy-service'
+import {MetricPublisher} from "./service/metric-publisher"
 
 export type Context = {
 	connectionString: string
@@ -14,6 +15,7 @@ export type Context = {
 	duneService: DuneService
 	duneSyncService: DuneSyncService
 	strategyService: StrategyService
+	metricPublisher: MetricPublisher
 	ethRunner: ContractRunner
 	arbRunner: ContractRunner
 }
@@ -28,7 +30,8 @@ export async function createContext(): Promise<Context> {
 	const plasmaRunner = new ethers.JsonRpcProvider(process.env.PLASMA_RPC_URL || "https://rpc.plasma.to")
 
 	const dataService = new DataService(ethRunner, arbRunner, plasmaRunner)
-	const syncService = new SyncService(connectionPool, dataService)
+	const metricPublisher = new MetricPublisher()
+	const syncService = new SyncService(connectionPool, dataService, metricPublisher)
 	const duneService = new DuneService()
 	const duneSyncService = new DuneSyncService(connectionPool, duneService)
 	const strategyService = new StrategyService(connectionPool)
@@ -41,6 +44,7 @@ export async function createContext(): Promise<Context> {
 		duneService,
 		duneSyncService,
 		strategyService,
+		metricPublisher,
 		ethRunner,
 		arbRunner,
 	}
