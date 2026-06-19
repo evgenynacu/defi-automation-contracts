@@ -1,7 +1,7 @@
 import {address} from "../common/types"
 import {
 	DAI_ADDRESS, GHO,
-	PT_eUSDe_AUG, PT_srUSDE_2APR2026, PT_sUSDe_7MAY2026, PT_sUSDe_9APR2026, PT_sUSDe_FEB26,
+	PT_eUSDe_AUG, PT_srUSDE_2APR2026, PT_sUSDD_27AUG2026, PT_sUSDe_7MAY2026, PT_sUSDe_9APR2026, PT_sUSDe_FEB26,
 	PT_sUSDe_JUL,
 	PT_sUSDe_SEP, PT_thBILL_19FEB2026,
 	PT_USDe_NOV,
@@ -65,6 +65,7 @@ export const tokens: Record<address, string> = {
 	[USDe_PLASMA]: "USDe",
 	[PT_sUSDe_7MAY2026]: "PT-sUSDe_7MAY2026",
 	[USDtb]: "USDtb",
+	[PT_sUSDD_27AUG2026]: "PT-sUSDD-AUG26",
 }
 
 export function findToken(address: address): string | undefined {
@@ -96,4 +97,5 @@ export const tokenMaturityDates: Record<string, Date> = {
 	[PT_srUSDE_2APR2026]: new Date("2026-04-02"),
 	[PT_sUSDe_9APR2026]: new Date("2026-04-09"),
 	[PT_sUSDe_7MAY2026]: new Date("2026-05-07"),
+	[PT_sUSDD_27AUG2026]: new Date("2026-08-27"),
 }

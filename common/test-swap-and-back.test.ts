@@ -4,7 +4,7 @@ import {
 	PT_cUSD_JAN_26,
 	PT_reUSD_25JUN2026, PT_sNUSD_5MAR2026,
 	PT_srUSDe_JAN_26,
-	PT_stcUSD_JAN_26, PT_sUSDe_7MAY2026,
+	PT_stcUSD_JAN_26, PT_sUSDD_27AUG2026, PT_sUSDe_7MAY2026,
 	PT_sUSDe_FEB26,
 	PT_thBILL_19FEB2026,
 	PYUSD,
@@ -113,6 +113,10 @@ describe("testSwapAndBack", () => {
 
 	it("should swap USDtb to sUSDe and back", async () => {
 		console.log(await testSwapAndBack(USDtb, m1_18, sUSDe_ADDRESS)) // 100k = 0.037%!!!! 1m = 0.078%
+	})
+
+	it("should swap USDT to PT-sUSDD and back", async () => {
+		console.log(await testSwapAndBack(USDT_ADDRESS, k100_6, PT_sUSDD_27AUG2026)) // 500k = 0.1277% 100k = 0.086%
 	})
 
 
