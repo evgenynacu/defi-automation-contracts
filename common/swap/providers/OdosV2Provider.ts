@@ -73,6 +73,7 @@ export class OdosV2Provider implements ISwapProvider {
       body: JSON.stringify(quoteBody),
       headers: {
         "Content-Type": "application/json",
+	    "x-api-key": process.env.ODOS_API_KEY || "",
       },
     })
 
