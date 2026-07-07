@@ -31,7 +31,7 @@ const networks: NetworksUserConfig = {
 if (process.env.ADMIN_PRIVATE_KEY) {
 	networks.mainnet = {
 		accounts: [process.env.ADMIN_PRIVATE_KEY!],
-		url: "https://eth.llamarpc.com",
+		url: process.env.MAINNET_RPC_URL || "https://eth.llamarpc.com",
 	}
 	networks.arbitrum = {
 		accounts: [process.env.ADMIN_PRIVATE_KEY!],

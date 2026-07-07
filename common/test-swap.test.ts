@@ -2,10 +2,10 @@ import { testSwap } from "./test-swap"
 import {
 	DAI_ADDRESS, GHO, PT_thBILL_19FEB2026,
 	SDAI_ADDRESS,
-	sUSDe_ADDRESS,
+	sUSDe_ADDRESS, sUSDS,
 	SYRUP_USDC, SYRUP_USDT,
 	USDC, USDC_ARB,
-	USDe_ADDRESS, USDT_ADDRESS,
+	USDe_ADDRESS, USDS, USDT_ADDRESS,
 	WEETH_ADDRESS,
 	WETH_ADDRESS, wsrUSD,
 	WSTETH_ADDRESS
@@ -105,6 +105,36 @@ describe("Test Swap", () => {
 
 	it("should try and swap wsrUSD -> USDT", async () => {
 		const out = await testSwap(wsrUSD, 100000000000000000000n, USDT_ADDRESS)
+		console.log("value is", out)
+	})
+
+	it("should try and swap USDS -> USDT", async () => {
+		const out = await testSwap(USDS, 100000000000000000000n, USDT_ADDRESS)
+		console.log("value is", out)
+	})
+
+	it("should try and swap USDT -> USDS", async () => {
+		const out = await testSwap(USDT_ADDRESS, 100000000000n, USDS)
+		console.log("value is", out)
+	})
+
+	it("should try and swap USDS -> sUSDS", async () => {
+		const out = await testSwap(USDS, 100000000000000000000n, sUSDS)
+		console.log("value is", out)
+	})
+
+	it("should try and swap sUSDS -> USDS", async () => {
+		const out = await testSwap(sUSDS, 100000000000000000000n, USDS)
+		console.log("value is", out)
+	})
+
+	it("should try and swap USDT -> sUSDS", async () => {
+		const out = await testSwap(USDT_ADDRESS, 100000000000n, sUSDS)
+		console.log("value is", out)
+	})
+
+	it("should try and swap sUSDS -> USDT", async () => {
+		const out = await testSwap(sUSDS, 100000000000000000000n, USDT_ADDRESS)
 		console.log("value is", out)
 	})
 

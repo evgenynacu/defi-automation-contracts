@@ -8,7 +8,8 @@ import {
 	siUSD,
 	srUSDe_ADDRESS,
 	sUSDe_ADDRESS,
-	USDC, wsrUSD
+	sUSDS,
+	USDC, USDS, wsrUSD
 } from "../common/addresses";
 
 export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
@@ -37,6 +38,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	// const strataSwapStrategy = await deployStrategy(hre, "StrataSwapStrategy", [strataSwapAddress])
 	await deployInfinifiSwap(hre)
 	await deployReservoirWsrUsdZap(hre)
+	await deploySusdsZap(hre)
 
 	return [
 		erc20TransferStrategy.address,    //0
@@ -102,6 +104,25 @@ async function deployReservoirWsrUsdZap(hre: HardhatRuntimeEnvironment) {
 	});
 
 	console.log("ReservoirWsrUsdZap deployed at:", swap.address);
+	return swap.address;
+}
+
+
+async function deploySusdsZap(hre: HardhatRuntimeEnvironment) {
+	const { deploy } = hre.deployments;
+	const { deployer } = await hre.getNamedAccounts();
+	console.log("deploying SusdsZap")
+
+	const swap = await deploy("SusdsZap", {
+		from: deployer,
+		args: [
+			USDS,
+			sUSDS,
+		],
+		log: true
+	});
+
+	console.log("SusdsZap deployed at:", swap.address);
 	return swap.address;
 }
 

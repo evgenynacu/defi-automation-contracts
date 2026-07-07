@@ -6,6 +6,7 @@ import {ReservoirProvider} from "./ReservoirProvider"
 import {EnsoApiProvider} from "./EnsoProvider";
 import {InfinifiProvider} from "./InfinifiProvider";
 import {ReservoirWsrUsdProvider} from "./ReservoirWsrUsdProvider";
+import {SusdsProvider} from "./SusdsProvider";
 
 export class ProviderRegistry {
 	private static instance: ProviderRegistry
@@ -33,6 +34,7 @@ export class ProviderRegistry {
 		return [
 			new InfinifiProvider(),
 			new ReservoirWsrUsdProvider(),
+			new SusdsProvider(),
 			// new OneInchProvider(),
 			new OdosV2Provider(),
 			// new SushiSwapProvider(),
