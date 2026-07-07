@@ -118,18 +118,18 @@ describe("Test Swap", () => {
 		console.log("value is", out)
 	})
 
-	it("should try and swap USDS -> sUSDS", async () => {
-		const out = await testSwap(USDS, 100000000000000000000n, sUSDS)
-		console.log("value is", out)
-	})
-
 	it("should try and swap sUSDS -> USDS", async () => {
 		const out = await testSwap(sUSDS, 100000000000000000000n, USDS)
 		console.log("value is", out)
 	})
 
 	it("should try and swap USDT -> sUSDS", async () => {
-		const out = await testSwap(USDT_ADDRESS, 100000000000n, sUSDS)
+		const out = await testSwap(USDT_ADDRESS, 750000000000n, sUSDS)
+		console.log("value is", out)
+	})
+
+	it("should try and swap USDS -> sUSDS", async () => {
+		const out = await testSwap(USDS, 750000000000000000000000n, sUSDS)
 		console.log("value is", out)
 	})
 

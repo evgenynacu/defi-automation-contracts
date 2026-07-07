@@ -141,7 +141,7 @@ async function runJobs() {
 				type: "swap-rate",
 				fromToken: USDT_ADDRESS,
 				toToken: USDS,
-				amount: 100000000000n,
+				amount: 1000000000000n,
 			}),
 			"checking USDT-USDS rate"
 		)
@@ -150,7 +150,7 @@ async function runJobs() {
 				type: "swap-rate",
 				fromToken: USDS,
 				toToken: USDT_ADDRESS,
-				amount: 100000000000000000000000n,
+				amount: 1000000000000000000000000n,
 			}),
 			"checking USDS-USDT rate"
 		)
