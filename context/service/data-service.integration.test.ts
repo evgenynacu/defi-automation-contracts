@@ -1,7 +1,14 @@
 import {DataService} from "./data-service";
 import {before} from "mocha";
 import {ethers} from "ethers";
-import {PT_srUSDE_2APR2026, PT_sUSDe_9APR2026, USDe_ADDRESS, USDe_PLASMA} from "../../common/addresses";
+import {
+	PT_srUSDE_2APR2026,
+	PT_sUSDe_9APR2026,
+	USDe_ADDRESS,
+	USDe_PLASMA,
+	USDS,
+	USDT_ADDRESS
+} from "../../common/addresses";
 
 describe('DataService', () => {
 	let dataService: DataService
@@ -18,6 +25,17 @@ describe('DataService', () => {
 		const data = await dataService.getData({
 			type: "pendle-implied-rate",
 			market: "0x4eaa571eafcd96f51728756bd7f396459bb9b869"
+		})
+		console.log(data)
+	})
+
+	it("should get USDS -> USDT rate", async () => {
+		const data = await dataService.getData({
+			type: "swap-rate",
+			fromToken: USDS,
+			toToken: USDT_ADDRESS,
+			amount: 1000000000000000000000000n,
+			multiplier: 1000000000000n,
 		})
 		console.log(data)
 	})

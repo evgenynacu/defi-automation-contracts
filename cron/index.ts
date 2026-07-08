@@ -151,6 +151,7 @@ async function runJobs() {
 				fromToken: USDS,
 				toToken: USDT_ADDRESS,
 				amount: 1000000000000000000000000n,
+				multiplier: 1000000000000n,
 			}),
 			"checking USDS-USDT rate"
 		)
