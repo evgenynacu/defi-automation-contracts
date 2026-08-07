@@ -4,6 +4,7 @@ import { address } from "./types"
 import { getSwaps } from "./swap/swap"
 import {
 	AaveFlashLoanStrategy__factory,
+	AaveV4OnBehalfStrategy__factory,
 	CompoundV3Strategy__factory,
 	Erc20TransferStrategy__factory, EthenaS4Strategy__factory, EulerV2Strategy__factory,
 	GenericAaveStrategy__factory, AaveOnBehalfStrategy__factory, InstaFlashLoanStrategy__factory, MerklStrategy__factory,
@@ -32,6 +33,7 @@ export const GENERIC_SWAP_STRATEGY_INDEX = 15
 export const RESET_APPROVAL_STRATEGY_INDEX = 16
 export const AAVE_ON_BEHALF_STRATEGY_INDEX = 17
 export const INSTA_FLASH_LOAN_STRATEGY_INDEX = 18
+export const AAVE_V4_ON_BEHALF_STRATEGY_INDEX = 19
 
 export type ResetApprovalOperation = {
 	type: 'reset-approval'
@@ -247,6 +249,55 @@ type AaveObOperation =
 	| AaveObBorrowOperation
 	| AaveObRepayOperation
 
+// Same reserve addressing, but acting on a position owned by `onBehalfOf` rather than the vault.
+// Routed through Aave's position managers — see common/approve-aave-v4-on-behalf.ts for the prerequisites.
+export type AaveV4ObSupplyOperation = {
+	type: 'aave-v4-ob-supply'
+	spoke: string
+	reserveId: bigint
+	amount: bigint
+	onBehalfOf: string
+}
+
+export type AaveV4ObWithdrawOperation = {
+	type: 'aave-v4-ob-withdraw'
+	spoke: string
+	reserveId: bigint
+	amount: bigint
+	onBehalfOf: string
+}
+
+export type AaveV4ObBorrowOperation = {
+	type: 'aave-v4-ob-borrow'
+	spoke: string
+	reserveId: bigint
+	amount: bigint
+	onBehalfOf: string
+}
+
+export type AaveV4ObRepayOperation = {
+	type: 'aave-v4-ob-repay'
+	spoke: string
+	reserveId: bigint
+	amount: bigint
+	onBehalfOf: string
+}
+
+export type AaveV4ObSetCollateralOperation = {
+	type: 'aave-v4-ob-set-collateral'
+	spoke: string
+	reserveId: bigint
+	use: boolean
+	onBehalfOf: string
+}
+
+type AaveV4ObOperation =
+	| AaveV4ObSupplyOperation
+	| AaveV4ObWithdrawOperation
+	| AaveV4ObBorrowOperation
+	| AaveV4ObRepayOperation
+	| AaveV4ObSetCollateralOperation
+
 export type MorphoFlashLoanOperation = {
 	type: 'morpho-flash-loan'
 	token: string
@@ -282,6 +333,7 @@ export type InnerStrategyOperation =
 	| EulerOperation
 	| AaveOperation
 	| AaveObOperation
+	| AaveV4ObOperation
 	| MorphoReadTotalBorrowAssetsOperation
 
 export type StrategyOperation =
@@ -402,6 +454,41 @@ async function serializeOperation(runner: ContractRunner, vault: address, op: St
 			return [{
 				position: AAVE_ON_BEHALF_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("repayDebt", [op.token, op.amount, op.onBehalfOf]),
+			}]
+		}
+		case "aave-v4-ob-set-collateral": {
+			const impl = AaveV4OnBehalfStrategy__factory.createInterface()
+			return [{
+				position: AAVE_V4_ON_BEHALF_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("setCollateral", [op.spoke, op.reserveId, op.use, op.onBehalfOf]),
+			}]
+		}
+		case "aave-v4-ob-supply": {
+			const impl = AaveV4OnBehalfStrategy__factory.createInterface()
+			return [{
+				position: AAVE_V4_ON_BEHALF_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("supplyCollateral", [op.spoke, op.reserveId, op.amount, op.onBehalfOf]),
+			}]
+		}
+		case "aave-v4-ob-withdraw": {
+			const impl = AaveV4OnBehalfStrategy__factory.createInterface()
+			return [{
+				position: AAVE_V4_ON_BEHALF_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("withdrawCollateral", [op.spoke, op.reserveId, op.amount, op.onBehalfOf]),
+			}]
+		}
+		case "aave-v4-ob-borrow": {
+			const impl = AaveV4OnBehalfStrategy__factory.createInterface()
+			return [{
+				position: AAVE_V4_ON_BEHALF_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("borrowDebt", [op.spoke, op.reserveId, op.amount, op.onBehalfOf]),
+			}]
+		}
+		case "aave-v4-ob-repay": {
+			const impl = AaveV4OnBehalfStrategy__factory.createInterface()
+			return [{
+				position: AAVE_V4_ON_BEHALF_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("repayDebt", [op.spoke, op.reserveId, op.amount, op.onBehalfOf]),
 			}]
 		}
 		case "morpho-supply": {

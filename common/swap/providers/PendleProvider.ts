@@ -5,7 +5,9 @@ import {MAX_SLIPPAGE_BPS} from "./config"
 import { fetch, ProxyAgent } from "undici";
 
 //export const ENABLED_AGGREGATORS = ["paraswap"].join(",")
-export const ENABLED_AGGREGATORS = ["kyberswap", "odos", "okx", "paraswap"]
+// Pendle no longer accepts "odos" — passing it makes the whole request 400 with
+// "Aggregator odos not found", which silently drops every Pendle quote.
+export const ENABLED_AGGREGATORS = ["kyberswap", "okx", "paraswap"]
 
 export class PendleProvider implements ISwapProvider {
 	getConfig(): ProviderConfig {
@@ -157,7 +159,7 @@ type QuoteResponse = {
 
 function filterAggregators(chainId: number) {
 	if (chainId === 9745) {
-		return ENABLED_AGGREGATORS.filter(it => it !== "odos" && it !== "paraswap").join(",")
+		return ENABLED_AGGREGATORS.filter(it => it !== "paraswap").join(",")
 	}
 	return ENABLED_AGGREGATORS.join(",")
 }

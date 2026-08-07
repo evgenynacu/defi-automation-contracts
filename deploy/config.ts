@@ -13,6 +13,9 @@ export type Config = {
 	merkl: address
 	ethenaS4Distributor: address,
 	instaFlash: address,
+	// Aave v4 is Ethereum-only for now; false elsewhere so the strategy slot stays zeroed.
+	// There is no default spoke: the spoke is chosen per strategy, since each one is a separate risk market.
+	aaveV4: boolean,
 }
 
 const config: Record<string, Config> = {
@@ -23,6 +26,7 @@ const config: Record<string, Config> = {
 		merkl: "0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae",
 		ethenaS4Distributor: ZERO_ADDRESS,
 		instaFlash: ZERO_ADDRESS,
+		aaveV4: false,
 	},
 	"arbitrum_universal": {
 		morphoBlue: MORPHO_BLUE_ARB,
@@ -31,6 +35,7 @@ const config: Record<string, Config> = {
 		merkl: "0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae",
 		ethenaS4Distributor: ZERO_ADDRESS,
 		instaFlash: ZERO_ADDRESS,
+		aaveV4: false,
 	},
 	"plasma": {
 		morphoBlue: ZERO_ADDRESS,
@@ -39,6 +44,7 @@ const config: Record<string, Config> = {
 		merkl: "0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae",
 		ethenaS4Distributor: ZERO_ADDRESS,
 		instaFlash: "0x352423e2fA5D5c99343d371C9e3bC56C87723Cc7",
+		aaveV4: false,
 	},
 	"default": {
 		morphoBlue: MORPHO_BLUE,
@@ -47,6 +53,7 @@ const config: Record<string, Config> = {
 		merkl: "0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae",
 		ethenaS4Distributor: "0xc3b7d4ada2af58e6dc7b4fb303a0de47ade894c9",
 		instaFlash: ZERO_ADDRESS,
+		aaveV4: true,
 	}
 }
 

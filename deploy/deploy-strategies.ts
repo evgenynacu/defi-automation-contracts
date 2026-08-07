@@ -11,6 +11,7 @@ import {
 	sUSDS,
 	USDC, USDS, wsrUSD
 } from "../common/addresses";
+import {AAVE_V4_POSITION_MANAGERS} from "../common/aave-v4/addresses";
 
 export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const config = getConfig(hre.network.name)
@@ -33,6 +34,14 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 	const resetApprovalStrategy = await deployStrategy(hre, "ResetApprovalStrategy")
 	const aaveOnBehalfStrategy = await deployStrategy(hre, "AaveOnBehalfStrategy", [config.aavePoolAddressProvider])
 	const instaFlashLoanStrategy = config.instaFlash === ZERO_ADDRESS ? ZERO_ADDRESS : (await deployStrategy(hre, "InstaFlashLoanStrategy", [config.instaFlash])).address
+	// Aave v4 takes the spoke per call, so the strategy is stateless. Only deployed where v4 exists.
+	const aaveV4OnBehalfStrategy = config.aaveV4
+		? (await deployStrategy(hre, "AaveV4OnBehalfStrategy", [
+			AAVE_V4_POSITION_MANAGERS.GIVER,
+			AAVE_V4_POSITION_MANAGERS.TAKER,
+			AAVE_V4_POSITION_MANAGERS.CONFIG,
+		])).address
+		: ZERO_ADDRESS
 
 	// const strataSwapAddress = await deployStrataSwap(hre)
 	// const strataSwapStrategy = await deployStrategy(hre, "StrataSwapStrategy", [strataSwapAddress])
@@ -60,6 +69,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 		resetApprovalStrategy.address,    //16
 		aaveOnBehalfStrategy.address,     //17
 		instaFlashLoanStrategy,           //18
+		aaveV4OnBehalfStrategy,           //19
 	]
 }
 
