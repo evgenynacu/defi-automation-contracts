@@ -7,7 +7,11 @@ import { resolve } from "path"
 dotenvConfig({ path: resolve(__dirname, "../.env") })
 
 import { AAVE_POOL_ADDRESS_PROVIDER, MORPHO_BLUE, UNISWAP_V4_POOL_MANAGER, USDG, ZERO_ADDRESS } from "../common/addresses"
-import { ERC20_STRATEGY_INDEX, UNISWAP_V4_FLASH_LOAN_STRATEGY_INDEX } from "../common/serialize-operation"
+import {
+	ERC20_STRATEGY_INDEX,
+	GENERIC_SWAP_STRATEGY_INDEX,
+	UNISWAP_V4_FLASH_LOAN_STRATEGY_INDEX,
+} from "../common/serialize-operation"
 
 // Aave v4 Core hub, the deepest USDG holder on mainnet
 const USDG_WHALE = "0xCca852Bc40e560adC3b1Cc58CA5b55638ce826c9"
@@ -29,13 +33,15 @@ describe("UniswapV4FlashLoanStrategy", function () {
 		const strategy = await (await ethers.getContractFactory("UniswapV4FlashLoanStrategy"))
 			.deploy(UNISWAP_V4_POOL_MANAGER)
 		const impl = await (await ethers.getContractFactory("AutomatedVault"))
-			.deploy(MORPHO_BLUE, AAVE_POOL_ADDRESS_PROVIDER, UNISWAP_V4_POOL_MANAGER)
+			.deploy(MORPHO_BLUE, AAVE_POOL_ADDRESS_PROVIDER, UNISWAP_V4_POOL_MANAGER, ZERO_ADDRESS)
 
 		const transfer = await (await ethers.getContractFactory("Erc20TransferStrategy")).deploy()
+		const swap = await (await ethers.getContractFactory("SwapStrategy")).deploy()
 
 		const strategies = Array(UNISWAP_V4_FLASH_LOAN_STRATEGY_INDEX + 1).fill(ZERO_ADDRESS)
 		strategies[UNISWAP_V4_FLASH_LOAN_STRATEGY_INDEX] = await strategy.getAddress()
 		strategies[ERC20_STRATEGY_INDEX] = await transfer.getAddress()
+		strategies[GENERIC_SWAP_STRATEGY_INDEX] = await swap.getAddress()
 
 		const initData = impl.interface.encodeFunctionData("__Vault_init", [strategies])
 		const proxy = await (await ethers.getContractFactory("MyProxy"))
@@ -45,6 +51,7 @@ describe("UniswapV4FlashLoanStrategy", function () {
 			vault: await ethers.getContractAt("AutomatedVault", await proxy.getAddress()),
 			strategy,
 			transfer,
+			swap,
 		}
 	}
 
@@ -53,6 +60,10 @@ describe("UniswapV4FlashLoanStrategy", function () {
 			position: UNISWAP_V4_FLASH_LOAN_STRATEGY_INDEX,
 			callData: strategy.interface.encodeFunctionData("executeFlashLoan", [token, amount, inner]),
 		}
+	}
+
+	function encodeOperations(ops: any[]) {
+		return ethers.AbiCoder.defaultAbiCoder().encode(["tuple(uint256 position, bytes callData)[]"], [ops])
 	}
 
 	beforeEach(async () => {
@@ -119,8 +130,45 @@ describe("UniswapV4FlashLoanStrategy", function () {
 		expect(await usdg.balanceOf(vaultAddress)).to.equal(0n)
 	})
 
-	it("rejects an unlockCallback that does not come from the PoolManager", async () => {
+	it("rejects an unlockCallback from outside a rebalance", async () => {
 		const { vault } = await deployVault()
 		await expect(vault.unlockCallback("0x")).to.be.revertedWith("!NotRebalancing")
+	})
+
+	it("rejects a re-entrant Aave callback from a malicious swap router mid-rebalance", async () => {
+		const { vault, strategy, swap } = await deployVault()
+		const vaultAddress = await vault.getAddress()
+
+		// SwapStrategy does an unrestricted swapRouter.call(swapData), with both supplied by an off-chain
+		// quote. A hostile quote can therefore name the vault as the router and re-enter a callback while
+		// `rebalancing` is true. `initiator` cannot stop it — the caller chooses it — so pinning
+		// msg.sender to the Aave pool is the only guard. Without it these operations would execute.
+		const reenter = vault.interface.encodeFunctionData(
+			"executeOperation(address,uint256,uint256,address,bytes)",
+			[USDG, 0n, 0n, vaultAddress, encodeOperations([])],
+		)
+		const maliciousSwap = swap.interface.encodeFunctionData("swap", [USDG, USDG, vaultAddress, reenter])
+
+		await expect(vault.rebalance([
+			flashLoanCall(strategy, USDG, 1_000000n, [
+				{ position: GENERIC_SWAP_STRATEGY_INDEX, callData: maliciousSwap },
+			]),
+		])).to.be.reverted
+	})
+
+	it("accepts the same callback when the Aave pool is the caller", async () => {
+		// Sanity check that the guard rejects on the caller, not on the payload: the identical calldata
+		// succeeds when it genuinely arrives from the pool.
+		const { vault } = await deployVault()
+		const pool = await vault.POOL()
+		await impersonateAccount(pool)
+		await setBalance(pool, 10n ** 18n)
+
+		// still outside a rebalance, so this must fail on the rebalancing gate rather than the caller
+		await expect(
+			vault.connect(await ethers.getSigner(pool))
+				.getFunction("executeOperation(address,uint256,uint256,address,bytes)")
+				.staticCall(USDG, 0n, 0n, await vault.getAddress(), encodeOperations([])),
+		).to.be.revertedWith("!NotRebalancing")
 	})
 })

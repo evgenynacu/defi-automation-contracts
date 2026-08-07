@@ -22,6 +22,8 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
     IPool public immutable POOL;
     // Uniswap v4 PoolManager, zero where v4 is not deployed
     address private immutable UNISWAP_V4_POOL_MANAGER;
+    // Instadapp flash aggregator, zero where it is not deployed
+    address private immutable INSTA_FLASH;
 
     bytes32 private constant FLASH_LOAN_OUT_SLOT = keccak256("flashLoan#output");
 
@@ -30,12 +32,31 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
 
     bool private rebalancing;
 
-    constructor (address _morpho, address aaveProvider, address uniswapV4PoolManager) {
+    constructor (address _morpho, address aaveProvider, address uniswapV4PoolManager, address instaFlash) {
         MORPHO_ADDRESS = _morpho;
         ADDRESSES_PROVIDER = IPoolAddressesProvider(aaveProvider);
         POOL = IPool(IPoolAddressesProvider(aaveProvider).getPool());
         UNISWAP_V4_POOL_MANAGER = uniswapV4PoolManager;
+        INSTA_FLASH = instaFlash;
         _disableInitializers();
+    }
+
+    // @notice Guards a flash loan callback.
+    // @dev Both halves are needed. `rebalancing` is only true while the vault is making external calls,
+    //      so on its own it is not a caller check: a strategy hands control to arbitrary addresses
+    //      mid-rebalance (SwapStrategy calls a router supplied by an off-chain quote), and any of them
+    //      could call back in. Pinning msg.sender to the flash loan provider is what makes that safe —
+    //      an `initiator` argument cannot, since the caller chooses it.
+    modifier onlyFlashLoanCallback(address provider) {
+        require(rebalancing, "!NotRebalancing");
+        require(msg.sender == provider, "!UnexpectedCaller");
+        _;
+    }
+
+    // @notice Runs the operations funded by a flash loan and records their output.
+    // @dev Single writer for FLASH_LOAN_OUT_SLOT; the flash loan strategies read and clear it.
+    function _runFlashLoanOperations(Operation[] memory operations) internal {
+        StorageUtil.setUintSlot(FLASH_LOAN_OUT_SLOT, executeOperations(operations));
     }
 
     // @notice Initialized the vault. It can have any number of initialization calls for the strategies inside
@@ -88,40 +109,27 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
     function onMorphoFlashLoan(
         uint256 amount,
         bytes calldata data
-    ) external {
-        // Ensure the caller is the Morpho contract
-        address morphoAddress = _getMorphoAddress();
-        require(rebalancing, "!NotRebalancing");
-        require(msg.sender == morphoAddress, "Caller must be Morpho");
-
-        // Execute operations with the borrowed funds
-        // data should be encoded as Operation[] by the caller
+    ) external onlyFlashLoanCallback(_getMorphoAddress()) {
         OperationsWithAddress memory received = abi.decode(data, (OperationsWithAddress));
-        // state timestamp was checked
-        uint out = executeOperations(received.operations);
-        StorageUtil.setUintSlot(FLASH_LOAN_OUT_SLOT, out);
+        _runFlashLoanOperations(received.operations);
 
         // Transfer tokens back to Morpho to repay the loan
         // This will automatically revert if there aren't enough tokens
-        IERC20(received.token).forceApprove(morphoAddress, amount);
+        IERC20(received.token).forceApprove(_getMorphoAddress(), amount);
     }
 
+    // Aave v3 flash loan callback
     function executeOperation(
         address token,
         uint256 amount,
         uint256 premium,
         address initiator,
         bytes calldata params
-    ) external returns (bool) {
-        require(rebalancing, "!NotRebalancing");
-
+    ) external onlyFlashLoanCallback(address(POOL)) returns (bool) {
         require(initiator == address(this));
-        // Execute operations with the borrowed funds
-        // data should be encoded as Operation[] by the caller
+
         Operation[] memory operations = abi.decode(params, (Operation[]));
-        // state timestamp was checked
-        uint out = executeOperations(operations);
-        StorageUtil.setUintSlot(FLASH_LOAN_OUT_SLOT, out);
+        _runFlashLoanOperations(operations);
 
         IERC20(token).forceApprove(address(POOL), amount + premium);
         return true;
@@ -134,14 +142,12 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
         uint256[] calldata premiums,
         address initiator,
         bytes calldata params
-    ) external returns (bool) {
-        require(rebalancing, "!NotRebalancing");
+    ) external onlyFlashLoanCallback(INSTA_FLASH) returns (bool) {
         require(initiator == address(this));
         require(assets.length == 1, "Single token only");
 
         Operation[] memory operations = abi.decode(params, (Operation[]));
-        uint out = executeOperations(operations);
-        StorageUtil.setUintSlot(FLASH_LOAN_OUT_SLOT, out);
+        _runFlashLoanOperations(operations);
 
         IERC20(assets[0]).safeTransfer(msg.sender, amounts[0] + premiums[0]);
         return true;
@@ -155,18 +161,18 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
      *      credits the balance difference since the snapshot.
      * @param data abi.encode(token, amount, Operation[])
      */
-    function unlockCallback(bytes calldata data) external returns (bytes memory) {
+    function unlockCallback(bytes calldata data)
+        external
+        onlyFlashLoanCallback(UNISWAP_V4_POOL_MANAGER)
+        returns (bytes memory)
+    {
         address poolManager = UNISWAP_V4_POOL_MANAGER;
-        require(rebalancing, "!NotRebalancing");
-        require(msg.sender == poolManager, "Caller must be PoolManager");
-
         (address token, uint256 amount, Operation[] memory operations) =
                             abi.decode(data, (address, uint256, Operation[]));
 
         IPoolManager(poolManager).take(token, address(this), amount);
 
-        uint out = executeOperations(operations);
-        StorageUtil.setUintSlot(FLASH_LOAN_OUT_SLOT, out);
+        _runFlashLoanOperations(operations);
 
         // This reverts if the operations did not leave enough behind to repay
         IPoolManager(poolManager).sync(token);

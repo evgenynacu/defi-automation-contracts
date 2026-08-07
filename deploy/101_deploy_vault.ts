@@ -19,7 +19,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 	const config = getConfig(hre.network.name)
 	const vaultDeployResult = await deploy("AutomatedVault", {
 		from: deployer,
-		args: [config.morphoBlue, config.aavePoolAddressProvider, config.uniswapV4PoolManager],
+		args: [config.morphoBlue, config.aavePoolAddressProvider, config.uniswapV4PoolManager, config.instaFlash],
 		proxy: {
 			proxyContract: "MyProxy",
 			execute: {
