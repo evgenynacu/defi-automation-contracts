@@ -4,6 +4,7 @@ import {getDecimals} from "./decimals"
 import {Lending} from "./lending"
 import {PriceOracle__factory} from "../typechain-types"
 import {address} from "./types"
+import {FlashLoanProvider, toFlashLoanOperation} from "./flash-loan-provider"
 
 export type WitdrawRequest<T> = {
 	ex: StrategyExecutor<T>,
@@ -12,13 +13,13 @@ export type WitdrawRequest<T> = {
 	collateralShare?: number,
 	recipient?: address,
 	amount?: bigint,
-	flashLoanProvider?: "insta" | "morpho",
+	flashLoanProvider?: FlashLoanProvider,
 }
 
 export async function withdraw<T>({ex, lending, debtShare, collateralShare, recipient, amount, flashLoanProvider}: WitdrawRequest<T>): Promise<T> {
 
 	const from = await ex.getFrom()
-	const realFlashLoanProvider: "morpho-flash-loan" | "insta-flash-loan" = flashLoanProvider ? `${flashLoanProvider}-flash-loan` : "morpho-flash-loan"
+	const realFlashLoanProvider = toFlashLoanOperation(flashLoanProvider)
 
 	const {
 		debt,

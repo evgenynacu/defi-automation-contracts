@@ -5,6 +5,7 @@ import { getSwaps } from "./swap/swap"
 import {
 	AaveFlashLoanStrategy__factory,
 	AaveV4OnBehalfStrategy__factory,
+	UniswapV4FlashLoanStrategy__factory,
 	CompoundV3Strategy__factory,
 	Erc20TransferStrategy__factory, EthenaS4Strategy__factory, EulerV2Strategy__factory,
 	GenericAaveStrategy__factory, AaveOnBehalfStrategy__factory, InstaFlashLoanStrategy__factory, MerklStrategy__factory,
@@ -34,6 +35,7 @@ export const RESET_APPROVAL_STRATEGY_INDEX = 16
 export const AAVE_ON_BEHALF_STRATEGY_INDEX = 17
 export const INSTA_FLASH_LOAN_STRATEGY_INDEX = 18
 export const AAVE_V4_ON_BEHALF_STRATEGY_INDEX = 19
+export const UNISWAP_V4_FLASH_LOAN_STRATEGY_INDEX = 20
 
 export type ResetApprovalOperation = {
 	type: 'reset-approval'
@@ -317,6 +319,15 @@ export type AaveFlashLoanOperation = {
 	innerOperations: InnerStrategyOperation[]
 }
 
+// Uniswap v4 charges nothing to take and settle the same amount inside one unlock, so this is the
+// cheapest source where the PoolManager holds enough of the token.
+export type UniswapV4FlashLoanOperation = {
+	type: 'uni-v4-flash-loan'
+	token: string
+	amount: bigint
+	innerOperations: InnerStrategyOperation[]
+}
+
 export type InstaFlashLoanOperation = {
 	type: 'insta-flash-loan'
 	token: string
@@ -344,6 +355,7 @@ export type StrategyOperation =
 	| MorphoFlashLoanOperation
 	| AaveFlashLoanOperation
 	| InstaFlashLoanOperation
+	| UniswapV4FlashLoanOperation
 
 export async function serializeOperations(runner: ContractRunner, vault: address, ops: StrategyOperation[]): Promise<OperationWithInfo[][]> {
 	const serializedOps = await Promise.all(ops.map(op => serializeOperation(runner, vault, op)))
@@ -593,6 +605,18 @@ async function serializeOperation(runner: ContractRunner, vault: address, op: St
 			const crossJoined = crossJoin(innerOperations)
 			return crossJoined.map(ops => ({
 				position: AAVE_FLASH_LOAN_STRATEGY_INDEX,
+				callData: impl.encodeFunctionData("executeFlashLoan", [op.token, op.amount, ops]),
+				info: ops.map(it => it.info).join(""),
+				in: ops.map(it => it.in).find(it => it !== undefined),
+				out: ops.map(it => it.out).find(it => it !== undefined),
+			}))
+		}
+		case "uni-v4-flash-loan": {
+			const impl = UniswapV4FlashLoanStrategy__factory.createInterface()
+			const innerOperations = await Promise.all(op.innerOperations.map(it => serializeOperation(runner, vault, it)))
+			const crossJoined = crossJoin(innerOperations)
+			return crossJoined.map(ops => ({
+				position: UNISWAP_V4_FLASH_LOAN_STRATEGY_INDEX,
 				callData: impl.encodeFunctionData("executeFlashLoan", [op.token, op.amount, ops]),
 				info: ops.map(it => it.info).join(""),
 				in: ops.map(it => it.in).find(it => it !== undefined),

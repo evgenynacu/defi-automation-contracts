@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {DelegateCall} from "../util/DelegateCall.sol";
 import {HasOperation} from "./HasOperation.sol";
+import {IPoolManager} from "../uniswap-v4/IPoolManager.sol";
 import {RolesUpgradeable} from "../util/RolesUpgradeable.sol";
 import {StorageUtil} from "../util/StorageUtil.sol";
 
@@ -19,6 +20,8 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
     address private immutable MORPHO_ADDRESS;
     IPoolAddressesProvider public immutable ADDRESSES_PROVIDER;
     IPool public immutable POOL;
+    // Uniswap v4 PoolManager, zero where v4 is not deployed
+    address private immutable UNISWAP_V4_POOL_MANAGER;
 
     bytes32 private constant FLASH_LOAN_OUT_SLOT = keccak256("flashLoan#output");
 
@@ -27,10 +30,11 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
 
     bool private rebalancing;
 
-    constructor (address _morpho, address aaveProvider) {
+    constructor (address _morpho, address aaveProvider, address uniswapV4PoolManager) {
         MORPHO_ADDRESS = _morpho;
         ADDRESSES_PROVIDER = IPoolAddressesProvider(aaveProvider);
         POOL = IPool(IPoolAddressesProvider(aaveProvider).getPool());
+        UNISWAP_V4_POOL_MANAGER = uniswapV4PoolManager;
         _disableInitializers();
     }
 
@@ -141,6 +145,35 @@ contract AutomatedVault is HasOperation, IFlashLoanSimpleReceiver, Initializable
 
         IERC20(assets[0]).safeTransfer(msg.sender, amounts[0] + premiums[0]);
         return true;
+    }
+
+    /**
+     * @notice Callback for a Uniswap v4 flash loan
+     * @dev v4 has no flashLoan entry point. Inside unlock the borrowed amount is taken, the operations
+     *      run, and the same amount is returned — the PoolManager only requires deltas to net to zero,
+     *      so nothing is paid for it. Settling requires sync() before the transfer, since settle()
+     *      credits the balance difference since the snapshot.
+     * @param data abi.encode(token, amount, Operation[])
+     */
+    function unlockCallback(bytes calldata data) external returns (bytes memory) {
+        address poolManager = UNISWAP_V4_POOL_MANAGER;
+        require(rebalancing, "!NotRebalancing");
+        require(msg.sender == poolManager, "Caller must be PoolManager");
+
+        (address token, uint256 amount, Operation[] memory operations) =
+                            abi.decode(data, (address, uint256, Operation[]));
+
+        IPoolManager(poolManager).take(token, address(this), amount);
+
+        uint out = executeOperations(operations);
+        StorageUtil.setUintSlot(FLASH_LOAN_OUT_SLOT, out);
+
+        // This reverts if the operations did not leave enough behind to repay
+        IPoolManager(poolManager).sync(token);
+        IERC20(token).safeTransfer(poolManager, amount);
+        IPoolManager(poolManager).settle();
+
+        return "";
     }
 
     function _getMorphoAddress() internal view returns (address) {

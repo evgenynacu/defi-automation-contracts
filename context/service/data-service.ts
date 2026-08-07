@@ -1,4 +1,5 @@
 import {address} from "../../common/types"
+import {FlashLoanProvider} from "../../common/flash-loan-provider"
 import {CalculateResult, createCalculateExecutor, StrategyExecutor} from "../../common/calculate-result"
 import {ContractRunner} from "ethers"
 import {withdrawFromMorpho} from "../../common/withdraw-from-morpho"
@@ -188,7 +189,7 @@ export type SwapRateRequest = {
 type CommonPart = {
 	vault: address
 	from: address
-	flashLoanProvider?: "morpho" | "insta"
+	flashLoanProvider?: FlashLoanProvider
 }
 
 export type MorphoWithdrawDataRequest = {

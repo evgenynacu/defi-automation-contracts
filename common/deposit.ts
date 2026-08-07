@@ -2,12 +2,14 @@ import { StrategyExecutor } from "./calculate-result"
 import { verifyAllowance } from "./verify-allowance"
 import { MaxUint256 } from "ethers"
 import { Lending } from "./lending"
+import { FlashLoanProvider, toFlashLoanOperation } from "./flash-loan-provider"
 
 export async function deposit<T>(
 	ex: StrategyExecutor<T>,
 	lending: Lending,
 	amount: bigint,
 	leverage: number,
+	flashLoanProvider?: FlashLoanProvider,
 ) {
 	const vaultAddress = await ex.getVaultAddress()
 	const from = await ex.getFrom()
@@ -26,7 +28,7 @@ export async function deposit<T>(
 			from,
 		},
 		{
-			type: "morpho-flash-loan",
+			type: toFlashLoanOperation(flashLoanProvider),
 			token: debt,
 			amount: flashLoanAmount,
 			innerOperations: [

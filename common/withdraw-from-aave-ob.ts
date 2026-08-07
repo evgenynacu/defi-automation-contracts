@@ -1,4 +1,5 @@
 import {StrategyExecutor} from "./calculate-result"
+import {FlashLoanProvider} from "./flash-loan-provider"
 import {withdraw} from "./withdraw"
 import {toAddress} from "./types"
 import {AaveOnBehalf} from "./lending/aave-on-behalf";
@@ -9,7 +10,7 @@ export async function withdrawFromAaveOnBehalf<T>(
 	debtToken: string,
 	debtShare: number = 1,
 	collateralShare?: number,
-	flashLoanProvider?: "insta" | "morpho",
+	flashLoanProvider?: FlashLoanProvider,
 ): Promise<T> {
 	return withdraw({
 		ex,

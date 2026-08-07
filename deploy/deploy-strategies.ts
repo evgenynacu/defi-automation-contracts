@@ -42,6 +42,9 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 			AAVE_V4_POSITION_MANAGERS.CONFIG,
 		])).address
 		: ZERO_ADDRESS
+	const uniswapV4FlashLoanStrategy = config.uniswapV4PoolManager === ZERO_ADDRESS
+		? ZERO_ADDRESS
+		: (await deployStrategy(hre, "UniswapV4FlashLoanStrategy", [config.uniswapV4PoolManager])).address
 
 	// const strataSwapAddress = await deployStrataSwap(hre)
 	// const strataSwapStrategy = await deployStrategy(hre, "StrataSwapStrategy", [strataSwapAddress])
@@ -70,6 +73,7 @@ export async function deployStrategies(hre: HardhatRuntimeEnvironment) {
 		aaveOnBehalfStrategy.address,     //17
 		instaFlashLoanStrategy,           //18
 		aaveV4OnBehalfStrategy,           //19
+		uniswapV4FlashLoanStrategy,       //20
 	]
 }
 

@@ -6,6 +6,7 @@ import { AaveV4OnBehalf } from "../common/lending/aave-v4-on-behalf"
 import { getReserveId } from "../common/aave-v4/get-reserve-id"
 import { verifyReserveCapacity } from "../common/aave-v4/get-capacity"
 import { PT_USDG_SEP26_USDG } from "../common/aave-v4/positions"
+import { FlashLoanProvider } from "../common/flash-loan-provider"
 
 /**
  * Leveraged deposit into PT-USDG-24SEP2026 collateral against USDG debt, on the USDG Pendle spoke.
@@ -14,6 +15,9 @@ import { PT_USDG_SEP26_USDG } from "../common/aave-v4/positions"
  * Run 701 first — it grants the vault its permissions and flags the collateral, without which the
  * borrow leg reverts inside the flash loan.
  */
+// Morpho holds almost no USDG; the v4 PoolManager holds millions and charges nothing.
+const FLASH_LOAN_PROVIDER: FlashLoanProvider = "uni-v4"
+
 const AMOUNT = 1_000000n
 const LEVERAGE = 10
 
@@ -37,7 +41,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 	const aave = new AaveV4OnBehalf(SPOKE, COLLATERAL, DEBT)
 
-	await sendOrEstimate(hre, ex => deposit(ex, aave, AMOUNT, LEVERAGE))
+	await sendOrEstimate(hre, ex => deposit(ex, aave, AMOUNT, LEVERAGE, FLASH_LOAN_PROVIDER))
 }
 
 // noinspection JSUnusedGlobalSymbols

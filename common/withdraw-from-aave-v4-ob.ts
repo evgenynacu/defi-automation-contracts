@@ -3,13 +3,14 @@ import { withdraw } from "./withdraw"
 import { AaveV4OnBehalf } from "./lending/aave-v4-on-behalf"
 import { AaveV4Leg } from "./aave-v4/types"
 import { address } from "./types"
+import { FlashLoanProvider } from "./flash-loan-provider"
 
 export type AaveV4WithdrawOptions = {
 	debtShare?: number
 	collateralShare?: number
 	/** position owner; defaults to the executor's sender */
 	onBehalfOf?: address
-	flashLoanProvider?: "insta" | "morpho"
+	flashLoanProvider?: FlashLoanProvider
 }
 
 /**

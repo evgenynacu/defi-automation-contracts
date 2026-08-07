@@ -75,5 +75,9 @@ export const USDC: address = toAddress("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB
 export const USDC_ARB = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
 export const sENA: address = toAddress("0x8bE3460A480c80728a8C4D7a5D5303c85ba7B3b9")
 
+// Uniswap v4 PoolManager — flash loans via take/settle inside unlock, no fee
+export const UNISWAP_V4_POOL_MANAGER = "0x000000000004444c5dc75cB358380D2e3dE08A90"
+export const UNISWAP_V4_POOL_MANAGER_ARB = "0x360E68faCcca8cA495c1B759Fd9EEe466db9FB32"
+
 export const PENDLE_ROUTER = "0x888888888889758F76e7103c6CbF23ABbF58F946"
 export const STRATA_SWAP = "0xbed375fAcbB6A4F3100a697fA2Bb47153CEf2bcc"

@@ -5,6 +5,7 @@ import { withdrawFromAaveV4OnBehalf } from "../common/withdraw-from-aave-v4-ob"
 import { getReserveId } from "../common/aave-v4/get-reserve-id"
 import { getReserveCapacity } from "../common/aave-v4/get-capacity"
 import { PT_USDG_SEP26_USDG } from "../common/aave-v4/positions"
+import { FlashLoanProvider } from "../common/flash-loan-provider"
 
 /**
  * Full exit from the PT-USDG-24SEP2026 / USDG position on the USDG Pendle spoke.
@@ -18,10 +19,11 @@ import { PT_USDG_SEP26_USDG } from "../common/aave-v4/positions"
  * - the collateral withdraw asks for exactly the quoted balance, so interest accrued since the quote
  *   stays behind as dust. Run again, or retire the reserve, if you need the position at literally zero.
  *
- * Morpho is the default flash-loan source and holds very little USDG — check the pre-flight output
- * below before running, and switch to "insta" if that is deployed on this network.
+ * Flash-loaned from the Uniswap v4 PoolManager: Morpho holds almost no USDG, and v4 charges nothing
+ * for taking and settling the same amount inside one unlock.
  */
-const FLASH_LOAN_PROVIDER: "morpho" | "insta" = "morpho"
+// Morpho holds almost no USDG; the v4 PoolManager holds millions and charges nothing.
+const FLASH_LOAN_PROVIDER: FlashLoanProvider = "uni-v4"
 
 const { spoke: SPOKE, collateral: COLLATERAL, debt: DEBT } = PT_USDG_SEP26_USDG
 
