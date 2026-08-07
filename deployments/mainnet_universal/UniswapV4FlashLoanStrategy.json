@@ -1,0 +1,143 @@
+{
+  "address": "0x8FA84493fA898980b10295eBE3bF0e5B11F7Eee6",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "poolManager",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "FlashLoanRequested",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint16",
+              "name": "position",
+              "type": "uint16"
+            },
+            {
+              "internalType": "bytes",
+              "name": "callData",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct HasOperation.Operation[]",
+          "name": "operations",
+          "type": "tuple[]"
+        }
+      ],
+      "name": "executeFlashLoan",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "out",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getPoolManager",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xf3d64af739a3e45a7dacf70b78bfa7f7ccc5532c59c9241633efd20737190152",
+  "receipt": {
+    "to": null,
+    "from": "0x5D3A5c30Dd9F7b8913EbE388bDC66E895CE7C75E",
+    "contractAddress": "0x8FA84493fA898980b10295eBE3bF0e5B11F7Eee6",
+    "transactionIndex": 246,
+    "gasUsed": "509130",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x24d51497e59c63df8db50dc41738fccaba6bfd40233565b44c86dfb5310ea452",
+    "transactionHash": "0xf3d64af739a3e45a7dacf70b78bfa7f7ccc5532c59c9241633efd20737190152",
+    "logs": [],
+    "blockNumber": 25703644,
+    "cumulativeGasUsed": "31710186",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x000000000004444c5dc75cB358380D2e3dE08A90"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "cf0753a92a556ed60b2b0f634c25d808",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.24+commit.e11b9ed9\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"poolManager\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"FlashLoanRequested\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"uint16\",\"name\":\"position\",\"type\":\"uint16\"},{\"internalType\":\"bytes\",\"name\":\"callData\",\"type\":\"bytes\"}],\"internalType\":\"struct HasOperation.Operation[]\",\"name\":\"operations\",\"type\":\"tuple[]\"}],\"name\":\"executeFlashLoan\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"out\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getPoolManager\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"executeFlashLoan(address,uint256,(uint16,bytes)[])\":{\"details\":\"Called via delegatecall from the vault\",\"params\":{\"amount\":\"The amount to borrow, capped by the PoolManager's balance of that token\",\"operations\":\"operation list for the vault, executed while holding the borrowed funds\",\"token\":\"The token to borrow\"},\"returns\":{\"out\":\"output produced during the flash loan operation\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"executeFlashLoan(address,uint256,(uint16,bytes)[])\":{\"notice\":\"Take a flash loan from the v4 PoolManager and run the operations against it\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/vault/UniswapV4FlashLoanStrategy.sol\":\"UniswapV4FlashLoanStrategy\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[],\"viaIR\":true},\"sources\":{\"contracts/uniswap-v4/IPoolManager.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.24;\\n\\n// @notice Minimal subset of the Uniswap v4 PoolManager, for flash borrowing via flash accounting.\\n// @dev Vendored from Uniswap/v4-core. `Currency` upstream is a user-defined value type over address,\\n//      which is ABI-identical to address.\\n//\\n//      There is no flashLoan function in v4. Instead, inside `unlock` the caller may `take` any currency\\n//      and `settle` it back, and the PoolManager only requires that all deltas net to zero before unlock\\n//      returns. Taking and returning the same amount therefore costs nothing \\u2014 fees exist only on `swap`.\\n//      Available size is the PoolManager's whole balance of that token, pooled across every v4 pool.\\ninterface IPoolManager {\\n    // @notice Opens a lock and calls back into msg.sender via IUnlockCallback.unlockCallback.\\n    function unlock(bytes calldata data) external returns (bytes memory);\\n\\n    // @notice Transfers `amount` of `currency` out, recording a debt against the caller.\\n    function take(address currency, address to, uint256 amount) external;\\n\\n    // @notice Snapshots the PoolManager's balance of `currency`. Must be called before transferring in,\\n    //         since settle() credits the difference between the snapshot and the balance at settle time.\\n    function sync(address currency) external;\\n\\n    // @notice Credits whatever arrived since sync() against the caller's debt.\\n    function settle() external payable returns (uint256 paid);\\n}\\n\\ninterface IUnlockCallback {\\n    function unlockCallback(bytes calldata data) external returns (bytes memory);\\n}\\n\",\"keccak256\":\"0x73d5d7bc5753c9bd6a45e3d0dc4334fb4e08af8f1e252b83b526bec5a03a353a\",\"license\":\"MIT\"},\"contracts/util/StorageUtil.sol\":{\"content\":\"// SPDX-License-Identifier: UNLICENSED\\npragma solidity ^0.8.24;\\n\\nlibrary StorageUtil {\\n    function setUintSlot(bytes32 slot, uint value) internal {\\n        assembly {\\n            sstore(slot, value)\\n        }\\n    }\\n\\n    function readUintSlot(bytes32 slot) internal view returns (uint value) {\\n        // solhint-disable-next-line security/no-inline-assembly\\n        assembly {\\n            value := sload(slot)\\n        }\\n    }\\n\\n    function setAddressSlot(bytes32 slot, address value) internal {\\n        assembly {\\n            sstore(slot, value)\\n        }\\n    }\\n\\n    function readAddressSlot(bytes32 slot) internal view returns (address value) {\\n        // solhint-disable-next-line security/no-inline-assembly\\n        assembly {\\n            value := sload(slot)\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x242db77578f88d6d81b2662733b3f8f33d685604f07a56186da6231f6ffa60b3\",\"license\":\"UNLICENSED\"},\"contracts/vault/HasOperation.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.24;\\n\\nabstract contract HasOperation {\\n    struct OperationsWithAddress {\\n        address token;\\n        Operation[] operations;\\n    }\\n\\n    // @dev Operation for the rebalance\\n    struct Operation {\\n        uint16 position;\\n        bytes callData;\\n    }\\n}\",\"keccak256\":\"0x95407579684801a3b4a11849d404b7c631b1bcee9d2b3e106e17925dbb3784cc\",\"license\":\"MIT\"},\"contracts/vault/UniswapV4FlashLoanStrategy.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.24;\\n\\nimport \\\"../util/StorageUtil.sol\\\";\\nimport {IPoolManager} from \\\"../uniswap-v4/IPoolManager.sol\\\";\\nimport {HasOperation} from \\\"./HasOperation.sol\\\";\\n\\n// @notice Flash loan sourced from the Uniswap v4 PoolManager, which charges nothing for taking and\\n//         settling the same amount within one unlock.\\n// @dev Delegatecalled by the vault, so the unlock and the IUnlockCallback the PoolManager calls back into\\n//      are both the vault. The callback itself lives on AutomatedVault, next to the Morpho and Aave ones.\\ncontract UniswapV4FlashLoanStrategy is HasOperation {\\n    bytes32 private constant FLASH_LOAN_OUT_SLOT = keccak256(\\\"flashLoan#output\\\");\\n\\n    IPoolManager private immutable POOL_MANAGER;\\n\\n    event FlashLoanRequested(address token, uint256 amount);\\n\\n    constructor(address poolManager) {\\n        require(poolManager != address(0), \\\"poolManager is not set\\\");\\n        POOL_MANAGER = IPoolManager(poolManager);\\n    }\\n\\n    function getPoolManager() external view returns (address) {\\n        return address(POOL_MANAGER);\\n    }\\n\\n    /**\\n     * @notice Take a flash loan from the v4 PoolManager and run the operations against it\\n     * @dev Called via delegatecall from the vault\\n     * @param token The token to borrow\\n     * @param amount The amount to borrow, capped by the PoolManager's balance of that token\\n     * @param operations operation list for the vault, executed while holding the borrowed funds\\n     * @return out output produced during the flash loan operation\\n     */\\n    function executeFlashLoan(\\n        address token,\\n        uint256 amount,\\n        Operation[] calldata operations\\n    ) external returns (uint out) {\\n        POOL_MANAGER.unlock(abi.encode(token, amount, operations));\\n\\n        out = StorageUtil.readUintSlot(FLASH_LOAN_OUT_SLOT);\\n        StorageUtil.setUintSlot(FLASH_LOAN_OUT_SLOT, 0);\\n\\n        emit FlashLoanRequested(token, amount);\\n    }\\n}\\n\",\"keccak256\":\"0x9b2fd1d562f343fe3f2300a7ba2e122de424f4ed35ded500915ccb5ffcd8f3cf\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x60a06040523462000047576200001e6200001862000126565b62000258565b620000286200004d565b61081462000297823960805181818161026e01526106b9015261081490f35b62000053565b60405190565b600080fd5b601f801991011690565b634e487b7160e01b600052604160045260246000fd5b90620000849062000058565b810190811060018060401b038211176200009d57604052565b62000062565b90620000ba620000b26200004d565b928362000078565b565b600080fd5b60018060a01b031690565b620000d790620000c1565b90565b620000e581620000cc565b03620000ed57565b600080fd5b905051906200010182620000da565b565b9060208282031262000120576200011d91600001620000f2565b90565b620000bc565b6200014962000aab803803806200013d81620000a3565b92833981019062000103565b90565b90565b90565b6200016b6200016562000171926200014c565b6200014f565b620000c1565b90565b6200017f9062000152565b90565b60209181520190565b60007f706f6f6c4d616e61676572206973206e6f742073657400000000000000000000910152565b620001c2601660209262000182565b620001cd816200018b565b0190565b620001e99060208101906000818303910152620001b3565b90565b15620001f457565b620001fe6200004d565b62461bcd60e51b8152806200021660048201620001d1565b0390fd5b620002336200022d6200023992620000c1565b6200014f565b620000c1565b90565b62000247906200021a565b90565b62000255906200023c565b90565b62000291906200028b81620002836200027c62000276600062000174565b620000cc565b91620000cc565b1415620001ec565b6200024a565b60805256fe60806040526004361015610013575b61021f565b61001e60003561003d565b806378d84da3146100385763e870ced10361000e576101e6565b61009d565b60e01c90565b60405190565b600080fd5b600080fd5b600091031261005e57565b61004e565b60018060a01b031690565b61007790610063565b90565b6100839061006e565b9052565b919061009b9060006020850194019061007a565b565b346100cd576100ad366004610053565b6100c96100b8610260565b6100c0610043565b91829182610087565b0390f35b610049565b600080fd5b6100e08161006e565b036100e757565b600080fd5b905035906100f9826100d7565b565b90565b610107816100fb565b0361010e57565b600080fd5b90503590610120826100fe565b565b600080fd5b600080fd5b600080fd5b909182601f8301121561016b5781359167ffffffffffffffff831161016657602001926020830284011161016157565b61012c565b610127565b610122565b916060838303126101be5761018882600085016100ec565b926101968360208301610113565b92604082013567ffffffffffffffff81116101b9576101b59201610131565b9091565b6100d2565b61004e565b6101cc906100fb565b9052565b91906101e4906000602085019401906101c3565b565b3461021a576102166102056101fc366004610170565b9291909161069d565b61020d610043565b918291826101d0565b0390f35b610049565b600080fd5b600090565b90565b61024061023b61024592610063565b610229565b610063565b90565b6102519061022c565b90565b61025d90610248565b90565b610268610224565b506102927f0000000000000000000000000000000000000000000000000000000000000000610254565b90565b600090565b60209181520190565b90565b61ffff1690565b6102b6816102a6565b036102bd57565b600080fd5b905035906102cf826102ad565b565b506102e09060208101906102c2565b90565b6102ec906102a6565b9052565b600080fd5b600080fd5b600080fd5b903560016020038236030381121561034057016020813591019167ffffffffffffffff821161033b57600182023603831361033657565b6102f5565b6102f0565b6102fa565b60209181520190565b90826000939282370152565b601f801991011690565b919061037e816103778161038395610345565b809561034e565b61035a565b0190565b6103c5916103b760408201926103ad6103a360008301836102d1565b60008501906102e3565b60208101906102ff565b916020818503910152610364565b90565b906103d291610387565b90565b90356001604003823603038112156103eb570190565b6102fa565b60200190565b91816104019161029a565b9081610412602083028401946102a3565b92836000925b8484106104285750505050505090565b909192939495602061045361044d83856001950388526104488b886103d5565b6103c8565b986103f0565b940194019294939190610418565b610488610495959394929461047e6060840196600085019061007a565b60208301906101c3565b60408185039101526103f6565b90565b634e487b7160e01b600052604160045260246000fd5b906104b89061035a565b810190811067ffffffffffffffff8211176104d257604052565b610498565b60e01b90565b600080fd5b906104f56104ee610043565b92836104ae565b565b67ffffffffffffffff81116105155761051160209161035a565b0190565b610498565b60005b83811061052e575050906000910152565b80602091830151818501520161051d565b9092919261055461054f826104f7565b6104e2565b938185526020850190828401116105705761056e9261051a565b565b6104dd565b9080601f83011215610593578160206105909351910161053f565b90565b610122565b906020828203126105c957600082015167ffffffffffffffff81116105c4576105c19201610575565b90565b6100d2565b61004e565b5190565b60209181520190565b6105fa610603602093610608936105f1816105ce565b938480936105d2565b9586910161051a565b61035a565b0190565b61062291602082019160008184039101526105db565b90565b61062d610043565b3d6000823e3d90fd5b7f6b588333b27ba71843c858b6d05ac839380f5f5dc22fbe58d7831700d6b5ccc690565b90565b61067161066c6106769261065a565b610229565b6100fb565b90565b91602061069b9294936106946040820196600083019061007a565b01906101c3565b565b939261073091926000916106af610295565b50610725836106dd7f0000000000000000000000000000000000000000000000000000000000000000610254565b926107116348c89491916107028c918b986106f6610043565b998a9460208601610461565b602082018103825203866104ae565b610719610043565b968795869485936104d7565b83526004830161060c565b03925af180156107c9576107a8575b5061075061074b610636565b6107ce565b9261076c61075c610636565b610766600061065d565b906107db565b907f36b2acb66143c7d81ece04083e3157526cab9360d579ecd6ed68c9e7481123f1916107a361079a610043565b92839283610679565b0390a1565b6107c4903d806000833e6107bc81836104ae565b810190610598565b61073f565b610625565b6107d6610295565b505490565b5556fea264697066735822122011de4eefb30f1e06e760fd6bf3b9b26bf3ef03a909cf35831b4643efd8fa6a6264736f6c63430008180033",
+  "deployedBytecode": "0x60806040526004361015610013575b61021f565b61001e60003561003d565b806378d84da3146100385763e870ced10361000e576101e6565b61009d565b60e01c90565b60405190565b600080fd5b600080fd5b600091031261005e57565b61004e565b60018060a01b031690565b61007790610063565b90565b6100839061006e565b9052565b919061009b9060006020850194019061007a565b565b346100cd576100ad366004610053565b6100c96100b8610260565b6100c0610043565b91829182610087565b0390f35b610049565b600080fd5b6100e08161006e565b036100e757565b600080fd5b905035906100f9826100d7565b565b90565b610107816100fb565b0361010e57565b600080fd5b90503590610120826100fe565b565b600080fd5b600080fd5b600080fd5b909182601f8301121561016b5781359167ffffffffffffffff831161016657602001926020830284011161016157565b61012c565b610127565b610122565b916060838303126101be5761018882600085016100ec565b926101968360208301610113565b92604082013567ffffffffffffffff81116101b9576101b59201610131565b9091565b6100d2565b61004e565b6101cc906100fb565b9052565b91906101e4906000602085019401906101c3565b565b3461021a576102166102056101fc366004610170565b9291909161069d565b61020d610043565b918291826101d0565b0390f35b610049565b600080fd5b600090565b90565b61024061023b61024592610063565b610229565b610063565b90565b6102519061022c565b90565b61025d90610248565b90565b610268610224565b506102927f0000000000000000000000000000000000000000000000000000000000000000610254565b90565b600090565b60209181520190565b90565b61ffff1690565b6102b6816102a6565b036102bd57565b600080fd5b905035906102cf826102ad565b565b506102e09060208101906102c2565b90565b6102ec906102a6565b9052565b600080fd5b600080fd5b600080fd5b903560016020038236030381121561034057016020813591019167ffffffffffffffff821161033b57600182023603831361033657565b6102f5565b6102f0565b6102fa565b60209181520190565b90826000939282370152565b601f801991011690565b919061037e816103778161038395610345565b809561034e565b61035a565b0190565b6103c5916103b760408201926103ad6103a360008301836102d1565b60008501906102e3565b60208101906102ff565b916020818503910152610364565b90565b906103d291610387565b90565b90356001604003823603038112156103eb570190565b6102fa565b60200190565b91816104019161029a565b9081610412602083028401946102a3565b92836000925b8484106104285750505050505090565b909192939495602061045361044d83856001950388526104488b886103d5565b6103c8565b986103f0565b940194019294939190610418565b610488610495959394929461047e6060840196600085019061007a565b60208301906101c3565b60408185039101526103f6565b90565b634e487b7160e01b600052604160045260246000fd5b906104b89061035a565b810190811067ffffffffffffffff8211176104d257604052565b610498565b60e01b90565b600080fd5b906104f56104ee610043565b92836104ae565b565b67ffffffffffffffff81116105155761051160209161035a565b0190565b610498565b60005b83811061052e575050906000910152565b80602091830151818501520161051d565b9092919261055461054f826104f7565b6104e2565b938185526020850190828401116105705761056e9261051a565b565b6104dd565b9080601f83011215610593578160206105909351910161053f565b90565b610122565b906020828203126105c957600082015167ffffffffffffffff81116105c4576105c19201610575565b90565b6100d2565b61004e565b5190565b60209181520190565b6105fa610603602093610608936105f1816105ce565b938480936105d2565b9586910161051a565b61035a565b0190565b61062291602082019160008184039101526105db565b90565b61062d610043565b3d6000823e3d90fd5b7f6b588333b27ba71843c858b6d05ac839380f5f5dc22fbe58d7831700d6b5ccc690565b90565b61067161066c6106769261065a565b610229565b6100fb565b90565b91602061069b9294936106946040820196600083019061007a565b01906101c3565b565b939261073091926000916106af610295565b50610725836106dd7f0000000000000000000000000000000000000000000000000000000000000000610254565b926107116348c89491916107028c918b986106f6610043565b998a9460208601610461565b602082018103825203866104ae565b610719610043565b968795869485936104d7565b83526004830161060c565b03925af180156107c9576107a8575b5061075061074b610636565b6107ce565b9261076c61075c610636565b610766600061065d565b906107db565b907f36b2acb66143c7d81ece04083e3157526cab9360d579ecd6ed68c9e7481123f1916107a361079a610043565b92839283610679565b0390a1565b6107c4903d806000833e6107bc81836104ae565b810190610598565b61073f565b610625565b6107d6610295565b505490565b5556fea264697066735822122011de4eefb30f1e06e760fd6bf3b9b26bf3ef03a909cf35831b4643efd8fa6a6264736f6c63430008180033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "executeFlashLoan(address,uint256,(uint16,bytes)[])": {
+        "details": "Called via delegatecall from the vault",
+        "params": {
+          "amount": "The amount to borrow, capped by the PoolManager's balance of that token",
+          "operations": "operation list for the vault, executed while holding the borrowed funds",
+          "token": "The token to borrow"
+        },
+        "returns": {
+          "out": "output produced during the flash loan operation"
+        }
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "executeFlashLoan(address,uint256,(uint16,bytes)[])": {
+        "notice": "Take a flash loan from the v4 PoolManager and run the operations against it"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": null
+  }
+}
