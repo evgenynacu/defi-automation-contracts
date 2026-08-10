@@ -28,6 +28,12 @@ export const AAVE_V4_SPOKES = {
 	TREASURY: toAddress("0xB9B0b8616f6Bf6841972a52058132BE08d723155"),
 } as const
 
+/** Reverse lookup for labelling — falls back to the address for an unlisted spoke. */
+export function getSpokeName(spoke: string): string {
+	const entry = Object.entries(AAVE_V4_SPOKES).find(([, a]) => a.toLowerCase() === spoke.toLowerCase())
+	return entry ? entry[0] : spoke
+}
+
 // Governance-deployed position managers, active on every spoke. These are what let a vault operate a
 // position it does not own — the spoke rejects a foreign onBehalfOf from anyone else.
 export const AAVE_V4_POSITION_MANAGERS = {

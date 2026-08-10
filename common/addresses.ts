@@ -65,6 +65,7 @@ export const PT_sUSDe_9APR2026 = "0xab509448ad489e2e1341e25cc500f2596464cc82"
 export const USDe_PLASMA = "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34"
 export const USDG = "0xe343167631d89B6Ffc58B88d6b7fB0228795491D"
 export const PT_USDG_24SEP2026 = "0xc1906aeCf868749a2DeE203F59b904c0cf212140"
+export const syrupUSDG = "0x87b65C4aAFFA76881f9E96F3e7ED945ddFC3Cd7A"
 
 export const rUSD: address = toAddress("0x09D4214C03D01F49544C0448DBE3A27f768F2b34".toLowerCase())
 export const srUSD: address = toAddress("0x738d1115b90efa71ae468f1287fc864775e23a31".toLowerCase())

@@ -13,13 +13,19 @@ import {
 	openPositionSizeGauge,
 	pendleImpliedRateGauge,
 	swapRateGauge,
+	aaveV4SupplyLeftGauge,
+	aaveV4SupplyCapGauge,
+	aaveV4BorrowableGauge,
 } from "../metrics/registry"
+import {getSpokeName} from "../../common/aave-v4/addresses"
 
 type SyncData = {
 	result: number
 	ltv?: number
 	hf?: number
 	rate?: number
+	supplyCap?: number
+	borrowable?: number
 	[key: string]: unknown
 }
 
@@ -79,6 +85,13 @@ export class MetricPublisher {
 					{ wallet: wallets[request.from] || request.from, comet: request.comet },
 					data.result,
 				)
+				return
+			}
+			case "aave-v4-capacity": {
+				const labels = { spoke: getSpokeName(request.spoke), token: findToken(request.token) || request.token }
+				aaveV4SupplyLeftGauge.set(labels, data.result)
+				if (data.supplyCap !== undefined) aaveV4SupplyCapGauge.set(labels, data.supplyCap)
+				if (data.borrowable !== undefined) aaveV4BorrowableGauge.set(labels, data.borrowable)
 				return
 			}
 			case "aave-free-supply": {

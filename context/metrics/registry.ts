@@ -62,6 +62,26 @@ export const aaveTotalSuppliedGauge = new Gauge({
 	labelNames: ['token'],
 })
 
+// Aave v4 caps are per (spoke, reserve), so both labels are needed: the same token has different
+// headroom on different spokes, and a spoke can list one token twice from two hubs.
+export const aaveV4SupplyLeftGauge = new Gauge({
+	name: 'aave_v4_supply_left',
+	help: 'Aave v4 remaining supply headroom for a spoke reserve, in whole units',
+	labelNames: ['spoke', 'token'],
+})
+
+export const aaveV4SupplyCapGauge = new Gauge({
+	name: 'aave_v4_supply_cap',
+	help: 'Aave v4 supply cap (addCap) for a spoke reserve, in whole units',
+	labelNames: ['spoke', 'token'],
+})
+
+export const aaveV4BorrowableGauge = new Gauge({
+	name: 'aave_v4_borrowable',
+	help: 'Aave v4 borrowable now for a spoke reserve: min(credit line left, hub liquidity)',
+	labelNames: ['spoke', 'token'],
+})
+
 export const pendleImpliedRateGauge = new Gauge({
 	name: 'pendle_implied_rate',
 	help: 'Implied rate of pendle PT',
@@ -79,3 +99,6 @@ register.registerMetric(hfGauge)
 register.registerMetric(aaveFreeSupplyGauge)
 register.registerMetric(aaveReserveCapGauge)
 register.registerMetric(aaveTotalSuppliedGauge)
+register.registerMetric(aaveV4SupplyLeftGauge)
+register.registerMetric(aaveV4SupplyCapGauge)
+register.registerMetric(aaveV4BorrowableGauge)

@@ -17,10 +17,16 @@ import {
 	WEETH_ADDRESS,
 	WETH_ADDRESS,
 	wsrUSD,
-	WSTETH_ADDRESS
+	WSTETH_ADDRESS,
+	USDG,
+	syrupUSDG,
+	PT_USDG_24SEP2026
 } from "../common/addresses"
 
 export const tokens: Record<address, string> = {
+	[USDG]: "USDG",
+	[syrupUSDG]: "syrupUSDG",
+	[PT_USDG_24SEP2026]: "PT-USDG-24SEP2026",
 	[USDC]: "USDC",
 	[USDT_ADDRESS]: "USDT",
 	[PT_eUSDe_AUG]: "PT-eUSDe-AUG25",

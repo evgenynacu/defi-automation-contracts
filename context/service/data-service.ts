@@ -14,6 +14,7 @@ import {withdraw} from "../../common/withdraw";
 import {Euler} from "../../common/lending/euler";
 import {PendleMarket__factory} from "../../typechain-types";
 import {withdrawFromAaveOnBehalf} from "../../common/withdraw-from-aave-ob";
+import {getAaveV4Capacity} from "../aave-v4/get-capacity-data";
 
 export class DataService {
 	constructor(private readonly ethRunner: ContractRunner, private readonly arbRunner: ContractRunner, private readonly plasmaRunner: ContractRunner) {
@@ -24,6 +25,8 @@ export class DataService {
 			return getAaveHealthFactor(this.ethRunner, request.from)
 		} else if (request.type === "swap-rate") {
 			return getSwapRate(request)
+		} else if (request.type === "aave-v4-capacity") {
+			return getAaveV4Capacity(this.ethRunner, request)
 		} else if (request.type === "aave-free-supply") {
 			const caps = await getSupplyCaps(this.ethRunner, request.token, request.aToken)
 			return {
@@ -147,6 +150,7 @@ type DataResult = {
 export type DataRequest =
 	AaveHealthFactorRequest
 	| AaveFreeSupplyRequest
+	| AaveV4CapacityRequest
 	| PendleImpliedRateRequest
 	| SwapRateRequest
 	| CompoundHealthFactorRequest
@@ -164,6 +168,19 @@ export type CompoundHealthFactorRequest = {
 	from: address
 	comet: address
 	collateral: address
+}
+
+/**
+ * Remaining room on one Aave v4 spoke reserve.
+ *
+ * The hub is part of the key, not a convenience: a spoke can list the same token twice when it draws it
+ * from two different hubs, and those are separate reserves with separate caps.
+ */
+export type AaveV4CapacityRequest = {
+	type: "aave-v4-capacity"
+	spoke: address
+	token: address
+	hub: address
 }
 
 export type AaveFreeSupplyRequest = {

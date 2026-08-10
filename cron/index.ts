@@ -9,8 +9,13 @@ import {
 	USDC,
 	USDe_ADDRESS,
 	USDS,
-	USDT_ADDRESS
+	USDT_ADDRESS,
+	USDG,
+	syrupUSDG
 } from "../common/addresses"
+import {AAVE_V4_HUBS, AAVE_V4_SPOKES, getSpokeName} from "../common/aave-v4/addresses"
+import {address, toAddress} from "../common/types"
+import {findToken} from "../context/tokens"
 import {updateJobs} from "../context/db/update-jobs"
 import {SyncService} from "../context/service/sync-service";
 import {sleep} from "../common/sleep";
@@ -19,6 +24,27 @@ import express from "express";
 import {register} from "../context/metrics/registry";
 
 dotenv.config()
+
+/**
+ * Aave v4 spoke reserves to report capacity for.
+ *
+ * The hub is part of the key: a spoke can list the same token twice when it draws it from two different
+ * hubs, and those are separate reserves with separate caps. Add a line here to watch another reserve.
+ */
+const AAVE_V4_WATCHED_RESERVES: { spoke: address, token: address, hub: address }[] = [
+	// syrupUSDG collateral on the USDG Maple spoke — cap has been sitting at zero
+	{
+		spoke: AAVE_V4_SPOKES.USDG_MAPLE,
+		token: toAddress(syrupUSDG),
+		hub: AAVE_V4_HUBS.GLOBAL_DOLLAR,
+	},
+	// USDG debt on the same spoke, drawn from the Core hub
+	{
+		spoke: AAVE_V4_SPOKES.USDG_MAPLE,
+		token: toAddress(USDG),
+		hub: AAVE_V4_HUBS.CORE,
+	},
+]
 
 async function runJobs() {
 	console.log("Starting cron jobs")
@@ -81,6 +107,13 @@ async function runJobs() {
 
 	cron.schedule('* * * * *', () => {
 		console.log("Running cron job")
+
+		for (const reserve of AAVE_V4_WATCHED_RESERVES) {
+			logAsync(
+				syncService.syncData({ type: "aave-v4-capacity", ...reserve }),
+				`checking aave v4 capacity ${getSpokeName(reserve.spoke)} ${findToken(reserve.token) || reserve.token}`,
+			)
+		}
 
 		// logAsync(
 		// 	syncService.syncData({

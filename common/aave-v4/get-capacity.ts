@@ -21,6 +21,13 @@ export type ReserveCapacity = {
 	borrowLeft: bigint
 	/** What can actually be borrowed right now: min(borrowLeft, hubLiquidity) */
 	borrowable: bigint
+	/** decimals of the underlying, so callers can present these as whole units */
+	decimals: number
+}
+
+/** Whole units, for metrics and logs. Raw bigints are unreadable as gauge values. */
+export function toWholeUnits(amount: bigint, decimals: number): number {
+	return Number(amount) / 10 ** decimals
 }
 
 /**
@@ -68,6 +75,7 @@ export async function getReserveCapacity(
 		borrowCap,
 		borrowLeft,
 		borrowable: borrowLeft < hubLiquidity ? borrowLeft : hubLiquidity,
+		decimals: Number(reserve.decimals),
 	}
 }
 
