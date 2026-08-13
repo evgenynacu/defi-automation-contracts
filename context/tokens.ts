@@ -20,7 +20,7 @@ import {
 	WSTETH_ADDRESS,
 	USDG,
 	syrupUSDG,
-	PT_USDG_24SEP2026
+	PT_USDG_24SEP2026, PT_sUSDS_26NOV2026
 } from "../common/addresses"
 
 export const tokens: Record<address, string> = {
@@ -72,6 +72,7 @@ export const tokens: Record<address, string> = {
 	[PT_sUSDe_7MAY2026]: "PT-sUSDe_7MAY2026",
 	[USDtb]: "USDtb",
 	[PT_sUSDD_27AUG2026]: "PT-sUSDD-AUG26",
+	[PT_sUSDS_26NOV2026]: "PT-sUSDS-NOV26",
 }
 
 export function findToken(address: address): string | undefined {
@@ -104,4 +105,5 @@ export const tokenMaturityDates: Record<string, Date> = {
 	[PT_sUSDe_9APR2026]: new Date("2026-04-09"),
 	[PT_sUSDe_7MAY2026]: new Date("2026-05-07"),
 	[PT_sUSDD_27AUG2026]: new Date("2026-08-27"),
+	[PT_sUSDS_26NOV2026]: new Date("2026-11-26"),
 }
