@@ -3,6 +3,8 @@ import { address } from "./types"
 import { AAVE_V4_POSITION_MANAGERS } from "./aave-v4/addresses"
 import { getReserveId } from "./aave-v4/get-reserve-id"
 import { AaveV4Leg } from "./aave-v4/types"
+import { verifyVault } from "./verify-vault"
+import { AAVE_V4_ON_BEHALF_STRATEGY_INDEX } from "./serialize-operation"
 import { IConfigPositionManager__factory, ISpoke__factory, ITakerPositionManager__factory } from "../typechain-types"
 
 /**
@@ -51,6 +53,13 @@ export async function approveAaveV4OnBehalf(
 	debts: AaveV4Leg[],
 ) {
 	const owner = await signer.getAddress()
+
+	// These grants are permanent and unlimited, and succeed against any address. Confirm the grantee is
+	// a vault that can actually use them before signing anything.
+	const strategies = await verifyVault(signer.provider!, vault, AAVE_V4_ON_BEHALF_STRATEGY_INDEX)
+	console.log(`Granting ${owner} -> vault ${vault} on spoke ${spoke}`)
+	console.log(`  vault verified: ${strategies.length} strategies, AaveV4OnBehalfStrategy at ${strategies[AAVE_V4_ON_BEHALF_STRATEGY_INDEX]}`)
+
 	const taker = ITakerPositionManager__factory.connect(AAVE_V4_POSITION_MANAGERS.TAKER, signer)
 	const config = IConfigPositionManager__factory.connect(AAVE_V4_POSITION_MANAGERS.CONFIG, signer)
 	const spokeContract = ISpoke__factory.connect(spoke, signer)

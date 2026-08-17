@@ -38,11 +38,11 @@ const AAVE_V4_WATCHED_RESERVES: { spoke: address, token: address, hub: address }
 		token: toAddress(syrupUSDG),
 		hub: AAVE_V4_HUBS.GLOBAL_DOLLAR,
 	},
-	// USDG debt on the same spoke, drawn from the Core hub
+	// the USDG debt leg of that position — Global Dollar, where the credit line actually has room
 	{
 		spoke: AAVE_V4_SPOKES.USDG_MAPLE,
 		token: toAddress(USDG),
-		hub: AAVE_V4_HUBS.CORE,
+		hub: AAVE_V4_HUBS.GLOBAL_DOLLAR,
 	},
 ]
 
@@ -255,6 +255,21 @@ async function syncAllPTs(syncService: SyncService) {
 		})
 	} catch (e) {
 		console.error("Error syncing PT-sUSDS/USDT", e)
+	}
+
+	await sleep(3000)
+
+	try {
+		await syncService.syncData({
+			type: "morpho-withdraw",
+			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+			marketId: "0x2412afc9614939a5d994397fe0b94a4f6fb8bc02bfc139e1a5956a865e2efe26",
+			debtShare: 1,
+			collateralShare: 1,
+		})
+	} catch (e) {
+		console.error("Error syncing PT-USDG/USDC", e)
 	}
 
 	console.log("PTs synchronized in", (Date.now() - start), "ms")
