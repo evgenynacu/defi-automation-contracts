@@ -238,6 +238,20 @@ async function runJobs() {
 async function syncAllNonPTs(syncService: SyncService) {
 	const start = Date.now()
 
+	try {
+		await syncService.syncData({
+			type: "morpho-withdraw",
+			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
+			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
+			marketId: "0x3274643db77a064abd3bc851de77556a4ad2e2f502f4f0c80845fa8f909ecf0b",
+			debtShare: 1,
+			collateralShare: 1,
+		})
+	} catch (e) {
+		console.error("Error syncing sUSDS/USDT", e)
+	}
+
+
 	console.log("non-PTs synchronized in", (Date.now() - start), "ms")
 }
 

@@ -4,7 +4,8 @@ import {sUSDS, USDS} from "../../addresses";
 import {ISusds__factory, SusdsZap__factory} from "../../../typechain-types";
 import {MAX_SLIPPAGE_BPS} from "./config";
 import {address} from "../../types";
-import {OdosV2Provider} from "./OdosV2Provider";
+import {KyberSwapProvider} from "./KyberSwapProvider";
+import {EnsoApiProvider} from "./EnsoProvider";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -24,12 +25,12 @@ const ZAP_DEPLOYED = ZAP !== ZERO_ADDRESS;
  */
 export class SusdsProvider implements ISwapProvider {
 	// Aggregator used to build calldata for the tokenIn<->USDS leg inside the zap.
-	private swapProvider: ISwapProvider = new OdosV2Provider();
+	private swapProvider: ISwapProvider = new EnsoApiProvider();
 
 	getConfig(): ProviderConfig {
 		return {
 			name: "susds",
-			enabled: true,
+			enabled: false,
 		};
 	}
 
