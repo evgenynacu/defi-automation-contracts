@@ -16,12 +16,14 @@ import {
 import {AAVE_V4_HUBS, AAVE_V4_SPOKES, getSpokeName} from "../common/aave-v4/addresses"
 import {address, toAddress} from "../common/types"
 import {findToken} from "../context/tokens"
+import {marketIds} from "../context/morpho"
 import {updateJobs} from "../context/db/update-jobs"
 import {SyncService} from "../context/service/sync-service";
 import {sleep} from "../common/sleep";
 import {refreshViews} from "../context/service/refresh-views-service";
 import express from "express";
 import {register} from "../context/metrics/registry";
+import {SUSDS_USDT_ROUTE_POOLS} from "../context/route-pools";
 
 dotenv.config()
 
@@ -44,6 +46,17 @@ const AAVE_V4_WATCHED_RESERVES: { spoke: address, token: address, hub: address }
 		token: toAddress(USDG),
 		hub: AAVE_V4_HUBS.GLOBAL_DOLLAR,
 	},
+]
+
+/**
+ * Markets whose borrow rate is worth watching.
+ *
+ * A levered position pays this on the whole debt while earning the collateral's yield on the whole
+ * collateral, so the two rates converging is what ends the trade — long before health factor moves.
+ */
+const WATCHED_BORROW_RATE_MARKETS: `0x${string}`[] = [
+	// sUSDS/USDT
+	"0x3274643db77a064abd3bc851de77556a4ad2e2f502f4f0c80845fa8f909ecf0b",
 ]
 
 async function runJobs() {
@@ -107,6 +120,20 @@ async function runJobs() {
 
 	cron.schedule('* * * * *', () => {
 		console.log("Running cron job")
+
+		for (const marketId of WATCHED_BORROW_RATE_MARKETS) {
+			logAsync(
+				syncService.syncData({ type: "morpho-borrow-rate", marketId }),
+				`checking morpho borrow rate ${marketIds[marketId] || marketId}`,
+			)
+		}
+
+		for (const pool of SUSDS_USDT_ROUTE_POOLS) {
+			logAsync(
+				syncService.syncData({ type: "pool-liquidity", ...pool }),
+				`checking route pool ${pool.venue}`,
+			)
+		}
 
 		for (const reserve of AAVE_V4_WATCHED_RESERVES) {
 			logAsync(

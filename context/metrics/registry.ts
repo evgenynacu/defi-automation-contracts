@@ -82,6 +82,27 @@ export const aaveV4BorrowableGauge = new Gauge({
 	labelNames: ['spoke', 'token'],
 })
 
+export const morphoBorrowApyGauge = new Gauge({
+	name: 'morpho_borrow_apy',
+	help: 'Morpho Blue borrow APY for a market, in percent, compounded continuously',
+	labelNames: ['market'],
+})
+
+// Two gauges rather than one, because the units differ and Prometheus has no way to tell them apart.
+// A token balance is depth in whole units; Uniswap v4 liquidity is an L value that only compares
+// against its own history.
+export const routePoolLiquidityGauge = new Gauge({
+	name: 'route_pool_liquidity',
+	help: 'Token balance backing one hop of a swap route, in whole units',
+	labelNames: ['stage', 'venue', 'token'],
+})
+
+export const routePoolV4LiquidityGauge = new Gauge({
+	name: 'route_pool_v4_liquidity',
+	help: 'Uniswap v4 active liquidity (L) at the current tick for one pool on a swap route',
+	labelNames: ['stage', 'venue'],
+})
+
 export const pendleImpliedRateGauge = new Gauge({
 	name: 'pendle_implied_rate',
 	help: 'Implied rate of pendle PT',
@@ -102,3 +123,6 @@ register.registerMetric(aaveTotalSuppliedGauge)
 register.registerMetric(aaveV4SupplyLeftGauge)
 register.registerMetric(aaveV4SupplyCapGauge)
 register.registerMetric(aaveV4BorrowableGauge)
+register.registerMetric(morphoBorrowApyGauge)
+register.registerMetric(routePoolLiquidityGauge)
+register.registerMetric(routePoolV4LiquidityGauge)

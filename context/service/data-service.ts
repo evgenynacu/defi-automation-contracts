@@ -15,6 +15,8 @@ import {Euler} from "../../common/lending/euler";
 import {PendleMarket__factory} from "../../typechain-types";
 import {withdrawFromAaveOnBehalf} from "../../common/withdraw-from-aave-ob";
 import {getAaveV4Capacity} from "../aave-v4/get-capacity-data";
+import {getMorphoBorrowRate} from "../../common/get-morpho-borrow-rate";
+import {getPoolLiquidity, PoolSource} from "../../common/get-pool-liquidity";
 
 export class DataService {
 	constructor(private readonly ethRunner: ContractRunner, private readonly arbRunner: ContractRunner, private readonly plasmaRunner: ContractRunner) {
@@ -27,6 +29,13 @@ export class DataService {
 			return getSwapRate(request)
 		} else if (request.type === "aave-v4-capacity") {
 			return getAaveV4Capacity(this.ethRunner, request)
+		} else if (request.type === "morpho-borrow-rate") {
+			return getMorphoBorrowRate(this.ethRunner, request.marketId)
+		} else if (request.type === "pool-liquidity") {
+			return {
+				id: `pool-liquidity-${request.venue}-${describeSource(request.source)}`,
+				result: await getPoolLiquidity(this.ethRunner, request.source),
+			}
 		} else if (request.type === "aave-free-supply") {
 			const caps = await getSupplyCaps(this.ethRunner, request.token, request.aToken)
 			return {
@@ -67,6 +76,11 @@ export class DataService {
 			result: hf
 		}
 	}
+}
+
+/** A venue can appear once per token it holds, so the token is part of the row id. */
+function describeSource(source: PoolSource): string {
+	return source.kind === "uniswap-v4" ? source.poolId : source.token
 }
 
 async function getPendleImpliedRate(runner: ContractRunner, request: PendleImpliedRateRequest) {
@@ -151,6 +165,8 @@ export type DataRequest =
 	AaveHealthFactorRequest
 	| AaveFreeSupplyRequest
 	| AaveV4CapacityRequest
+	| MorphoBorrowRateRequest
+	| PoolLiquidityRequest
 	| PendleImpliedRateRequest
 	| SwapRateRequest
 	| CompoundHealthFactorRequest
@@ -181,6 +197,25 @@ export type AaveV4CapacityRequest = {
 	spoke: address
 	token: address
 	hub: address
+}
+
+/** Current cost of the debt leg of a levered position. */
+export type MorphoBorrowRateRequest = {
+	type: "morpho-borrow-rate"
+	marketId: `0x${string}`
+}
+
+/**
+ * Depth of one venue on a swap route.
+ *
+ * Carries the source rather than a key into a table so the request stays self-describing, the same way
+ * AaveV4CapacityRequest carries its own (spoke, hub, token).
+ */
+export type PoolLiquidityRequest = {
+	type: "pool-liquidity"
+	stage: string
+	venue: string
+	source: PoolSource
 }
 
 export type AaveFreeSupplyRequest = {

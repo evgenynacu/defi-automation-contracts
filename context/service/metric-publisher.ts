@@ -16,6 +16,9 @@ import {
 	aaveV4SupplyLeftGauge,
 	aaveV4SupplyCapGauge,
 	aaveV4BorrowableGauge,
+	morphoBorrowApyGauge,
+	routePoolLiquidityGauge,
+	routePoolV4LiquidityGauge,
 } from "../metrics/registry"
 import {getSpokeName} from "../../common/aave-v4/addresses"
 
@@ -92,6 +95,25 @@ export class MetricPublisher {
 				aaveV4SupplyLeftGauge.set(labels, data.result)
 				if (data.supplyCap !== undefined) aaveV4SupplyCapGauge.set(labels, data.supplyCap)
 				if (data.borrowable !== undefined) aaveV4BorrowableGauge.set(labels, data.borrowable)
+				return
+			}
+			case "morpho-borrow-rate": {
+				morphoBorrowApyGauge.set(
+					{ market: marketIds[request.marketId] || request.marketId },
+					data.result,
+				)
+				return
+			}
+			case "pool-liquidity": {
+				const { stage, venue, source } = request
+				if (source.kind === "uniswap-v4") {
+					routePoolV4LiquidityGauge.set({ stage, venue }, data.result)
+				} else {
+					routePoolLiquidityGauge.set(
+						{ stage, venue, token: findToken(source.token) || source.token },
+						data.result,
+					)
+				}
 				return
 			}
 			case "aave-free-supply": {
