@@ -25,7 +25,7 @@ const ZAP_DEPLOYED = ZAP !== ZERO_ADDRESS;
  */
 export class SusdsProvider implements ISwapProvider {
 	// Aggregator used to build calldata for the tokenIn<->USDS leg inside the zap.
-	private swapProvider: ISwapProvider = new EnsoApiProvider();
+	private swapProvider: ISwapProvider = new KyberSwapProvider();
 
 	getConfig(): ProviderConfig {
 		return {
