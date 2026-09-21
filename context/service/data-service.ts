@@ -33,7 +33,7 @@ export class DataService {
 			return getMorphoBorrowRate(this.ethRunner, request.marketId)
 		} else if (request.type === "pool-liquidity") {
 			return {
-				id: `pool-liquidity-${request.venue}-${describeSource(request.source)}`,
+				id: poolLiquidityJobId(request.venue, request.source),
 				result: await getPoolLiquidity(this.ethRunner, request.source),
 			}
 		} else if (request.type === "aave-free-supply") {
@@ -78,9 +78,16 @@ export class DataService {
 	}
 }
 
-/** A venue can appear once per token it holds, so the token is part of the row id. */
-function describeSource(source: PoolSource): string {
-	return source.kind === "uniswap-v4" ? source.poolId : source.token
+/**
+ * Row id for one venue's depth.
+ *
+ * Exported because the backfill writes into the same `data` rows as the live sync — if the two ever
+ * disagreed on this string, the reconstructed history would land under a different job and the chart
+ * would show a gap instead of a continuation. A venue can appear once per token it holds, so the token
+ * is part of the id.
+ */
+export function poolLiquidityJobId(venue: string, source: PoolSource): string {
+	return `pool-liquidity-${venue}-${source.kind === "uniswap-v4" ? source.poolId : source.token}`
 }
 
 async function getPendleImpliedRate(runner: ContractRunner, request: PendleImpliedRateRequest) {

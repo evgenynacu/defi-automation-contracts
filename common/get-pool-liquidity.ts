@@ -1,4 +1,4 @@
-import { Contract, type ContractRunner } from "ethers"
+import { type BlockTag, Contract, type ContractRunner } from "ethers"
 import { address } from "./types"
 
 /**
@@ -49,16 +49,24 @@ function getDecimals(runner: ContractRunner, token: address): Promise<number> {
  * Reported so that movement is visible rather than only exhaustion: the venues carrying most of an exit
  * are typically far too deep to run dry, but a large withdrawal from one is an early sign that the route
  * is about to reprice, and it shows up here well before a quote gets worse.
+ *
+ * Both sources are plain state reads, so a past blockTag gives the depth as it stood at that block and
+ * the history of a venue can be rebuilt from an archive node.
  */
-export async function getPoolLiquidity(runner: ContractRunner, source: PoolSource): Promise<number> {
+export async function getPoolLiquidity(
+	runner: ContractRunner,
+	source: PoolSource,
+	blockTag: BlockTag = "latest",
+): Promise<number> {
 	if (source.kind === "uniswap-v4") {
 		const stateView = new Contract(UNISWAP_V4_STATE_VIEW, stateViewAbi, runner)
 		// Not a token amount and not comparable between pools — only its own history is meaningful.
-		return Number(await stateView.getLiquidity(source.poolId))
+		return Number(await stateView.getLiquidity(source.poolId, { blockTag }))
 	}
 
 	const [balance, decimals] = await Promise.all([
-		new Contract(source.token, erc20Abi, runner).balanceOf(source.holder) as Promise<bigint>,
+		new Contract(source.token, erc20Abi, runner).balanceOf(source.holder, { blockTag }) as Promise<bigint>,
+		// Decimals are immutable, so this stays a latest-block read no matter which block is being sampled.
 		getDecimals(runner, source.token),
 	])
 	return Number(balance) / 10 ** decimals

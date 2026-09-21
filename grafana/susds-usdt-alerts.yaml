@@ -1,0 +1,327 @@
+# Grafana unified alerting rules for the sUSDS/USDT position and its exit route.
+#
+# These cannot live in the dashboard JSON. Panel-embedded `alert` blocks were legacy dashboard
+# alerting and were removed in Grafana 9 — under unified alerting a rule is a separate object with
+# its own evaluation group, so it has to be created through provisioning, the API, or the UI.
+#
+# Replace DS_UID_HERE with the UID of the Prometheus data source the cron /metrics endpoint is
+# scraped into (Connections -> Data sources -> pick it -> the UID is the last path segment of the URL).
+#
+# On Grafana Cloud there is no filesystem to drop this on, so import it with:
+#
+#   curl -X POST https://<stack>.grafana.net/api/v1/provisioning/alert-rules \
+#        -H "Authorization: Bearer <service-account-token>" \
+#        -H "Content-Type: application/json" -d @rule.json
+#
+# one rule at a time, or paste the YAML under Alerting -> Alert rules -> Import (name varies by
+# version). Self-hosted: drop this file in /etc/grafana/provisioning/alerting/ and restart.
+
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: susds-usdt
+    folder: DeFi
+    interval: 1m
+    rules:
+
+      # ---------------------------------------------------------------------
+      # The trade stops working. Not a safety alert — a profitability one.
+      # ---------------------------------------------------------------------
+      - uid: susds-usdt-carry-inverted
+        title: sUSDS/USDT carry inverted
+        condition: C
+        for: 30m
+        labels:
+          severity: critical
+          position: susds-usdt
+        annotations:
+          summary: Borrow APY has passed break-even; the position is now bleeding.
+          description: >-
+            Break-even is SSR x collateral/debt, about 3.77% at 15x. Above it the debt costs more
+            than the collateral earns and every hour held loses money. Deleverage or exit.
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: DS_UID_HERE
+            model:
+              editorMode: code
+              expr: morpho_borrow_apy{market="sUSDS/USDT"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              refId: C
+              datasource: {type: __expr__, uid: __expr__}
+              conditions:
+                - evaluator: {type: gt, params: [3.77]}
+                  operator: {type: and}
+                  query: {params: [A]}
+                  reducer: {type: last}
+                  type: query
+        noDataState: NoData
+        execErrState: Error
+        isPaused: false
+
+      - uid: susds-usdt-carry-headroom-thin
+        title: sUSDS/USDT carry headroom under 20bps
+        condition: C
+        for: 1h
+        labels:
+          severity: warning
+          position: susds-usdt
+        annotations:
+          summary: Borrow APY is within 20bps of break-even.
+          description: >-
+            Early warning for the critical rule above. Utilization drives this, so it can move
+            several basis points in an hour when lenders withdraw.
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: DS_UID_HERE
+            model:
+              editorMode: code
+              expr: morpho_borrow_apy{market="sUSDS/USDT"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              refId: C
+              datasource: {type: __expr__, uid: __expr__}
+              conditions:
+                - evaluator: {type: gt, params: [3.57]}
+                  operator: {type: and}
+                  query: {params: [A]}
+                  reducer: {type: last}
+                  type: query
+        noDataState: NoData
+        execErrState: Error
+        isPaused: false
+
+      # ---------------------------------------------------------------------
+      # Solvency.
+      # ---------------------------------------------------------------------
+      - uid: susds-usdt-health-factor-low
+        title: sUSDS/USDT health factor below 1.02
+        condition: C
+        for: 10m
+        labels:
+          severity: critical
+          position: susds-usdt
+        annotations:
+          summary: Health factor is approaching liquidation.
+          description: >-
+            The oracle is NAV-based rather than market price, so this cannot gap on a depeg — it
+            only moves when debt outgrows collateral. Reaching here means the carry has been
+            negative for a while.
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: DS_UID_HERE
+            model:
+              editorMode: code
+              expr: hf{position_id="sUSDS/USDT"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              refId: C
+              datasource: {type: __expr__, uid: __expr__}
+              conditions:
+                - evaluator: {type: lt, params: [1.02]}
+                  operator: {type: and}
+                  query: {params: [A]}
+                  reducer: {type: last}
+                  type: query
+        noDataState: NoData
+        execErrState: Error
+        isPaused: false
+
+      # ---------------------------------------------------------------------
+      # The unwind simulation stopped running.
+      #
+      # This is the one that covers the silent-failure gap. When the simulation throws, cron catches
+      # it per-market and the process stays up, so the gauge keeps being exported with its last
+      # value — absent() will never fire, and the dashboard looks healthy. But open_position_size is
+      # a 6-decimal USDT figure derived from live quotes and accruing interest, so it changes on
+      # every scrape while the simulation is working. Zero changes over 30 minutes means it stopped.
+      # ---------------------------------------------------------------------
+      - uid: susds-usdt-unwind-sim-stalled
+        title: sUSDS/USDT unwind simulation stalled
+        condition: C
+        for: 5m
+        labels:
+          severity: critical
+          position: susds-usdt
+        annotations:
+          summary: The full-exit simulation has not produced a new value in 30 minutes.
+          description: >-
+            Its gauges are frozen at their last good reading, so health factor and unwind proceeds
+            on the dashboard are stale rather than current. Usually the swap route failing to quote.
+            Check the cron logs for "Error syncing sUSDS/USDT".
+        data:
+          - refId: A
+            relativeTimeRange: {from: 3600, to: 0}
+            datasourceUid: DS_UID_HERE
+            model:
+              editorMode: code
+              expr: changes(open_position_size{position_id="sUSDS/USDT"}[30m])
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              refId: C
+              datasource: {type: __expr__, uid: __expr__}
+              conditions:
+                - evaluator: {type: lt, params: [1]}
+                  operator: {type: and}
+                  query: {params: [A]}
+                  reducer: {type: last}
+                  type: query
+        noDataState: NoData
+        execErrState: Error
+        isPaused: false
+
+      - uid: susds-usdt-collector-down
+        title: DeFi metrics collector down
+        condition: C
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: No metrics are arriving from the cron process.
+          description: Every gauge on the dashboard is stale. Check the cron container and Alloy.
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: DS_UID_HERE
+            model:
+              editorMode: code
+              expr: absent(morpho_borrow_apy{market="sUSDS/USDT"})
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              refId: C
+              datasource: {type: __expr__, uid: __expr__}
+              conditions:
+                - evaluator: {type: gt, params: [0]}
+                  operator: {type: and}
+                  query: {params: [A]}
+                  reducer: {type: last}
+                  type: query
+        noDataState: OK
+        execErrState: Error
+        isPaused: false
+
+      # ---------------------------------------------------------------------
+      # Route depth. Levels are meaningless here — these venues are far too deep
+      # to run dry — so both rules watch rate of change instead.
+      # ---------------------------------------------------------------------
+      - uid: susds-usdt-route-pool-drawdown
+        title: sUSDS/USDT exit route pool drained 25% in 6h
+        condition: C
+        for: 15m
+        labels:
+          severity: warning
+          position: susds-usdt
+        annotations:
+          summary: "{{ $labels.venue }} ({{ $labels.token }}) is down sharply over 6 hours."
+          description: >-
+            Not an exit blocker on its own — the route clears at 8x position size even without the
+            RFQ venues. It is an early sign that the route is about to reprice, well before any
+            quote gets worse.
+        data:
+          - refId: A
+            relativeTimeRange: {from: 21600, to: 0}
+            datasourceUid: DS_UID_HERE
+            model:
+              editorMode: code
+              expr: 100 * (route_pool_liquidity / (route_pool_liquidity offset 6h) - 1)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              refId: C
+              datasource: {type: __expr__, uid: __expr__}
+              conditions:
+                - evaluator: {type: lt, params: [-25]}
+                  operator: {type: and}
+                  query: {params: [A]}
+                  reducer: {type: last}
+                  type: query
+        noDataState: NoData
+        execErrState: Error
+        isPaused: false
+
+      - uid: susds-usdt-psm-drawdown
+        title: Sky PSM pocket drained 20% in 6h
+        condition: C
+        for: 15m
+        labels:
+          severity: warning
+          position: susds-usdt
+        annotations:
+          summary: The lite-PSM USDC pocket is down over 6 hours.
+          description: >-
+            The PSM carries most of the sUSDS exit. Its pocket is shared Sky infrastructure, so a
+            drawdown reflects everyone's flow, not just ours — which is what makes it useful early.
+        data:
+          - refId: A
+            relativeTimeRange: {from: 21600, to: 0}
+            datasourceUid: DS_UID_HERE
+            model:
+              editorMode: code
+              expr: >-
+                100 * (route_pool_liquidity{venue="sky-lite-psm"}
+                / (route_pool_liquidity{venue="sky-lite-psm"} offset 6h) - 1)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: A
+              refId: C
+              datasource: {type: __expr__, uid: __expr__}
+              conditions:
+                - evaluator: {type: lt, params: [-20]}
+                  operator: {type: and}
+                  query: {params: [A]}
+                  reducer: {type: last}
+                  type: query
+        noDataState: NoData
+        execErrState: Error
+        isPaused: false

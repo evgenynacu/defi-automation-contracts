@@ -1,4 +1,4 @@
-import { Contract, type ContractRunner } from "ethers"
+import { type BlockTag, Contract, type ContractRunner } from "ethers"
 import { MorphoBlue__factory } from "../typechain-types"
 import { getMorphoBlue } from "./get-morpho-blue"
 
@@ -21,13 +21,17 @@ const irmAbi = [
  *
  * borrowRateView, unlike borrowRate, does not write, which is what lets this run against a plain
  * provider. It prices the market as of its last accrual, so the number moves with utilization.
+ *
+ * Every read takes the same blockTag, so passing a past block reconstructs the rate as it stood then —
+ * the market state and the IRM's own curve are both on-chain. That is what makes history recoverable
+ * for a metric that only started being collected recently.
  */
-export async function getMorphoBorrowRate(runner: ContractRunner, marketId: string) {
+export async function getMorphoBorrowRate(runner: ContractRunner, marketId: string, blockTag: BlockTag = "latest") {
 	const { chainId } = await runner.provider!.getNetwork()
 	const morpho = MorphoBlue__factory.connect(getMorphoBlue(chainId), runner)
 	const [params, market] = await Promise.all([
-		morpho.idToMarketParams(marketId),
-		morpho.market(marketId),
+		morpho.idToMarketParams(marketId, { blockTag }),
+		morpho.market(marketId, { blockTag }),
 	])
 
 	const irm = new Contract(params.irm, irmAbi, runner)
@@ -41,6 +45,7 @@ export async function getMorphoBorrowRate(runner: ContractRunner, marketId: stri
 			market.lastUpdate,
 			market.fee,
 		],
+		{ blockTag },
 	)
 
 	const apr = Number(ratePerSecond) / 1e18 * SECONDS_PER_YEAR
