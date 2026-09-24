@@ -291,12 +291,12 @@ async function syncAllPTs(syncService: SyncService) {
 			type: "morpho-withdraw",
 			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-			marketId: "0x2412afc9614939a5d994397fe0b94a4f6fb8bc02bfc139e1a5956a865e2efe26",
+			marketId: "0x1e9d614631a7df0ec07fb05b2c8cb2491575fd1a63a33bf187a6afb295a4fc64",
 			debtShare: 1,
 			collateralShare: 1,
 		})
 	} catch (e) {
-		console.error("Error syncing PT-USDG/USDC", e)
+		console.error("Error syncing PT-reUSD/USDC", e)
 	}
 
 	console.log("PTs synchronized in", (Date.now() - start), "ms")
