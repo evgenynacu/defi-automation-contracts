@@ -276,21 +276,6 @@ async function syncAllPTs(syncService: SyncService) {
 			type: "morpho-withdraw",
 			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
 			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
-			marketId: "0x0367161b7cb23dfd03747dd3815d1c445b0437b648a6d50346249c6e7b92ff1b",
-			debtShare: 1,
-			collateralShare: 1,
-		})
-	} catch (e) {
-		console.error("Error syncing PT-sUSDS/USDT", e)
-	}
-
-	await sleep(3000)
-
-	try {
-		await syncService.syncData({
-			type: "morpho-withdraw",
-			from: "0x089fa9741628c1A4576F5BA47E02D1180b581e36",
-			vault: "0x5Af8B1e9b34de89a07f6114c2ffB3bABaEdca240",
 			marketId: "0x1e9d614631a7df0ec07fb05b2c8cb2491575fd1a63a33bf187a6afb295a4fc64",
 			debtShare: 1,
 			collateralShare: 1,
