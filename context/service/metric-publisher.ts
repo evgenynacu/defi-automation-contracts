@@ -104,6 +104,20 @@ export class MetricPublisher {
 				)
 				return
 			}
+			case "morpho-health-factor": {
+				// Not setPositionGauges: that reads `result` as a position size, and here it is the
+				// health factor itself. Same gauges and same labels though, so a position measured
+				// this way sits alongside one measured by the unwind simulation.
+				const labels = {
+					wallet: wallets[request.owner] || request.owner,
+					position_id: marketIds[request.marketId] || request.marketId,
+				}
+				hfGauge.set(labels, data.result)
+				if (data.ltv !== undefined) {
+					ltvGauge.set(labels, data.ltv)
+				}
+				return
+			}
 			case "compound-borrow-rate": {
 				borrowApyGauge.set({ protocol: "compound", market: request.market }, data.result)
 				return

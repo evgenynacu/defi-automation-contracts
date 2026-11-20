@@ -17,6 +17,7 @@ import {withdrawFromAaveOnBehalf} from "../../common/withdraw-from-aave-ob";
 import {getAaveV4Capacity} from "../aave-v4/get-capacity-data";
 import {getMorphoBorrowRate} from "../../common/get-morpho-borrow-rate";
 import {getCompoundBorrowRate} from "../../common/get-compound-borrow-rate";
+import {getMorphoHealthFactor} from "../../common/get-morpho-health-factor";
 import {getPoolLiquidity, PoolSource} from "../../common/get-pool-liquidity";
 
 export class DataService {
@@ -32,6 +33,8 @@ export class DataService {
 			return getAaveV4Capacity(this.ethRunner, request)
 		} else if (request.type === "morpho-borrow-rate") {
 			return getMorphoBorrowRate(this.ethRunner, request.marketId)
+		} else if (request.type === "morpho-health-factor") {
+			return getMorphoHealthFactor(this.ethRunner, request.marketId, request.owner)
 		} else if (request.type === "compound-borrow-rate") {
 			return getCompoundBorrowRate(this.getRunner(request.chainId), request.comet)
 		} else if (request.type === "pool-liquidity") {
@@ -196,6 +199,7 @@ export type DataRequest =
 	| AaveV4CapacityRequest
 	| MorphoBorrowRateRequest
 	| CompoundBorrowRateRequest
+	| MorphoHealthFactorRequest
 	| PoolLiquidityRequest
 	| PendleImpliedRateRequest
 	| SwapRateRequest
@@ -233,6 +237,18 @@ export type AaveV4CapacityRequest = {
 export type MorphoBorrowRateRequest = {
 	type: "morpho-borrow-rate"
 	marketId: `0x${string}`
+}
+
+/**
+ * Liquidation distance for one account's position on a Morpho Blue market.
+ *
+ * Separate from morpho-withdraw, which also yields a health factor: that one simulates the whole exit
+ * and stops reporting when no swap route quotes, while this reads chain state and keeps working.
+ */
+export type MorphoHealthFactorRequest = {
+	type: "morpho-health-factor"
+	marketId: `0x${string}`
+	owner: address
 }
 
 /**

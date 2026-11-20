@@ -57,6 +57,22 @@ const AAVE_V4_WATCHED_RESERVES: { spoke: address, token: address, hub: address }
 const WATCHED_BORROW_RATE_MARKETS: `0x${string}`[] = [
 	// sUSDS/USDT
 	"0x3274643db77a064abd3bc851de77556a4ad2e2f502f4f0c80845fa8f909ecf0b",
+	// WBTC/USDT
+	"0xa921ef34e2fc7a27ccc50ae7e4b154e16c9799d3387076c421423ef52ac4df99",
+]
+
+/**
+ * Morpho positions to report a health factor for.
+ *
+ * Read from chain state rather than derived from the unwind simulation in syncAllNonPTs below, so it
+ * keeps reporting for a position whose exit route cannot currently be quoted.
+ */
+const WATCHED_MORPHO_POSITIONS: { marketId: `0x${string}`, owner: address }[] = [
+	// WBTC/USDT held by the BTC wallet
+	{
+		marketId: "0xa921ef34e2fc7a27ccc50ae7e4b154e16c9799d3387076c421423ef52ac4df99",
+		owner: toAddress("0x21F1359b6DD3392d3DC567d005d83B6d017CC60D"),
+	},
 ]
 
 /**
@@ -141,6 +157,13 @@ async function runJobs() {
 			logAsync(
 				syncService.syncData({ type: "morpho-borrow-rate", marketId }),
 				`checking morpho borrow rate ${marketIds[marketId] || marketId}`,
+			)
+		}
+
+		for (const position of WATCHED_MORPHO_POSITIONS) {
+			logAsync(
+				syncService.syncData({ type: "morpho-health-factor", ...position }),
+				`checking morpho health factor ${marketIds[position.marketId] || position.marketId}`,
 			)
 		}
 
