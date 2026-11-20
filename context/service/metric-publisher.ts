@@ -16,7 +16,7 @@ import {
 	aaveV4SupplyLeftGauge,
 	aaveV4SupplyCapGauge,
 	aaveV4BorrowableGauge,
-	morphoBorrowApyGauge,
+	borrowApyGauge,
 	routePoolLiquidityGauge,
 	routePoolV4LiquidityGauge,
 } from "../metrics/registry"
@@ -98,10 +98,14 @@ export class MetricPublisher {
 				return
 			}
 			case "morpho-borrow-rate": {
-				morphoBorrowApyGauge.set(
-					{ market: marketIds[request.marketId] || request.marketId },
+				borrowApyGauge.set(
+					{ protocol: "morpho", market: marketIds[request.marketId] || request.marketId },
 					data.result,
 				)
+				return
+			}
+			case "compound-borrow-rate": {
+				borrowApyGauge.set({ protocol: "compound", market: request.market }, data.result)
 				return
 			}
 			case "pool-liquidity": {

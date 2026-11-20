@@ -59,6 +59,22 @@ const WATCHED_BORROW_RATE_MARKETS: `0x${string}`[] = [
 	"0x3274643db77a064abd3bc851de77556a4ad2e2f502f4f0c80845fa8f909ecf0b",
 ]
 
+/**
+ * Compound III markets to report the borrow rate for.
+ *
+ * Reported as a continuously compounded APY, the same convention the Morpho rate uses, so the two are
+ * comparable on one chart. Compound's own UI quotes a simple APR net of COMP rewards, so this number
+ * is expected to sit above what the website shows.
+ */
+const WATCHED_COMPOUND_MARKETS: { chainId: number, comet: address, market: string }[] = [
+	// USD₮0 on Arbitrum — the same Comet the BTC health-factor job above already uses.
+	{
+		chainId: 42161,
+		comet: toAddress("0xd98Be00b5D27fc98112BdE293e487f8D4cA57d07"),
+		market: "USDT0-arb",
+	},
+]
+
 async function runJobs() {
 	console.log("Starting cron jobs")
 
@@ -125,6 +141,13 @@ async function runJobs() {
 			logAsync(
 				syncService.syncData({ type: "morpho-borrow-rate", marketId }),
 				`checking morpho borrow rate ${marketIds[marketId] || marketId}`,
+			)
+		}
+
+		for (const market of WATCHED_COMPOUND_MARKETS) {
+			logAsync(
+				syncService.syncData({ type: "compound-borrow-rate", ...market }),
+				`checking compound borrow rate ${market.market}`,
 			)
 		}
 

@@ -84,7 +84,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "morpho_borrow_apy{market=\"sUSDS/USDT\"}",
+          "expr": "borrow_apy{protocol=\"morpho\",market=\"sUSDS/USDT\"}",
           "range": false,
           "instant": true,
           "refId": "A"
@@ -154,7 +154,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "($breakeven - morpho_borrow_apy{market=\"sUSDS/USDT\"}) * 100",
+          "expr": "($breakeven - borrow_apy{protocol=\"morpho\",market=\"sUSDS/USDT\"}) * 100",
           "range": false,
           "instant": true,
           "refId": "A"
@@ -505,7 +505,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "morpho_borrow_apy{market=\"sUSDS/USDT\"}",
+          "expr": "borrow_apy{protocol=\"morpho\",market=\"sUSDS/USDT\"}",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -1113,6 +1113,85 @@
           "fields": ""
         }
       }
+    },
+    {
+      "id": 104,
+      "type": "row",
+      "title": "Borrow rates, all markets",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 40
+      },
+      "panels": []
+    },
+    {
+      "id": 40,
+      "type": "timeseries",
+      "title": "Borrow APY by market",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 41
+      },
+      "description": "Every lending market the cron watches, across protocols. Deliberately unfiltered by protocol \u2014 one comparable series per market is the whole reason borrow_apy is generic. Continuously compounded; for Compound that is an upper bound on a rate that actually accrues discretely, and runs above the APR its own UI quotes.",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "borrow_apy",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "{{protocol}} {{market}}"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "calcs": [
+            "lastNotNull",
+            "min",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 3,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 0,
+            "showPoints": "auto",
+            "pointSize": 5,
+            "spanNulls": true,
+            "axisPlacement": "auto",
+            "gradientMode": "none"
+          },
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      }
     }
   ],
   "refresh": "1m",
@@ -1200,6 +1279,6 @@
   "timezone": "",
   "title": "sUSDS/USDT - position and exit route",
   "uid": "susds-usdt-exit",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }

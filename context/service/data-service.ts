@@ -16,6 +16,7 @@ import {PendleMarket__factory} from "../../typechain-types";
 import {withdrawFromAaveOnBehalf} from "../../common/withdraw-from-aave-ob";
 import {getAaveV4Capacity} from "../aave-v4/get-capacity-data";
 import {getMorphoBorrowRate} from "../../common/get-morpho-borrow-rate";
+import {getCompoundBorrowRate} from "../../common/get-compound-borrow-rate";
 import {getPoolLiquidity, PoolSource} from "../../common/get-pool-liquidity";
 
 export class DataService {
@@ -31,6 +32,8 @@ export class DataService {
 			return getAaveV4Capacity(this.ethRunner, request)
 		} else if (request.type === "morpho-borrow-rate") {
 			return getMorphoBorrowRate(this.ethRunner, request.marketId)
+		} else if (request.type === "compound-borrow-rate") {
+			return getCompoundBorrowRate(this.getRunner(request.chainId), request.comet)
 		} else if (request.type === "pool-liquidity") {
 			return {
 				id: poolLiquidityJobId(request.venue, request.source),
@@ -54,6 +57,25 @@ export class DataService {
 			const runner = this.getRunnerByVault(request.vault)
 			const executor = createCalculateExecutor(runner, request.vault, request.from)
 			return getData(executor, request)
+		}
+	}
+
+	/**
+	 * Picks the provider for a chain.
+	 *
+	 * The vault-keyed lookup below cannot serve requests that have no vault, and leaving the chain
+	 * implicit would silently make a request type single-network.
+	 */
+	getRunner(chainId: number): ContractRunner {
+		switch (chainId) {
+			case 1:
+				return this.ethRunner
+			case 42161:
+				return this.arbRunner
+			case 9745:
+				return this.plasmaRunner
+			default:
+				throw new Error(`No provider configured for chain ${chainId}`)
 		}
 	}
 
@@ -173,6 +195,7 @@ export type DataRequest =
 	| AaveFreeSupplyRequest
 	| AaveV4CapacityRequest
 	| MorphoBorrowRateRequest
+	| CompoundBorrowRateRequest
 	| PoolLiquidityRequest
 	| PendleImpliedRateRequest
 	| SwapRateRequest
@@ -210,6 +233,26 @@ export type AaveV4CapacityRequest = {
 export type MorphoBorrowRateRequest = {
 	type: "morpho-borrow-rate"
 	marketId: `0x${string}`
+}
+
+/**
+ * Same question for a Compound III market.
+ *
+ * Comet markets are deployed per chain, so the chain is part of the request rather than assumed —
+ * the same base asset has its own market and its own rate on each one.
+ */
+export type CompoundBorrowRateRequest = {
+	type: "compound-borrow-rate"
+	chainId: number
+	comet: address
+	/**
+	 * Gauge label, and required rather than defaulting to the comet address: a series named after an
+	 * address would be renamed the moment someone added a readable label, losing its history.
+	 *
+	 * Must identify the market across chains, since the label set does not carry the chain — the same
+	 * base asset has a separate Comet on each one. Hence "USDT0-arb", not "USDT0".
+	 */
+	market: string
 }
 
 /**

@@ -46,7 +46,7 @@ groups:
             datasourceUid: DS_UID_HERE
             model:
               editorMode: code
-              expr: morpho_borrow_apy{market="sUSDS/USDT"}
+              expr: borrow_apy{protocol="morpho",market="sUSDS/USDT"}
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -86,7 +86,7 @@ groups:
             datasourceUid: DS_UID_HERE
             model:
               editorMode: code
-              expr: morpho_borrow_apy{market="sUSDS/USDT"}
+              expr: borrow_apy{protocol="morpho",market="sUSDS/USDT"}
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200
@@ -217,7 +217,7 @@ groups:
             datasourceUid: DS_UID_HERE
             model:
               editorMode: code
-              expr: absent(morpho_borrow_apy{market="sUSDS/USDT"})
+              expr: absent(borrow_apy{protocol="morpho",market="sUSDS/USDT"})
               instant: true
               intervalMs: 1000
               maxDataPoints: 43200

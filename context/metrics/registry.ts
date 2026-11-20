@@ -82,10 +82,14 @@ export const aaveV4BorrowableGauge = new Gauge({
 	labelNames: ['spoke', 'token'],
 })
 
-export const morphoBorrowApyGauge = new Gauge({
-	name: 'morpho_borrow_apy',
-	help: 'Morpho Blue borrow APY for a market, in percent, compounded continuously',
-	labelNames: ['market'],
+// One gauge across lending protocols rather than one each: a borrow APY means the same thing
+// everywhere and is directly comparable, so a single series lets one panel put Morpho and Compound
+// side by side. Every protocol must publish the same convention — continuously compounded APY in
+// percent — or the comparison quietly lies.
+export const borrowApyGauge = new Gauge({
+	name: 'borrow_apy',
+	help: 'Borrow APY for a lending market, in percent, compounded continuously',
+	labelNames: ['protocol', 'market'],
 })
 
 // Two gauges rather than one, because the units differ and Prometheus has no way to tell them apart.
@@ -123,6 +127,6 @@ register.registerMetric(aaveTotalSuppliedGauge)
 register.registerMetric(aaveV4SupplyLeftGauge)
 register.registerMetric(aaveV4SupplyCapGauge)
 register.registerMetric(aaveV4BorrowableGauge)
-register.registerMetric(morphoBorrowApyGauge)
+register.registerMetric(borrowApyGauge)
 register.registerMetric(routePoolLiquidityGauge)
 register.registerMetric(routePoolV4LiquidityGauge)
